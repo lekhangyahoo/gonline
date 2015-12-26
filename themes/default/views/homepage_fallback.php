@@ -1,0 +1,1 @@
+<div class="alert">There is no default homepage selected. Please Login <?php echo anchor('admin');?> and set one on the Gonline Configuration page.</div>
