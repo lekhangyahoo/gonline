@@ -18,14 +18,10 @@ class Page extends Front{
 		\CI::load()->model(['Products', 'Categories']);
         \CI::load()->helper('form');
         \CI::lang()->load('products');
-		
-		//$engines = \CI::Products()->getProductsCondition(1,1);
-		//$alternator = \CI::Products()->getProductsAlternators(2,1);
-		//echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
-		
         if(file_exists(FCPATH.'themes/'.config_item('theme').'/views/homepage.php'))
         {
 			$data['power']= @$_POST['power'];
+            $data['hz']= @$_POST['hz'];
 			$engines = array();
 			$alternators = array();
 			$generators = array();
@@ -33,7 +29,7 @@ class Page extends Front{
 			$data['alternators'] = $alternators;
 			
 			if($data['power'] > 0){
-				
+                $data['hz']= @$_POST['hz'];
 				$categories['sort'] = $data['sort'] = '';
 				$categories['dir'] 	= $data['dir'] = '';
 				$categories['slug'] = $data['slug'] = '';
@@ -42,15 +38,15 @@ class Page extends Front{
 				$categories = \CI::Categories()->get($data['slug'], $data['sort'], $data['dir'], $data['page'], $data['per_page']);
 				
 				
-				$engines = \CI::Products()->getProductsCondition($data['power']);
+				$engines = \CI::Products()->getProductsCondition($data['power'], $data['hz']);
 				
-				$alternators = \CI::Products()->getProductsAlternators($data['power']);	
+				$alternators = \CI::Products()->getProductsAlternators($data['power'], $data['hz']);
 				
 				//echo \CI::db()->last_query().'<pre>';print_r($alternators);exit;
 				
 				$data['engines'] = $engines;
 				$data['alternators'] = $alternators;				
-				$generators = $this->results($data['engines'],$data['alternators'], $data['power']);
+				$generators = $this->results($data['hz'], $data['engines'],$data['alternators'], $data['power']);
 			}
 			$generators = $this->array_orderby(@$generators, 'kVA', SORT_ASC, 'price', SORT_ASC);
 			
@@ -94,7 +90,7 @@ class Page extends Front{
 		return array_pop($args);
 	}
 	
-	public function results($engines, $alternators, $power){
+	public function results($hz, $engines, $alternators, $power){
 		$generators = array();
 		$tmp = 0;
 		foreach($engines as $engine){
@@ -111,7 +107,9 @@ class Page extends Front{
 					
 					if($engine->days > $alternator->days)
 						$generators[$tmp]['days'] = $engine->days;
-					else $generators[$tmp]['days'] = $alternator->days;				
+					else $generators[$tmp]['days'] = $alternator->days;
+
+                    $generators[$tmp]['name'] = 'G'.$hz.'-'.round ($generators[$tmp]['generator_kVA']).$generators[$tmp]['engine']->code.$generators[$tmp]['alternator']->code;
 				//}
 				$tmp ++;
 			}

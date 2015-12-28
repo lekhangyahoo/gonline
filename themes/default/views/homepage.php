@@ -6,10 +6,10 @@
 		</div>
 		<div class="col" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
 		Hz
-			<select id="sort">
-                <option value="50"> 50hz </option>
-                <option value="60"> 60hz </option>
-            </select>
+			<select name="hz">
+				<option value="50" <?php if($hz == 50) echo 'selected'?>> 50hz </option>
+				<option value="60" <?php if($hz == 60) echo 'selected'?>> 60hz </option>
+			</select>
 		</div>
 		<div class="col pull-right" style="margin-top:22px" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
 			<button type="button" class="btn btn-primary">More Option</button>
@@ -17,42 +17,19 @@
 	</div>
 	<div><button type="submit" class="btn btn-primary">Submit</button></div>
 	</form>
-	<?php //if(!empty($engines) || !empty($alternators)) {echo '<pre>'; print_r($engines); print_r($alternators);echo '</pre>';}?>
 </div>
 
-<!--
-<?php if(!empty($generators)){?>
-<div> <h1>Results</h1></div>
-<?php $count = 1; foreach($generators as $generator){?>
-<div>
-	<div><?php echo "#".$count?></div>
-	<div>Engine -- Name: <?php echo $generator['engine']->name?>, Prime:<?php echo $generator['engine']->prime?> kWm, Standby:<?php echo $generator['engine']->standby?> kWm, Days:<?php echo $generator['engine']->days?></div>
-	
-	<div>kVA: <?php echo round ($generator['kVA'])?></div>
-	
-	<div>Alternator 50hz -- Name: <?php echo $generator['alternator']->name?>, kVA: <?php echo $generator['alternator']->power;?>, Days:<?php echo $generator['alternator']->days?></div>
-	
-	<div>Generator kVA: <?php echo round ($generator['generator_kVA'])?></div>
-	
-	<div>Max: <?php if($generator['engine']->days > $generator['alternator']->days) echo $generator['engine']->days;else echo $generator['alternator']->days?> days</div>
-	<div>Total price: <?php echo $generator['price']?></div>
-</div>
-<hr/>	
-<?php $count++;}?>
-<?php }else {if(@$power>0){?>
-<div>Not found, Please contact us! </div>
-<?php }}?>
--->
 <?php if(!empty($generators)){?>
 	<div> <h1>Results</h1></div>
 	
 	<div class="productsFilter">
         <div class="pull-right">
             <select id="sort">
-                <option <?php echo($sort=='name' && $dir == 'DESC')?' selected="selected"':'';?>  value="<?php echo site_url('category/'.$slug.'/name/DESC/'.$page);?>">Sort by power Low to Hight</option>
-                <option <?php echo($sort=='name' && $dir == 'ASC')?' selected="selected"':'';?> value="<?php echo site_url('category/'.$slug.'/name/ASC/'.$page);?>">Sort by power Hight to Low</option>
-                <option <?php echo($sort=='price' && $dir == 'ASC')?' selected="selected"':'';?>  value="<?php echo site_url('category/'.$slug.'/price/ASC/'.$page);?>"><?php echo lang('sort_by_price_asc');?></option>
-                <option <?php echo($sort=='price' && $dir == 'DESC')?' selected="selected"':'';?>  value="<?php echo site_url('category/'.$slug.'/price/DESC/'.$page);?>"><?php echo lang('sort_by_price_desc');?></option>
+                <option data-option="power" <?php echo($sort=='name' && $dir == 'DESC')?' selected="selected"':'';?>  value="asc">Sort by power Low to Hight</option>
+                <option data-option="power" <?php echo($sort=='name' && $dir == 'ASC')?' selected="selected"':'';?> value="desc">Sort by power Hight to Low</option>
+                <option data-option="price" <?php echo($sort=='price' && $dir == 'ASC')?' selected="selected"':'';?>  value="asc"><?php echo lang('sort_by_price_asc');?></option>
+                <option data-option="price" <?php echo($sort=='price' && $dir == 'DESC')?' selected="selected"':'';?>  value="desc"><?php echo lang('sort_by_price_desc');?></option>
+				<option data-option="day" <?php echo($sort=='name' && $dir == 'DESC')?' selected="selected"':'';?>  value="asc">Sort by day</option>
             </select>
         </div>
         <div class="pull-right">
@@ -60,19 +37,23 @@
         </div>
     </div> 
 	
-	<div class="col-nest categoryItems element">
+	<div class="col-nest categoryItems element" id="generators">
     <?php foreach($generators as $generator):?>
-        <div class="col" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
+        <div class="col listing-item" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1" data-power="<?php echo round ($generator['generator_kVA']);?>" data-price="<?php echo format_currency($generator['price']);?>" data-day="<?php echo $generator['days'];?>">
             <?php
             $photo  = theme_img('no_picture.png');
             ?>
 			
-            <div target="_blank" onclick="window.location = '<?php echo site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id)?>'" class="categoryItem" >
+            <div class="categoryItem" >
 			
-                <div class="previewImg"><img src="<?php echo $photo;?>"></div>
+                <div class="previewImg">
+					<a href="<?php echo site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id)?>" target="_blank"><img src="<?php echo $photo;?>"></a>
+				</div>
 
                 <div class="categoryItemDetails">
-                    <div><h1><?php //echo $product->name;?>G50-<?php echo round ($generator['generator_kVA']).$generator['engine']->code.$generator['alternator']->code;?>AB</h1></div>					
+                    <div>
+						<h1><?php echo $generator['name'];?>AB</h1>
+					</div>
 					<div>
 						Standby Power: <?php echo round ($generator['generator_kVA']);?> kVA
 					</div>
@@ -96,6 +77,27 @@
         </div>
     <?php endforeach;?>
     </div>
+
+<script>
+	$( "#sort" ).change(function() {
+		var value =  $(this).val() ;
+		var option = $(this).children('option:selected').data('option');
+		var divList = $(".listing-item");
+		if(value=='asc') {
+			divList.sort(function (a, b) {
+				return $(a).data(option) - $(b).data(option)
+			});
+		}else{
+			divList.sort(function (a, b) {
+				return $(b).data(option) - $(a).data(option)
+			});
+		}
+		$("#generators").html(divList);
+	});
+</script>
+
 <?php }else {if(@$power>0){?>
 	<div>Not found, Please contact us! </div>
 <?php }}?>
+
+

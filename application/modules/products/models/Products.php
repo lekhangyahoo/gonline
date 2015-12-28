@@ -146,48 +146,27 @@ Class Products extends CI_Model
         }
     }
 	
-	public function getProductsCondition($power = 0, $rpm = 1500, $get_max = true, $limit = false, $offset = false, $by=false, $sort=false)
+	public function getProductsCondition($power = 0, $hz = 50, $get_max = true, $limit = false, $offset = false, $by=false, $sort=false)
     {
 		// prime, standby is kWm , => kVA = kWm/cos
-		
-		/*CI::db()->select('products.*, engines.*, (engines.prime/engines.power_factor) as p_kAV, (engines.standby/engines.power_factor) as s_kAV , (engines.standby/engines.power_factor*1.5) as max_s_kAV, (engines.standby/engines.power_factor*0.8) as min_s_kAV');
-		CI::db()->where('engines.rpm', 1500);
-		//CI::db()->where('max_s_kAV >= '.$power);
-		CI::db()->where('engines.standby/engines.power_factor*'.$par_max.' >= '.$power);
-		CI::db()->where('engines.standby/engines.power_factor*'.$par_min.' <= '.$power);
-		CI::db()->join('engines', 'engines.product_id=products.id');
-        return CI::db()->order_by('name', 'ASC')->get('products')->result();*/
-		
-		/*$sql = 'SELECT products.*, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV, (engines.standby/engines.power_factor*'.$par_max.') AS max_s_kAV, (engines.standby/engines.power_factor*'.$par_min.') AS min_s_kAV '
-		.'FROM products JOIN `engines` ON engines.product_id=products.id '
-		.'WHERE engines.rpm = 1500 AND engines.standby/engines.power_factor >= '.$par_min*$power.' AND engines.standby/engines.power_factor <= '.$par_max*$power.'  ORDER BY `name` ASC';*/
-		if($rpm == 1500){
-			if($get_max){	// get max
-				$sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV '
-				.'FROM products JOIN `engines` ON engines.product_id=products.id '
-				.'JOIN `manufacturers` ON manufacturers.id=products.manufacturers '
-				.'WHERE engines.standby/engines.power_factor >= '.$power.' ORDER BY `name` ASC limit 50';
-			}
-			else {			// get min
-				$sql = 'SELECT products.*, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV '
-				.'FROM products JOIN `engines` ON engines.product_id=products.id '
-				.'WHERE engines.standby/engines.power_factor < '.$power.' ORDER BY `name` ASC limit 50';
-			}
+
+        $sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV '
+            .'FROM products JOIN `engines` ON engines.product_id=products.id '
+            .'JOIN `manufacturers` ON manufacturers.id=products.manufacturers ';
+        if($hz == 50){
+            $sql = $sql.'WHERE (rpm = 1500 or rpm = 3000) and ';
 		}else{
-			if($get_max){	// get max
-				$sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime_2/engines.power_factor) AS p_kAV, (engines.standby_2/engines.power_factor) AS s_kAV '
-				.'FROM products JOIN `engines` ON engines.product_id=products.id '
-				.'JOIN `manufacturers` ON manufacturers.id=products.manufacturers '
-				.'WHERE engines.standby_2/engines.power_factor >= '.$power.' ORDER BY `name` ASC limit 50';
-			}
-			else {			// get min
-				$sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime_2/engines.power_factor) AS p_kAV, (engines.standby_2/engines.power_factor) AS s_kAV '
-				.'FROM products JOIN `engines` ON engines.product_id=products.id '
-				.'JOIN `manufacturers` ON manufacturers.id=products.manufacturers '
-				.'WHERE engines.standby_2/engines.power_factor < '.$power.' ORDER BY `name` ASC limit 50';
-			}
+            $sql = $sql.'WHERE (rpm = 1800 or rpm = 3600) and ';
 		}
-		
+
+        if($get_max){	// get max
+            $sql = $sql.'engines.standby/engines.power_factor >= '.$power;
+        }
+        else {			// get min
+            $sql = $sql.'engines.standby/engines.power_factor < '.$power;
+        }
+
+        $sql = $sql.' ORDER BY `name` ASC limit 50';
 		return CI::db()->query($sql)->result();
         
     }
