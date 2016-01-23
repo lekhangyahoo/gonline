@@ -1,310 +1,148 @@
 <style>
-.download-document {
-    padding: 10px 0;
-    border-bottom: 1px solid #C5C5C5;
-	width: 75%;
-}
-.last{border:none}
+    .download-document {
+        padding: 10px 0;
+        border-bottom: 1px solid #C5C5C5;
+        width: 75%;
+    }
+    .last{border:none}
+
+    .cojefichas{width:1100px;margin:0;padding:0}
+    .cojecabeceras{background-color:#666;height:75px;width:1100px;margin:0;padding:0}
+    .cojecabeceras p{padding-top:15px}
+    .cabecera1{font-size:12px;font-weight:700;color:#FFF;margin:0;padding:0;width:220px;height:75px;float:left;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;text-align:center}
+    .cabecera2{font-size:12px;font-weight:700;color:#FFF;float:left;height:75px;width:50px;text-align:center;margin:0;padding:0;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF}
+    .cabecera3{margin:0;padding:0;float:left;height:75px;width:184px}
+    .cabecera31{font-size:12px;font-weight:700;color:#CCC;margin:0;padding:0;height:25px;border-right-width:1px;border-bottom-width:1px;border-right-style:dotted;border-bottom-style:dotted;border-right-color:#FFF;border-bottom-color:#FFF;text-align:center;line-height:25px}
+    .cabecera32{float:left;height:25px;width:91px;font-size:10px;font-weight:700;color:#FFF;text-align:center;margin:0;padding:0;border-right-width:1px;border-bottom-width:1px;border-right-style:dotted;border-bottom-style:dotted;border-right-color:#FFF;border-bottom-color:#FFF;line-height:24px}
+    .cabecera33{font-size:11px;font-weight:700;color:#FFF;height:25px;width:45px;float:left;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;text-align:center;line-height:24px}
+    .cabecera4{font-size:11px;font-weight:700;color:#FFF;margin:0;padding:0;height:75px;width:100px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;float:left;text-align:center}
+    .cabecera41{font-size:11px;font-weight:700;color:#FFF;margin:0;padding:0;height:75px;width:100px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;float:left;text-align:center}
+    .cabecera5{font-size:11px;font-weight:700;color:#FFF;text-align:center;margin:0;padding:0;float:left;width:95px;height:75px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF}
+    .cabecera6{height:75px;background-color:#627259;float:left;width:60px;text-align:center;font-size:12px;font-weight:700;color:#FFF;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF}
+    .cabecera7{height:75px;background-color:#5a7784;float:left;width:145px;text-align:center;font-size:12px;font-weight:700;color:#FFF;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF}
+    .cabecera8{height:75px;float:left;width:138px;text-align:center;font-size:12px;font-weight:700;color:#FFF}
+    .cojeresultados{height:61px;width:1100px;float:left;margin:0;padding:0;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#666;background-color:#D4D4D4}
+
+    .resultado1 a{color:#090;text-decoration:none}
+    .resultado11 a{color:#090;text-decoration:none;margin:0;padding:0}
+    .resultado1{float:left;width:220px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;height:60px;font-size:12px;margin:0;padding:0;background-color:#FFF;color:#090;font-weight:700}
+    .resultado2{font-size:12px;color:#000;height:60px;width:50px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;float:left;margin:0;text-align:center;padding:0}
+    .resultado3{float:left;height:60px;width:45px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;font-size:12px;color:#000;text-align:center;margin:0;padding:0}
+    .resultado4{margin:0;float:left;height:60px;width:100px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;font-size:12px;color:#000;text-align:center;padding:0}
+    .resultado41{margin:0;float:left;height:60px;width:100px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;font-size:12px;color:#000;text-align:center;padding:0}
+    .resultado5{float:left;height:60px;width:95px;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;font-size:12px;color:#000;text-align:center;padding:0}
+    .resultado6{font-size:12px;color:#000;height:60px;width:60px;float:left;text-align:center;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;margin:0;padding:0}
+    .resultado7{font-size:12px;color:#000;height:60px;width:145px;float:left;text-align:center;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;margin:0;}
+    .resultado8{font-size:12px;color:#000;height:60px;width:138px;float:left;text-align:center;border-right-width:1px;border-right-style:dotted;border-right-color:#FFF;margin:0;}
+
+    .marginTop20{margin-top: 20px}
+    .marginTop15{margin-top:15px}
+    .line2{background-color: #EEE !important;}
+    .boton-enviar-ficha {padding: 3px 5px !important;}
 </style>
-<div class="page-header">
-    <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
-	<div><?php echo round($generators['kVA_standby']);?> kVA, <?php echo $engine_manufacturer?> engine, 50 Hz - Three-phase - <?php echo $alternator_manufacturer?> Alternator </div>
-	
-</div>
 
-<div class="col-nest">
-    <div class="col" data-cols="2/5" data-medium-cols="2/5">
-        <div class="productImg"><?php
-        $photo = theme_img('pic_generator.png', lang('no_image_available'));
+<div class="cojefichas">
+    <div class="izquierda2"><span class="verde18">50 Hz | THREE-PHASE</span></div>
 
-        if(!empty($product->images[0]))
-        {
-            foreach($product->images as $photo)
-            {
-                if(isset($photo['primary']))
-                {
-                    $primary = $photo;
-                }
-            }
-            if(!isset($primary))
-            {
-                $tmp = $product->images; //duplicate the array so we don't lose it.
-                $primary = array_shift($tmp);
-            }
-
-            $photo = '<img src="'.base_url('uploads/images/full/'.$primary['filename']).'" alt="'.$product->seo_title.'" data-caption="'.htmlentities(nl2br($primary['caption'])).'"/>';
-        }
-        echo $photo
-        ?></div>
-        <?php if(!empty($primary['caption'])):?>
-        <div class="productCaption">
-            <?php echo $primary['caption'];?>
+    <div class="cojecabeceras">
+        <div class="cabecera1"><p>MODEL</p></div>
+        <div class="cabecera2"><p>R.P.M.</p></div>
+        <div class="cabecera3">
+            <div class="cabecera31"> POWER  </div>
+            <div class="cabecera32">CONTIN. PRP.</div>
+            <div class="cabecera32">STAND-BY LTP.</div>
+            <div class="cabecera33">kVA</div>
+            <div class="cabecera33">kW</div>
+            <div class="cabecera33">kVA</div>
+            <div class="cabecera33">kW</div>
         </div>
-        <?php endif;?>
+        <div class="cabecera4"><p>ENGINE</p></div>
+        <div class="cabecera41"><p>ALTERNATOR</p></div>
+        <div class="cabecera5"><p>PRICE</p>
+        </div>
+        <div class="cabecera6">
+            <p>DAY<br>
+            </p></div>
 
-        <?php if(count($product->images) > 1):?>
-            <div class="col-nest productImages">
-
-                <?php foreach($product->images as $image):?>
-                    <div class="col productThumbnail" data-cols="1/3" data-medium-cols="1/3" data-small-cols="1/3" style="margin:15px 0px;">
-                        <img src="<?php echo base_url('uploads/images/full/'.$image['filename']);?>" data-caption="<?php echo htmlentities(nl2br($image['caption']));?>"/>
-                    </div>
-                <?php endforeach;?>
-
-            </div>
-        <?php endif;?>
-		
-		<div>
-			<div class="page-header"><b>Technical Document Downloads</b></div>			
-			<div class="download-document last">
-				<img src="<?php echo base_url('assets/img')?>/label-pdf.gif" width="20" height="9" alt="PDF" border="0">
-				<?php $url_document = str_replace('/generator/','/documents/',uri_string())?>
-				<a target="_blank" href="<?php echo base_url($url_document)?>">Spec. Sheet - <?php echo $generators['name'];?>.pdf</a>
-			</div>
-		</div>
-		
+        <div class="cabecera7">
+            <p>DOWNLOADS<br>
+            </p></div>
+        <div class="cabecera8">
+            <p>ACTION<br>
+            </p></div>
+        <br>
     </div>
 
-
-    <div class="col pull-right" style="padding: 0px 25px;" data-cols="3/5" data-medium-cols="3/5">
-        <div id="productAlerts"></div>
-            <div class="productPrice">           
-                <?php echo format_currency($generators['price']);?>
+    <?php $image_compare = array('default-compare-1.JPG','default-compare-2.JPG','default-compare-3.JPG','default-compare-4.JPG');?>
+    <?php foreach($compare as $key=>$gen){ $index_ima = $key%4;//$index_ima = rand(0, 3);?>
+        <?php if($key%2==1){ $line2 = ' line2'; }else {$line2='';}?>
+        <div class="cojeresultados" id="compare_<?php echo $key;?>">
+            <div class="resultado1">
+                <a href="<?php echo site_url($gen['uri_string_compare']);?>" target="_self">
+                    <img src="<?php echo base_url('themes/default/assets/img/'.$image_compare[$index_ima])?>" width="81" height="59" hspace="15" border="0" align="left">
+                    <br>
+                    <?php echo $gen['result']['generators']['name'];?>
+                </a>
             </div>
-        <div class="productDetails"> 
-
-            <div class="productDescription">
-                <?php echo (new content_filter($product->description))->display();?>
-				<div id="textos">
-					<p class="negro14">GENERAL FEATURES:</p>
-					<p class="arial13"><strong>Power Generator with manual control panel.</strong></p>
-					<p><strong><span class="verde">ENGINE</span></strong><br>
-					  Make: <strong><?php echo $engine_manufacturer?></strong><br>
-					  Model: <strong><?php echo $eng->name;?></strong></p>
-					<p><strong><span class="verde">ALTERNATOR</span></strong><br>
-					  Model: <strong><?php echo $alternator_manufacturer?></strong>
-					  <br>
-					  Model: <strong><?php echo $alt->name;?></strong>
-					</p>
-					<p><strong><span class="verde">CONTROLLER</span></strong><br>
-					  Model: <strong>Decision - Maker</strong></p>					
-				</div>				
-				
-				<div class="potencia"><div class="potencia1"><strong>STAND-BY POWER:</strong><br>
-					<span class="arial11normal">(LTP “Limited Time Power” norma ISO 8528-1)</span></div>
-					<div class="potencia2"><?php echo round($generators['kVA_standby']);?> kVA</div>
-				</div>
-				<div style="clear: both;"></div>
-				<div style="clear: both; height:5px;"></div>
-				
-				<div class="potencia">
-					<div class="potencia1">
-						<strong>PRIME POWER:</strong><br>
-						<span class="arial11normal">(PRP “Prime Power” norma ISO 8528-1)</span>
-					</div>
-					<div class="potencia2"><?php echo round($generators['kVA_prime']);?> kVA</div>
-				</div>
-				
-				<!--
-				<div><span style="font-size:18px">Generator: </span><?php echo $generators['name'];?></div>
-				<div>Standby: <?php echo round($generators['kVA_standby']);?> kVA. Prime: <?php echo round($generators['kVA_prime']);?> kVA</div>
-				
-				<br/>
-				
-				<div><span style="font-size:18px">Engine: </span><a href="<?php echo site_url('product/'.$product->slug);?>" target="_blank"><?php echo $product->name?></a></div>
-				<div>Standby: <?php echo $engine_parameters->standby;?> kWm. Prime: <?php echo $engine_parameters->prime;?> kWm</div>
-				
-				<br/>
-				
-				<div><span style="font-size:18px">Alternator: </span><a href="<?php echo site_url('product/'.$alt->slug);?>" target="_blank"><?php echo $alt->name?></a></div>
-				<div>Power: <?php echo $engine_alternator->power;?> kVA. Efficiency: <?php echo $engine_alternator->efficiency;?> %</div>
-				
-				<br/>
-				
-				<div><span style="font-size:18px">Controller : </span><a href="#" target="_blank">Decision -Maker</a></div>
-				<div>- Digital display and keypad provide easy local data access</div>
-				<div>- Measurements a re selectable in metric o r English units</div>
-				-->
-            </div>
-			
-			<div class="potencia4">
-				
-					<div class="columnasfooter">
-					<div class="columna-enviar-ficha">
-						<input name="email_contact" type="text" class="formu-enviar-ficha" id="email_contact" value="E-mail or phone number" onclick="if (this.defaultValue==this.value) this.value=''" onblur="if (this.value=='') this.value=this.defaultValue">
-						<input name="CodGrupo" type="hidden" value="AKI0009540T3110016M">
-						<input name="Modelo" type="hidden" value="AK-009">
-						<input name="Cuadro" type="hidden" value="3110">
-						<input name="Alternador" type="hidden" value="MECC-ALTE">
-						<input name="Tension" type="hidden" value="4">
-						
-						<input name="Fabricante" type="hidden" value="KOHLER">
-						<input name="Titulo_Ficha" type="hidden" value="AK-009 - KOHLER - KDW1003 - 1.500 R.P.M. | 50 Hz">
-						<input name="Foto" type="hidden" value="AKI.JPG">
-						<input name="Alt_Foto" type="hidden" value="with manual control panel.AK-009 - KOHLER - KDW1003 - 1.500 R.P.M. | 50 Hz">
-						
-						<input name="sesion_activa" type="hidden" value="False">
-							  
-						<input name="Enviar" type="submit" onclick="form_send_email()" class="boton-enviar-ficha" value="Contact me">
-					</div>
-					</div>
-				
-			</div>
-							
-			<div class="potencia4" style="height:40px;margin-top:15px;">
-				<p class="arial14">
-					Need more information?, <a class="verde" href="#" target="_blank"><strong>CONTACT</strong></a>
-				</p>
-			</div>
-			
-			<div class="potencia4 compare"  style="height:40px;margin-top:15px;">
-				<p class="arial14">
-                    Compare &nbsp; <input type="checkbox" id="check_compare" value="1">
-                    <?php if(!empty(\CI::session()->userdata('compare'))){?>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a class="boton-enviar-ficha" href="<?php echo site_url('product/compare/1'); ?>" target="_blank">Show compare</a>
-                    <?php }?>
+            <div class="resultado2 <?php echo $line2?>">
+                <p class="marginTop20">
+                    <?php echo $gen['result']['engine_parameters']->rpm;?>
                 </p>
-			</div>
-			
-			<!--
-			<?php echo form_open('cart/add-to-cart', 'id="add-to-cart"');?>
-            <input type="hidden" name="cartkey" value="<?php echo CI::session()->flashdata('cartkey');?>" />
-            <input type="hidden" name="id" value="<?php echo $product->id?>"/>
+            </div>
+            <div class="resultado3 <?php echo $line2?>">
+                <p class="marginTop20"><?php echo round($gen['result']['generators']['kVA_prime']);?></p>
+            </div>
+            <div class="resultado3 <?php echo $line2?>">
+                <p class="marginTop20"><?php echo $gen['result']['engine_parameters']->prime;?></p>
+            </div>
+            <div class="resultado3 <?php echo $line2?>">
+                <p class="marginTop20"><?php echo round($gen['result']['generators']['kVA_standby']);?></p>
+            </div>
+            <div class="resultado3 <?php echo $line2?>">
+                <p class="marginTop20"><?php echo $gen['result']['engine_parameters']->standby;?></p>
+            </div>
+            <div class="resultado4 <?php echo $line2?>">
+                <p class="marginTop15">
+                    <?php echo $gen['result']['engine_manufacturer'];?><br>
+                    <?php echo $gen['result']['eng']->name;?>
+                </p>
+            </div>
+            <div class="resultado41 <?php echo $line2?>">
+                <p class="marginTop15">
+                    <?php echo $gen['result']['alternator_manufacturer']?><br>
+                    <?php echo $gen['result']['alt']->name;?>
+                </p>
+            </div>
+            <div class="resultado5 <?php echo $line2?>"><p class="marginTop20"><?php echo format_currency($gen['result']['generators']['price']);?></p></div>
+            <div class="resultado6 <?php echo $line2?>">
+                <p class="marginTop20"><?php echo $gen['result']['generators']['days'];?></p>
+            </div>
+            <div class="resultado7 <?php echo $line2?>">
+                <?php $url_document = str_replace('/generator/','/documents/',$gen['uri_string_compare'])?>
+                <a target="_blank" href="<?php echo base_url($url_document)?>">
+                    <p class="marginTop20"><img src="http://www.inmesol.com/images/gensets/pdf.png" width="121" height="25" ></p>
+                </a>
+            </div>
+            <div class="resultado8 <?php echo $line2?>">
+                <p class="marginTop20">
+                    <input name="Enviar" type="submit" onclick="remove_compare('<?php echo $key;?>','<?php echo $gen['uri_string_compare'];?>')" class="boton-enviar-ficha" value="Remove">&nbsp;
+                    <input name="Enviar" type="submit" onclick="form_send_email()" class="boton-enviar-ficha" value="Contact">
+                </p>
+            </div>
+        </div>
+    <?php }?>
 
-            <div class="text-left">
-            <?php if(!config_item('inventory_enabled') || config_item('allow_os_purchase') || !(bool)$product->track_stock || $product->quantity > 0) : ?>
-
-                <?php if(!$product->fixed_quantity) : ?>
-
-                        <strong>Quantity&nbsp;</strong>
-                        <input type="text" name="quantity" value="1" style="width:50px; display:inline"/>&nbsp;
-                        <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> <?php echo lang('form_add_to_cart');?></button>
-                <?php else: ?>
-                        <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> <?php echo lang('form_add_to_cart');?></button>
-                <?php endif;?>
-
-            <?php endif;?>
-                </div>
-            </form>
-			-->
-
-        </div>		
-
-    </div>
 </div>
-
-
 <script>
-	function form_send_email(){
-		var email = $("#email_contact").val();
-		if(isValidEmailAddress(email)){
-			alert("Thank you for your contact");
-		}else {
-			alert("Please enter your email");
-		}
-		return;
-	}
-	
-	function isValidEmailAddress(emailAddress) {
-        var pattern = new RegExp(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/);
-        return pattern.test(emailAddress);
-    };
-	
-	$('#check_compare').click(function() {
-        var url = '<?php echo uri_string();?>';
-        if ($(this).is(':checked')) {
-            $.ajax({
-                method: "POST",
-                url: "<?php echo site_url('product/add_compare/1');?>",
-                data: { url: url}
-            }).done(function( msg ) {
-                    alert( "Data Saved: " + msg );
-              });
-        }
-		else {
-            $.ajax({
-                method: "POST",
-                url: "<?php echo site_url('product/remove_compare/1');?>",
-                data: { url: url}
-            }).done(function( msg ) {
-                alert( "Data Saved: " + msg );
-            });
-		}
-    });
-
-    function addToCart(btn)
-    {
-        $('.productDetails').spin();
-        btn.attr('disabled', true);
-        var cart = $('#add-to-cart');
-        $.post(cart.attr('action'), cart.serialize(), function(data){
-            if(data.message != undefined)
-            {
-                $('#productAlerts').html('<div class="alert green">'+data.message+' <a href="<?php echo site_url('checkout');?>"> <?php echo lang('view_cart');?></a> <i class="close"></i></div>');
-                updateItemCount(data.itemCount);
-                cart[0].reset();
-            }
-            else if(data.error != undefined)
-            {
-                $('#productAlerts').html('<div class="alert red">'+data.error+' <i class="close"></i></div>');
-            }
-
-            $('.productDetails').spin(false);
-            btn.attr('disabled', false);
-        }, 'json');
+    function remove_compare(id, url) {
+        var compare_ = "#compare_"+id;
+        $(compare_).hide();
+        $.ajax({
+            method: "POST",
+            url: "<?php echo site_url('product/remove_compare/1');?>",
+            data: {url: url}
+        }).done(function (msg) {
+            //alert("Data Saved: " + msg);
+        });
     }
-
-    var banners = false;
-    $(document).ready(function(){
-        banners = $('#banners').html();
-    })
-
-    $('.productImages img').click(function(){
-        if(banners)
-        {
-            $.gumboTray(banners);
-            $('.banners').gumboBanner($('.productImages img').index(this));
-        }
-    });
-
-    $('.tabs').gumboTabs();
 </script>
-
-<?php if(count($product->images) > 1):?>
-<script id="banners" type="text/template">
-    <div class="banners">
-        <?php
-        foreach($product->images as $image):?>
-                <div class="banner" style="text-align:center;">
-                    <img src="<?php echo base_url('uploads/images/full/'.$image['filename']);?>" style="max-height:600px; margin:auto;"/>
-                    <?php if(!empty($image['caption'])):?>
-                        <div class="caption">
-                            <?php echo $image['caption'];?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-        <?php endforeach;?>
-        <a class="controls" data-direction="back"><i class="icon-chevron-left"></i></a>
-        <a class="controls" data-direction="forward"><i class="icon-chevron-right"></i></a>
-        <div class="banner-timer"></div>
-    </div>
-</script>
-<?php endif;?>
-
-
-<?php if(!empty($product->related_products)):?>
-    <div class="page-header" style="margin-top:30px;">
-        <h3><?php echo lang('related_products_title');?></h3>
-    </div>
-    <?php
-    $relatedProducts = [];
-    foreach($product->related_products as $related)
-    {
-        $related->images    = json_decode($related->images, true);
-        $relatedProducts[] = $related;
-    }
-    \GoCart\Libraries\View::getInstance()->show('categories/products', ['products'=>$relatedProducts]); ?>
-
-<?php endif;?>

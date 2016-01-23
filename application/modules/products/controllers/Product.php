@@ -172,13 +172,14 @@ class Product extends Front {
 	
 	function compare(){
 		$compare 	= \CI::session()->userdata('compare');
+        if(empty($compare)) redirect();
         $data = array();
         foreach($compare as $key=>$uri_string) {
-            $data[$key]['result'] = $this->get_generator_from_compare($uri_string);
-            $data[$key]['uri_string_compare'] = $uri_string;
+            $data['compare'][$key]['result'] = $this->get_generator_from_compare($uri_string);
+            $data['compare'][$key]['uri_string_compare'] = $uri_string;
         }
-        $this->view('generator', $data);
-        echo '<pre>';print_r( $data );exit;
+        $this->view('gen_compare', $data);
+        //echo '<pre>';print_r( $data );exit;
 	}
 	
 	function add_compare($type){
@@ -191,7 +192,9 @@ class Product extends Front {
         \CI::session()->set_userdata('compare', $compare);
 
         $compare 	= \CI::session()->userdata('compare');
-        print_r( $compare );exit;
+        //print_r( $compare );
+        if(count($compare)>0) echo true;
+        exit;
 
 	}
 	
@@ -200,7 +203,9 @@ class Product extends Front {
 		$compare = \CI::session()->userdata('compare');
 		$compare 	 = array_diff($compare, $url);
 		\CI::session()->set_userdata('compare', $compare);
-        print_r( $compare );exit;
+        //print_r( $compare );
+        if(count($compare)>0) echo true;
+        exit;
 	}
 
     function get_generator_from_compare($uri_string){

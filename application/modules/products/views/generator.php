@@ -160,11 +160,11 @@
 			<div class="potencia4 compare"  style="height:40px;margin-top:15px;">
 				<p class="arial14">
                     Compare &nbsp; <input type="checkbox" id="check_compare" value="1">
-                    <?php if(!empty(\CI::session()->userdata('compare'))){?>
+
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a class="boton-enviar-ficha" href="<?php echo site_url('product/compare/1'); ?>" target="_blank">Show compare</a>
-                    <?php }?>
+                    <a id="show-compare" <?php if(!\CI::session()->userdata('compare')) echo 'style="display: none" ';?>class="boton-enviar-ficha" href="<?php echo site_url('product/compare/1'); ?>" target="_blank">Show compare</a>
+
                 </p>
 			</div>
 			
@@ -220,7 +220,10 @@
                 url: "<?php echo site_url('product/add_compare/1');?>",
                 data: { url: url}
             }).done(function( msg ) {
-                    alert( "Data Saved: " + msg );
+                    //alert( "Data Saved: " + msg );
+                if(msg==true)
+                    $("#show-compare").show();
+                else $("#show-compare").hide();
               });
         }
 		else {
@@ -229,7 +232,12 @@
                 url: "<?php echo site_url('product/remove_compare/1');?>",
                 data: { url: url}
             }).done(function( msg ) {
-                alert( "Data Saved: " + msg );
+                //alert( "Data Saved: " + msg );
+                if(msg==true) {
+                    $("#show-compare").show();
+                } else {
+                    $("#show-compare").hide();
+                }
             });
 		}
     });
