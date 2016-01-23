@@ -143,7 +143,7 @@ class AdminProducts extends Admin {
     }
 
     public function form($id = false, $duplicate = false)
-    {		
+    {
         $this->product_id = $id;
         \CI::load()->library('form_validation');
         \CI::load()->model(array('ProductOptions', 'Categories', 'DigitalProducts', 'Customers'));
@@ -260,15 +260,31 @@ class AdminProducts extends Admin {
                 $data['images'] = (array)json_decode($product->images);
             }
 			
+			// get document file
+			$data['documents'] = \CI::Products()->get_documents($id);
+			
 			if($data['primary_category'] == 1){ // engine
 				$engine = \CI::Products()->find_engine($id);
 				$data['prime'] 		= isset($engine->prime) ? $engine->prime : '';
-				$data['standby'] 	= isset($engine->standby) ? $engine->standby : '';
-				$data['continuous'] = isset($engine->continuous) ? $engine->continuous : '';
+				$data['standby'] 	= isset($engine->standby) ? $engine->standby : '';				
+				$data['prime_2'] 	= isset($engine->prime_2) ? $engine->prime_2 : '';
+				$data['standby_2'] 	= isset($engine->standby_2) ? $engine->standby_2 : '';
+
+				$fuel_consumption = \CI::Products()->find_fuel_consumption($id,50);
+				$data['standby_fuel_con_1']	= isset($fuel_consumption->standby_fuel_con_1) ? $fuel_consumption->standby_fuel_con_1 : '';
+				$data['standby_fuel_con_2']	= isset($fuel_consumption->standby_fuel_con_2) ? $fuel_consumption->standby_fuel_con_2 : '';
+				$data['standby_fuel_con_3']	= isset($fuel_consumption->standby_fuel_con_3) ? $fuel_consumption->standby_fuel_con_3 : '';				
+				$data['prime_fuel_con_1']	= isset($fuel_consumption->prime_fuel_con_1) ? $fuel_consumption->prime_fuel_con_1 : '';
+				$data['prime_fuel_con_2']	= isset($fuel_consumption->prime_fuel_con_2) ? $fuel_consumption->prime_fuel_con_2 : '';
+				$data['prime_fuel_con_3']	= isset($fuel_consumption->prime_fuel_con_3) ? $fuel_consumption->prime_fuel_con_3 : '';
 				
-				$data['prime_2'] 		= isset($engine->prime_2) ? $engine->prime_2 : '';
-				$data['standby_2'] 		= isset($engine->standby_2) ? $engine->standby_2 : '';
-				$data['continuous_2'] 	= isset($engine->continuous_2) ? $engine->continuous_2 : '';            
+				$fuel_consumption = \CI::Products()->find_fuel_consumption($id,60);
+				$data['standby_fuel_con_2_1']	= isset($fuel_consumption->standby_fuel_con_2_1) ? $fuel_consumption->standby_fuel_con_2_1 : '';
+				$data['standby_fuel_con_2_2']	= isset($fuel_consumption->standby_fuel_con_2_2) ? $fuel_consumption->standby_fuel_con_2_2 : '';
+				$data['standby_fuel_con_2_3']	= isset($fuel_consumption->standby_fuel_con_2_3) ? $fuel_consumption->standby_fuel_con_2_3 : '';				
+				$data['prime_fuel_con_2_1']	= isset($fuel_consumption->prime_fuel_con_2_1) ? $fuel_consumption->prime_fuel_con_2_1 : '';
+				$data['prime_fuel_con_2_2']	= isset($fuel_consumption->prime_fuel_con_2_2) ? $fuel_consumption->prime_fuel_con_2_2 : '';
+				$data['prime_fuel_con_2_3']	= isset($fuel_consumption->prime_fuel_con_2_3) ? $fuel_consumption->prime_fuel_con_2_3 : '';
 			}
 			
 			if($data['primary_category'] == 2){ // alternators
@@ -377,23 +393,23 @@ class AdminProducts extends Admin {
             $slug = ($id) ? \CI::Products()->validate_slug($slug, $product->id) : \CI::Products()->validate_slug($slug);
 
 
-            $save['id'] = $id;
-            $save['sku'] = \CI::input()->post('sku');
-            $save['name'] = \CI::input()->post('name');
-            $save['seo_title'] = \CI::input()->post('seo_title');
-            $save['meta'] = \CI::input()->post('meta');
-            $save['description'] = \CI::input()->post('description');
-            $save['excerpt'] = \CI::input()->post('excerpt');
-            $save['weight'] = \CI::input()->post('weight');
-			$save['days'] = \CI::input()->post('days');
-            $save['track_stock'] = \CI::input()->post('track_stock');
+            $save['id'] 		= $id;
+            $save['sku'] 		= \CI::input()->post('sku');
+            $save['name'] 		= \CI::input()->post('name');
+            $save['seo_title'] 	= \CI::input()->post('seo_title');
+            $save['meta'] 		= \CI::input()->post('meta');
+            $save['description'] 	= \CI::input()->post('description');
+            $save['excerpt'] 		= \CI::input()->post('excerpt');
+            $save['weight'] 		= \CI::input()->post('weight');
+			$save['days'] 			= \CI::input()->post('days');
+            $save['track_stock'] 	= \CI::input()->post('track_stock');
             $save['fixed_quantity'] = \CI::input()->post('fixed_quantity');
-            $save['quantity'] = \CI::input()->post('quantity');
-            $save['shippable'] = \CI::input()->post('shippable');
-            $save['taxable'] = \CI::input()->post('taxable');
-			$save['dimensions'] = \CI::input()->post('dimensions');
-			$save['ogirin'] = \CI::input()->post('ogirin');
-            $save['manufacturers'] = \CI::input()->post('manufacturers');
+            $save['quantity'] 		= \CI::input()->post('quantity');
+            $save['shippable'] 		= \CI::input()->post('shippable');
+            $save['taxable'] 		= \CI::input()->post('taxable');
+			$save['dimensions'] 	= \CI::input()->post('dimensions');
+			$save['ogirin'] 		= \CI::input()->post('ogirin');
+            $save['manufacturers'] 	= \CI::input()->post('manufacturers');
 			
             $post_images = \CI::input()->post('images');
 
@@ -498,13 +514,32 @@ class AdminProducts extends Admin {
 				$save_engine['rpm'] 			= 1500;
 				$save_engine['prime'] 			= \CI::input()->post('prime');
 				$save_engine['standby'] 		= \CI::input()->post('standby');
-				$save_engine['continuous'] 		= \CI::input()->post('continuous');
-				
 				$save_engine['rpm_2'] 			= 1800;
 				$save_engine['prime_2'] 		= \CI::input()->post('prime_2');
-				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');
-				$save_engine['continuous_2'] 	= \CI::input()->post('continuous_2');
+				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');								
 				$engine_id = \CI::Products()->save_engine($id, $engine->id, $save_engine);
+				
+				$save_fuel_consumption['standby_fuel_con_1']	= \CI::input()->post('standby_fuel_con_1');
+				$save_fuel_consumption['standby_fuel_con_2']	= \CI::input()->post('standby_fuel_con_2');
+				$save_fuel_consumption['standby_fuel_con_3']	= \CI::input()->post('standby_fuel_con_3');				
+				$save_fuel_consumption['prime_fuel_con_1']		= \CI::input()->post('prime_fuel_con_1');
+				$save_fuel_consumption['prime_fuel_con_2']		= \CI::input()->post('prime_fuel_con_2');
+				$save_fuel_consumption['prime_fuel_con_3']		= \CI::input()->post('prime_fuel_con_3');
+				$save_fuel_consumption['product_id'] 			= $id;
+				$save_fuel_consumption['rpm'] 					= 1500;
+				$save_fuel_consumption['hz'] 					= 50;
+				$engine_id = \CI::Products()->fuel_consumption($id, $fuel_consumption->id, $save_fuel_consumption);
+				
+				$save_fuel_consumption_2['standby_fuel_con_1']	= \CI::input()->post('standby_fuel_con_2_1');
+				$save_fuel_consumption_2['standby_fuel_con_2']	= \CI::input()->post('standby_fuel_con_2_2');
+				$save_fuel_consumption_2['standby_fuel_con_3']	= \CI::input()->post('standby_fuel_con_2_3');				
+				$save_fuel_consumption_2['prime_fuel_con_1']	= \CI::input()->post('prime_fuel_con_2_1');
+				$save_fuel_consumption_2['prime_fuel_con_2']	= \CI::input()->post('prime_fuel_con_2_2');
+				$save_fuel_consumption_2['prime_fuel_con_3']	= \CI::input()->post('prime_fuel_con_2_3');
+				$save_fuel_consumption_2['product_id'] 			= $id;
+				$save_fuel_consumption_2['rpm'] 				= 1800;
+				$save_fuel_consumption_2['hz'] 					= 60;
+				$engine_id = \CI::Products()->fuel_consumption($id, $fuel_consumption->id, $save_fuel_consumption_2);
 			}
 			
 			// save alternators
@@ -956,5 +991,11 @@ class AdminProducts extends Admin {
             \CI::session()->set_flashdata('error', lang('error_not_found'));
             redirect('admin/products');
         }
+    }
+	
+	public function delete_documents()
+    {echo 'cccc';exit;
+        // \CI::Products()->delete_product($id);
+		echo "Deleted succsessful";
     }
 }

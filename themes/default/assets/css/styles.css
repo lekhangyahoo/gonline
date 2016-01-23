@@ -761,13 +761,15 @@ ul.navbarMobile li a:hover, ul.navbarMobile li a:active {
 }
 
 * {
-    font-family: 'Open Sans', sans-serif;
+    /*font-family: 'Open Sans', sans-serif;*/
+	font-family: 'Arial,Helvetica,sans-serif';
     font-smoothing: antialiased;
 }
 
 body {
     background-color:#fafafa;
-    font-size:14px;
+	font-family: 'Arial,Helvetica,sans-serif';
+    font-size:16px;
 }
 
 /* Page Titles */
@@ -964,4 +966,117 @@ small.sale{
 
 .hide {
     display:none;
+}
+
+
+#textos {
+    width: 380px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 14px;
+    padding: 0;
+    line-height: 16px;
+}
+.negro14 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+}
+.arial13 {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 14px;
+    color: #000;
+}
+.verde {
+    color: #0C0;
+}
+.potencia {
+    background-color: #CCC;
+    width: 380px;
+    padding: 0;
+    height: 50px;
+    font-family: Arial,Helvetica,sans-serif;
+    color: #000;
+}
+
+.potencia1 {
+    font-size: 14px;
+    font-weight: 400;
+    color: #666;
+    width: 250px;
+    padding-top: 6px;
+    padding-left: 10px;
+	float:left;
+}
+.potencia2 {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    padding-top: 12px;
+    padding-left: 20px;
+	text-align: right;
+	margin-right: 10px;
+}
+
+.arial11normal {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.potencia4 {
+    width: 380px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #999;
+    height: 70px;
+    margin-top: 15px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px;
+    text-align: left;
+    line-height: 18px;
+    overflow: hidden;
+}
+..columnasfooter {
+    float: left;
+    width: 230px;
+    color: #666;
+    text-align: center;
+	vertical-align: middle;
+}
+.columna-enviar-ficha {
+    width: 400px;
+    color: #666;
+    text-align: left;
+    vertical-align: middle;
+    margin-top: 20px;
+}
+.formu-enviar-ficha {
+    background-color: #CCC;
+    width: 200px !important;
+    border: none;
+    margin: 0 10px 0 0;
+    height: 22px;
+    padding: 0 0 0 5px;
+    color: #777;
+	display:inline-block !important;
+}
+.boton-enviar-ficha {
+    font-family: Arial,Helvetica,sans-serif;
+    color: #0C0;
+    font-size: 13px;
+    background-color: #333;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -webkit-box-shadow: 1px 2px 2px 0 rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 2px 2px 0 rgba(0,0,0,0.5);
+    box-shadow: 1px 2px 2px 0 rgba(0,0,0,0.5);
+}
+.arial14 {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 14px;
 }

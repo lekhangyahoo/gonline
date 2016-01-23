@@ -8,6 +8,7 @@
 	.efficiency{margin-right:10px; width:23%;float:left !important}
 	.document{width:30%;}
 	.display-name{margin-top:10px}
+	.remove-document{font-weight:bold; margin-left:10px; font-size:16px; cursor:pointer; color:red}
 </style>
 
 <?php echo form_open_multipart('admin/products/form/'.$id ); ?>
@@ -295,6 +296,16 @@
                 </div>				
 				
 				<div class="tab-pane" id="documents">
+					<div class="form-group">
+                        <label for="meta">Document List</label>
+                        <?php foreach($documents as $document){?>
+						<div>
+							<a href="<?php echo base_url('uploads/documents/'.$document->file_name);?>" target="_blank"><?php if($document->display_name == '')echo $document->file_name;else echo $document->display_name;?></a>
+							<span class="remove-document" data-remove-document="<?php echo $document->id?>"> x </span>
+						</div>
+						<?php }?>
+                    </div>
+					
                     <label for="file"><?php echo lang('file_label');?> </label>
                     <?php echo form_upload(['name'=>'userfile', 'class'=>'form-control document']);?>
 					<?php echo form_input(['name'=>'display_name', 'value'=>assign_value('display_name', @$display_name), 'class'=>'form-control document display-name', 'placeholder'=>'Display name']); ?>					
@@ -306,42 +317,72 @@
                     <fieldset>
                         <legend><?php echo lang('parameter_engine_rpm_1500');?></legend>
                         <div style="padding-top:10px;">
+						
+							<div class="form-group">
+                                <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
+                                <?php echo form_input(['name'=>'standby', 'value'=>assign_value('standby', @$standby), 'class'=>'form-control']); ?>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="slug"><?php echo lang('parameter_engine_prime');?> </label>
                                 <?php echo form_input(['name'=>'prime', 'value'=>assign_value('prime', @$prime), 'class'=>'form-control']); ?>
                             </div>
-
-                            <div class="form-group">
-                                <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
-                                <?php echo form_input(['name'=>'standby', 'value'=>assign_value('standby', @$standby), 'class'=>'form-control']); ?>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="meta"><?php echo lang('parameter_engine_continuous');?></label>
-								<?php echo form_input(['name'=>'continuous', 'value'=>assign_value('continuous', @$continuous), 'class'=>'form-control']); ?>
-                            </div>
+							
+							<div style="padding-top:10px;">   
+								<label stype="float:left" for="slug"><?php echo lang('parameter_engine_standby');?> - Fuel consumption 100%, 75%, 50%</label>					
+								<div class="form-group">                                
+									<?php echo form_input(['name'=>'standby_fuel_con_1', 'value'=>assign_value('standby_fuel_con_1', @$standby_fuel_con_1), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'standby_fuel_con_2', 'value'=>assign_value('standby_fuel_con_2', @$standby_fuel_con_2), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'standby_fuel_con_3', 'value'=>assign_value('standby_fuel_con_3', @$standby_fuel_con_3), 'class'=>'form-control efficiency']); ?>
+									
+								</div>						
+							</div>
+							<div style="padding-top:10px;">   
+								<label stype="float:left" for="slug"><?php echo lang('parameter_engine_prime');?> - Fuel consumption 100%, 75%, 50%</label>					
+								<div class="form-group">                                
+									<?php echo form_input(['name'=>'prime_fuel_con_1', 'value'=>assign_value('prime_fuel_con_1', @$prime_fuel_con_1), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'prime_fuel_con_2', 'value'=>assign_value('prime_fuel_con_2', @$prime_fuel_con_2), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'prime_fuel_con_3', 'value'=>assign_value('prime_fuel_con_3', @$prime_fuel_con_3), 'class'=>'form-control efficiency']); ?>
+									
+								</div>						
+							</div>
+                            
                         </div>
                     </fieldset>
 					<fieldset>
                         <legend><?php echo lang('parameter_engine_rpm_1800');?></legend>
                         <div style="padding-top:10px;">
-                            
-                            <div class="form-group">
-                                <label for="slug"><?php echo lang('parameter_engine_prime');?> </label>
-                                <?php echo form_input(['name'=>'prime_2', 'value'=>assign_value('prime_2', @$prime_2), 'class'=>'form-control']); ?>
-                            </div>
-
+						
                             <div class="form-group">
                                 <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
                                 <?php echo form_input(['name'=>'standby_2', 'value'=>assign_value('standby_2', @$standby_2), 'class'=>'form-control']); ?>
                             </div>
-
+							
                             <div class="form-group">
-                                <label for="meta"><?php echo lang('parameter_engine_continuous');?></label>
-								<?php echo form_input(['name'=>'continuous_2', 'value'=>assign_value('continuous_2', @$continuous_2), 'class'=>'form-control']); ?>
+                                <label for="slug"><?php echo lang('parameter_engine_prime');?> </label>
+                                <?php echo form_input(['name'=>'prime_2', 'value'=>assign_value('prime_2', @$prime_2), 'class'=>'form-control']); ?>
                             </div>
-                        </div>
+							
+							<div style="padding-top:10px;">   
+								<label stype="float:left" for="slug"><?php echo lang('parameter_engine_standby');?> - Fuel consumption 100%, 75%, 50%</label>					
+								<div class="form-group">                                
+									<?php echo form_input(['name'=>'standby_fuel_con_2_1', 'value'=>assign_value('standby_fuel_con_2_1', @$standby_fuel_con_2_1), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'standby_fuel_con_2_2', 'value'=>assign_value('standby_fuel_con_2_2', @$standby_fuel_con_2_2), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'standby_fuel_con_2_3', 'value'=>assign_value('standby_fuel_con_2_3', @$standby_fuel_con_2_3), 'class'=>'form-control efficiency']); ?>
+									
+								</div>						
+							</div>
+							<div style="padding-top:10px;">   
+								<label stype="float:left" for="slug"><?php echo lang('parameter_engine_prime');?> - Fuel consumption 100%, 75%, 50%</label>					
+								<div class="form-group">                                
+									<?php echo form_input(['name'=>'prime_fuel_con_2_1', 'value'=>assign_value('prime_fuel_con_2_1', @$prime_fuel_con_2_1), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'prime_fuel_con_2_2', 'value'=>assign_value('prime_fuel_con_2_2', @$prime_fuel_con_2_2), 'class'=>'form-control efficiency']); ?>
+									<?php echo form_input(['name'=>'prime_fuel_con_2_3', 'value'=>assign_value('prime_fuel_con_2_3', @$prime_fuel_con_2_3), 'class'=>'form-control efficiency']); ?>
+									
+								</div>						
+							</div>
+                        
+						</div>
                     </fieldset>					
 					<?php } ?>
 					
@@ -680,6 +721,22 @@ var optionValueCount = 0;
 var options = <?php echo json_encode($productOptions);?>
 
 $(document).ready(function() {
+	$('.remove-document').click(function() {
+		if (!confirm("Do you want to delete?")){
+		  return false;
+		}else{
+			var document_id = $( this ).data( "remove-document");			
+			var url = '<?php echo base_url('admin/products/delete_documents');?>';
+			alert(url);
+			$.post( url, { id: document_id})
+				.done(function( data ) {
+					alert( "Data Loaded: " + data );
+				});
+		}
+        //alert("Delete transaction ");
+        //return false;
+    });
+		
 
     optionsSortable();
     optionValuesSortable();
@@ -904,7 +961,6 @@ function photos_sortable()
         scroll: true
     });
 }
-
 </script>
 <style>
 .tree > ul > li {

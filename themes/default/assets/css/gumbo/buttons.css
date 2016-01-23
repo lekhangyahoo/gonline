@@ -4,7 +4,7 @@ Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 https://github.com/yui/pure/blob/master/LICENSE.md
 */
-.btn, button, input[type="submit"], input[type="button"], input[type="reset"] {
+.btn, button, input[type="submit"], input[type="button"], input[type="reset"], div .compare .boton-enviar-ficha {
     /* Structure */
     display: inline-block;
     white-space: nowrap;

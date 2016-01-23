@@ -272,6 +272,16 @@ Class Products extends CI_Model
         return $result;
     }
 	
+	public function find_fuel_consumption($product_id, $hz)
+    {
+        $result = CI::db()->get_where('fuel_consumptions', array('product_id'=>$product_id, 'hz'=>$hz))->row();
+        if(!$result)
+        {
+            return false;
+        }
+        return $result;
+    }
+	
 	public function find_alternator($product_id, $hz)
     {
         $result = CI::db()->get_where('alternators', array('product_id'=>$product_id, 'hz'=>$hz))->row();
@@ -410,7 +420,24 @@ Class Products extends CI_Model
         //return the engine id
         return true;
     }
-
+	
+	public function fuel_consumption($product_id ='', $fuel_consumption_id ='', $fuel_consumption = array() )
+    {
+        if ($fuel_consumption_id > 0)
+        {
+            CI::db()->where('id', $fuel_consumption_id);
+            CI::db()->update('fuel_consumptions', $fuel_consumption);
+        }
+        else
+        {
+            CI::db()->insert('fuel_consumptions', $fuel_consumption);
+            $id = CI::db()->insert_id();
+        }
+        
+        //return the engine id
+        return true;
+    }
+	
     public function delete_product($id)
     {
         // delete product
@@ -520,6 +547,10 @@ Class Products extends CI_Model
 		else {
 			return CI::db()->get('manufacturers')->result_array();
 		}
+	}
+	
+	public function get_documents($product_id){
+		return CI::db()->where('product_id', $product_id)->get('products_documents')->result();
 	}
 
 }

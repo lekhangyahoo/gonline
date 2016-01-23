@@ -18,6 +18,12 @@ class Page extends Front{
 		\CI::load()->model(['Products', 'Categories']);
         \CI::load()->helper('form');
         \CI::lang()->load('products');
+		/*
+		\CI::load()->helper('calculator');
+		\CI::load()->helper('html_to_pdf');
+		get_exchangeRates();exit;
+		convert2pdf('','');exit;
+		*/
         if(file_exists(FCPATH.'themes/'.config_item('theme').'/views/homepage.php'))
         {
 			$data['power']= @$_POST['power'];
@@ -95,7 +101,7 @@ class Page extends Front{
 		$tmp = 0;
 		foreach($engines as $engine){
 			foreach($alternators as $alternator){
-				//if($alternator->power >= $engine->p_kAV){
+				if($alternator->power >= $engine->p_kAV){
 					$generators[$tmp]['engine'] = $engine;
 					$generators[$tmp]['alternator'] = $alternator;
 					$generators[$tmp]['kVA'] = $engine->s_kAV * $alternator->efficiency*0.01;
@@ -110,7 +116,7 @@ class Page extends Front{
 					else $generators[$tmp]['days'] = $alternator->days;
 
                     $generators[$tmp]['name'] = 'G'.$hz.'-'.round ($generators[$tmp]['generator_kVA']).$generators[$tmp]['engine']->code.$generators[$tmp]['alternator']->code;
-				//}
+				}
 				$tmp ++;
 			}
 		}

@@ -29,10 +29,6 @@ class AdminCategories extends Admin {
         $this->view('categories', $data);
     }
 
-	function manufacturers($id){
-		
-	}
-	
     function form($id = false)
     {
 

@@ -17,6 +17,7 @@ a:hover {
     font-size:1.3em;
     padding:0px;
     margin:15px 0px 1em 0px;
+	color:#090;
 }
 
 .page-header h1, .page-header h2, .page-header h3, .page-header h4 {
@@ -99,11 +100,11 @@ h6 {
 p,
 td,
 th {
-  line-height: 1.65em;
+  line-height: 1em;
 }
 
 p {
-  margin-bottom: 1.65em;
+  margin-bottom: 1em;
 }
 
 hr {
