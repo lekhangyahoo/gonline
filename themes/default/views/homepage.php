@@ -56,14 +56,14 @@
 						<h1><?php echo $generator['name'];?>AB</h1>
 					</div>
 					<div>
-						Standby Power: <?php echo round ($generator['generator_kVA']);?> kVA
+						Standby Power: <b><?php echo round ($generator['generator_kVA']);?></b> kVA
 					</div>
 					<div>
 						Price: <?php echo format_currency($generator['price']);?>
 					</div>
-					<div>
+					<!--<div>
 						Days: <?php echo $generator['days'];?>
-					</div>
+					</div>-->
 					<!--
 					<div>
 						Engine Power: <?php echo $generator['engine']->standby?> kWm, <?php echo round($generator['engine']->standby/0.8)?> kVA
