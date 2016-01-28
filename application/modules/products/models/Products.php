@@ -156,7 +156,7 @@ Class Products extends CI_Model
         if($hz == 50){
             $sql = $sql.'WHERE (rpm = 1500 or rpm = 3000) and ';
 		}else{
-            $sql = $sql.'WHERE (rpm = 1800 or rpm = 3600) and ';
+            $sql = $sql.'WHERE (rpm_2 = 1800 or rpm_2 = 3600) and ';
 		}
 
         if($get_max){	// get max

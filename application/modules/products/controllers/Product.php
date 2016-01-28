@@ -91,6 +91,7 @@ class Product extends Front {
 		$data['alt'] 				= $alternator;
 		$data['eng'] 				= $engine;
 		$data['engine_alternator'] 	= $engine_alternator;
+        $data['hz']                 = $hz;
 
 
 		$generators = array();
@@ -105,7 +106,7 @@ class Product extends Front {
 			$generators['days'] = $engine->days;
 		else $generators['days'] = $alternator->days;
 
-		$generators['name'] = 'G50-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
+		$generators['name'] = 'G'.$hz.'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
 		//echo '<pre>';print_r($generators);exit;
 		$data['generators'] 	= $generators;
 
@@ -161,10 +162,10 @@ class Product extends Front {
 		
 		$data['engine_manufacturer'] 		= $engine->manufacturer->name;
 		$data['alternator_manufacturer'] 	= $alternator->manufacturer->name;
-		
 		\CI::load()->helper('calculator');
 		\CI::load()->helper('html_to_pdf');
 		$data['fuel'] 	= get_info_fuel_consumption($engine->id, $alternator->id, $hz);
+        //echo '<pre>';print_r($data);exit;
 		$html 			= \CI::load()->view('documents', $data, true);
 		convert2pdf($html,$data['generators']['name'].'.pdf');
 		exit;

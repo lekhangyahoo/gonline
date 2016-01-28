@@ -4,11 +4,18 @@
 		<div class="col" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
 		Please enter kVA:<input name="power" value="<?php echo $power?>"> </input>
 		</div>
-		<div class="col" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
+		<div class="col" data-cols="1/8" data-medium-cols="1/2" data-small-cols="1">
 		Hz
 			<select name="hz">
-				<option value="50" <?php if($hz == 50) echo 'selected'?>> 50hz </option>
-				<option value="60" <?php if($hz == 60) echo 'selected'?>> 60hz </option>
+				<option value="50" <?php if($hz == 50) echo 'selected'?>> 50 hz </option>
+				<option value="60" <?php if($hz == 60) echo 'selected'?>> 60 hz </option>
+			</select>
+		</div>
+		<div class="col" data-cols="1/8" data-medium-cols="1/2" data-small-cols="1">
+			Phase
+			<select name="phase">
+				<option value="3" <?php if(@$phase == 3) echo 'selected'?>> Three </option>
+				<option value="1" <?php if(@$phase == 1) echo 'selected'?>> Single </option>
 			</select>
 		</div>
 		<div class="col pull-right" style="margin-top:22px" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
@@ -42,7 +49,7 @@
         <div class="col listing-item" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1" data-power="<?php echo round ($generator['generator_kVA']);?>" data-price="<?php echo format_currency($generator['price']);?>" data-day="<?php echo $generator['days'];?>">
             <?php
             $photo  = theme_img('no_picture.png');
-			$url = site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id);
+			$url = site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id.'/0/0/'.$hz);
             ?>
 			
             <div class="categoryItem" >

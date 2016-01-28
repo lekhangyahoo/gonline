@@ -45,10 +45,10 @@ class Page extends Front{
 				
 				
 				$engines = \CI::Products()->getProductsCondition($data['power'], $data['hz']);
-				
+                //echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
 				$alternators = \CI::Products()->getProductsAlternators($data['power'], $data['hz']);
 				
-				//echo \CI::db()->last_query().'<pre>';print_r($alternators);exit;
+				//echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
 				
 				$data['engines'] = $engines;
 				$data['alternators'] = $alternators;				

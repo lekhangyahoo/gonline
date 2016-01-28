@@ -42,8 +42,8 @@ function get_info_fuel_consumption($engine_id, $alternator_id, $hz)
 	$generators['standby']['kWm_2'] = $generators['standby']['kVA_2'] * $cos_phi;
 	$generators['standby']['kWm_3'] = $generators['standby']['kVA_3'] * $cos_phi;
 	$generators['prime']['kWm_1']   = $generators['prime']['kVA_1'] * $cos_phi;		// 4/4
-	$generators['prime']['kWm_2']   = $generators['prime']['kVA_1'] * $cos_phi;		// 3/4
-	$generators['prime']['kWm_3']   = $generators['prime']['kVA_1'] * $cos_phi;		// 2/4
+	$generators['prime']['kWm_2']   = $generators['prime']['kVA_2'] * $cos_phi;		// 3/4
+	$generators['prime']['kWm_3']   = $generators['prime']['kVA_3'] * $cos_phi;		// 2/4
 	
 	// kW * g/kWh = g/h; (g/h) / 1000 = kg/h; (kg/h) / constant = l/h
 	$generators['fuel']['standby']['fuel_con_1'] = ($generators['standby']['kWm_1'] * $fuel_consumption->standby_fuel_con_1)/1000/$constant;
