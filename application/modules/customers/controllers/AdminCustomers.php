@@ -443,5 +443,19 @@ class AdminCustomers extends Admin {
             }
         }
     }
+	
+	public function contact()
+    {
+		if(isset($_POST['status']) && isset($_POST['id'])){
+			\CI::Customers()->update_contact($_POST['status'], $_POST['id']);
+			echo true;
+			return;
+		}else{
+			$data['contacts'] = \CI::Customers()->get_contacts();
+			$data['page_title'] = 'Contact';
+			//echo '<pre>'; print_r($data['contacts']);exit;   
+			$this->view('contact', $data);
+		}
+    }
     
 }

@@ -131,30 +131,28 @@
 				
 					<div class="columnasfooter">
 					<div class="columna-enviar-ficha">
-						<input name="email_contact" type="text" class="formu-enviar-ficha" id="email_contact" value="E-mail or phone number" onclick="if (this.defaultValue==this.value) this.value=''" onblur="if (this.value=='') this.value=this.defaultValue">
-						<input name="CodGrupo" type="hidden" value="AKI0009540T3110016M">
-						<input name="Modelo" type="hidden" value="AK-009">
-						<input name="Cuadro" type="hidden" value="3110">
-						<input name="Alternador" type="hidden" value="MECC-ALTE">
-						<input name="Tension" type="hidden" value="4">
-						
-						<input name="Fabricante" type="hidden" value="KOHLER">
-						<input name="Titulo_Ficha" type="hidden" value="AK-009 - KOHLER - KDW1003 - 1.500 R.P.M. | 50 Hz">
-						<input name="Foto" type="hidden" value="AKI.JPG">
-						<input name="Alt_Foto" type="hidden" value="with manual control panel.AK-009 - KOHLER - KDW1003 - 1.500 R.P.M. | 50 Hz">
-						
-						<input name="sesion_activa" type="hidden" value="False">
-							  
-						<input name="Enviar" type="submit" onclick="form_send_email()" class="boton-enviar-ficha" value="Contact me">
+						<input autocomplete="true" name="email_contact" type="text" class="formu-enviar-ficha" id="email_contact" value="" placeholder="E-mail or phone number">
+						<input name="Enviar" type="submit" onclick="form_send_email(0)" class="boton-enviar-ficha" value="Contact me">
 					</div>
 					</div>
 				
 			</div>
 							
-			<div class="potencia4" style="height:40px;margin-top:15px;">
+			<div class="potencia4" style="height:auto;margin-top:15px;">
 				<p class="arial14">
-					Need more information?, <a class="verde" href="#" target="_blank"><strong>CONTACT</strong></a>
+					Need more information?, <a class="verde more-information" href="javascript:void(0)" ><strong>CONTACT</strong></a>
 				</p>
+				<div class="content-information" style="display:none">
+					<input autocomplete="true" name="name" type="text" class="formu-enviar-ficha" id="name" value="" placeholder="Company's name">
+					<input autocomplete="true" name="email" type="text" class="formu-enviar-ficha" id="email" value="" placeholder="E-mail">
+					<input autocomplete="true" name="mobile" type="text" class="formu-enviar-ficha" id="mobile" value="" placeholder="Phone number">
+					<input autocomplete="true" name="address" type="text" class="formu-enviar-ficha" id="address" value="" placeholder="Your address">
+					<input autocomplete="true" name="subject" type="text" class="formu-enviar-ficha" id="subject" value="" placeholder="Subject">
+					<textarea rows="4" cols="50" name="content" class="" id="content" placeholder="Message"></textarea>
+					<input name="Enviar" type="submit" onclick="form_send_email(1)" class="boton-enviar-ficha" value="Send">
+					<br>
+				</div>	
+				
 			</div>
 			
 			<div class="potencia4 compare"  style="height:40px;margin-top:15px;">
@@ -197,12 +195,60 @@
 
 
 <script>
-	function form_send_email(){
-		var email = $("#email_contact").val();
-		if(isValidEmailAddress(email)){
-			alert("Thank you for your contact");
-		}else {
-			alert("Please enter your email");
+	$( ".more-information" ).click(function() {
+		$( ".content-information" ).toggle(400);
+	});
+
+	function form_send_email(flag){
+		var type = 0;
+		if(flag==0){
+			var email = $("#email_contact").val();			
+			if( (isValidEmailAddress(email) || $.isNumeric( email ) ) && email !=''){
+				if(isValidEmailAddress( email ))
+					type = 1;
+				if($.isNumeric( email ))
+					type = 2;
+				
+				var url = '<?php echo uri_string();?>';
+				$.ajax({
+					method: "POST",
+					url: "<?php echo site_url('product/contact');?>/"+type,
+					data: { email: email, url: url}
+				}).done(function( msg ) {
+						if(msg)
+							alert("Thank you for your contact");
+						$("#email_contact").val('');
+					});
+					  
+			}else {
+				alert("Please enter your email or mobile");
+			}
+		}else{
+			var email 	= $("#email").val();
+			var mobile 	= $("#mobile").val();
+			var name 	= $("#name").val();
+			var address = $("#address").val();
+			var subject = $("#subject").val();
+			var content = $("#content").val();
+			var type = 0;
+			if( (isValidEmailAddress(email) || $.isNumeric( mobile ) ) && (email !='' || mobile !='' ) ){
+				var url = '<?php echo uri_string();?>';
+				$.ajax({
+					method: "POST",
+					url: "<?php echo site_url('product/contact');?>/"+type,
+					data: { email: email, mobile: mobile, url: url, name: name, address: address, subject: subject, content: content}
+				}).done(function( msg ) {
+						if(msg)
+							alert("Thank you for your contact");
+						$( ".content-information" ).toggle(400);
+						$("#email").val('');$("#mobile").val('');
+						$("#name").val('');$("#address").val('');
+						$("#subject").val('');$("#content").val('');
+					});
+					  
+			}else {
+				alert("Please enter your email or mobile");
+			}
 		}
 		return;
 	}
@@ -218,7 +264,7 @@
             $.ajax({
                 method: "POST",
                 url: "<?php echo site_url('product/add_compare/1');?>",
-                data: { url: url}
+                data: {url: url}
             }).done(function( msg ) {
                     //alert( "Data Saved: " + msg );
                 if(msg==true)

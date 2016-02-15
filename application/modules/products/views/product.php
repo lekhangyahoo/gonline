@@ -1,206 +1,173 @@
 <div class="page-header">
     <h1><?php echo $product->name;?></h1>
+    <div><?php echo $get_parameters_of_product['manufacturer']->name?> <?php echo $get_parameters_of_product['category']->name?></div>
 </div>
 
 <div class="col-nest">
     <div class="col" data-cols="2/5" data-medium-cols="2/5">
-        <div class="productImg"><?php
-        //$photo = theme_img('no_picture.png', lang('no_image_available'));
-		if($product->categories[0]->category_id==1)
-			$photo = theme_img('pic_generator.png', lang('no_image_available'));
-		if($product->categories[0]->category_id==2)
-			$photo = theme_img('pic_alternator.png', lang('no_image_available'));
+        <div class="productImg">
+            <!--<img src="http://dev.gonline.com/themes/default/assets/img/pic_generator.png" alt="No Image Available">-->
+            <?php
+            if($product->primary_category==1)
+                $photo = theme_img('pic_generator.png', lang('no_image_available'));
+            if($product->primary_category==2)
+                $photo = theme_img('pic_alternator.png', lang('no_image_available'));
 
-        if(!empty($product->images[0]))
-        {
-            foreach($product->images as $photo)
+            if(!empty($product->images[0]))
             {
-                if(isset($photo['primary']))
+                foreach($product->images as $photo)
                 {
-                    $primary = $photo;
+                    if(isset($photo['primary']))
+                    {
+                        $primary = $photo;
+                    }
                 }
-            }
-            if(!isset($primary))
-            {
-                $tmp = $product->images; //duplicate the array so we don't lose it.
-                $primary = array_shift($tmp);
-            }
+                if(!isset($primary))
+                {
+                    $tmp = $product->images; //duplicate the array so we don't lose it.
+                    $primary = array_shift($tmp);
+                }
 
-            $photo = '<img src="'.base_url('uploads/images/full/'.$primary['filename']).'" alt="'.$product->seo_title.'" data-caption="'.htmlentities(nl2br($primary['caption'])).'"/>';
-        }
-        echo $photo
-        ?></div>
-        <?php if(!empty($primary['caption'])):?>
-        <div class="productCaption">
-            <?php echo $primary['caption'];?>
+                $photo = '<img src="'.base_url('uploads/images/full/'.$primary['filename']).'" alt="'.$product->seo_title.'" data-caption="'.htmlentities(nl2br($primary['caption'])).'"/>';
+            }
+            echo $photo;
+            ?>
         </div>
-        <?php endif;?>
 
-        <?php if(count($product->images) > 1):?>
-            <div class="col-nest productImages">
+        <?php if($documents){?>
+        <div>
+            <div class="page-header"><b>Technical Document Downloads</b></div>
+            <?php foreach($documents as $document){?>
+                <div class="download-document last">
+                    <img src="<?php echo base_url('assets/img')?>/label-pdf.gif" width="20" height="9" alt="PDF" border="0">
+                    <a target="_blank" href="<?php echo base_url('uploads/documents/'.$document->file_name)?>"><?php echo $document->display_name;?></a> <?php echo $document->size;?> Kb
+                </div>
+            <?php }?>
+        </div>
+        <?php }?>
 
-                <?php foreach($product->images as $image):?>
-                    <div class="col productThumbnail" data-cols="1/3" data-medium-cols="1/3" data-small-cols="1/3" style="margin:15px 0px;">
-                        <img src="<?php echo base_url('uploads/images/full/'.$image['filename']);?>" data-caption="<?php echo htmlentities(nl2br($image['caption']));?>"/>
-                    </div>
-                <?php endforeach;?>
-
-            </div>
-        <?php endif;?>
-		
-		<div>
-			<div class="page-header"><b>Technical Document Downloads</b></div>
-			<div class="download-document">
-				<img src="<?php echo base_url('assets/img')?>/label-pdf.gif" width="20" height="9" alt="PDF" border="0">
-				<a target="_blank" href="<?php echo base_url('uploads/documents')?>/3_PS-DB58-B.pdf">Spec. Sheet - g5401.pdf</a> 256 Kb
-			</div>
-		</div>
-		
     </div>
 
 
-    <div class="col pull-right" data-cols="3/5" data-medium-cols="3/5">
+    <div class="col pull-right" style="padding: 0px 25px;" data-cols="3/5" data-medium-cols="3/5">
         <div id="productAlerts"></div>
-        <?php if(!$product->is_giftcard):?>
-            <div class="productPrice">
+        <div class="productPrice">
             <?php if($product->saleprice > 0):?>
                 <small class="sale"><?php echo lang('on_sale');?></small>
                 <?php echo format_currency($product->saleprice);?>
             <?php else:?>
                 <?php echo format_currency($product->price);?>
             <?php endif;?>
-            </div>
-        <?php endif;?>
-
-        <br class="clear">
-
+        </div>
         <div class="productDetails">
 
-            <div class="productExcerpt">
-                <?php echo (new content_filter($product->excerpt))->display();?>
-            </div>
-
-            <?php echo form_open('cart/add-to-cart', 'id="add-to-cart"');?>
-            <input type="hidden" name="cartkey" value="<?php echo CI::session()->flashdata('cartkey');?>" />
-            <input type="hidden" name="id" value="<?php echo $product->id?>"/>
-
-            <?php if(count($options) > 0): ?>
-                <?php foreach($options as $option):
-                    $required = '';
-                    if($option->required)
-                    {
-                        $required = ' class="required"';
-                    }
-                    ?>
-                        <div class="col-nest">
-                            <div class="col" data-cols="1/3">
-                                <label<?php echo $required;?>><?php echo ($product->is_giftcard) ? lang('gift_card_'.$option->name) : $option->name;?></label>
-                            </div>
-                            <div class="col" data-cols="2/3">
-                        <?php
-                        if($option->type == 'checklist')
-                        {
-                            $value  = [];
-                            if($posted_options && isset($posted_options[$option->id]))
-                            {
-                                $value  = $posted_options[$option->id];
-                            }
-                        }
-                        else
-                        {
-                            if(isset($option->values[0]))
-                            {
-                                $value  = $option->values[0]->value;
-                                if($posted_options && isset($posted_options[$option->id]))
-                                {
-                                    $value  = $posted_options[$option->id];
-                                }
-                            }
-                            else
-                            {
-                                $value = false;
-                            }
-                        }
-
-                        if($option->type == 'textfield'):?>
-                            <input type="text" name="option[<?php echo $option->id;?>]" value="<?php echo $value;?>"/>
-                        <?php elseif($option->type == 'textarea'):?>
-                            <textarea name="option[<?php echo $option->id;?>]"><?php echo $value;?></textarea>
-                        <?php elseif($option->type == 'droplist'):?>
-                            <select name="option[<?php echo $option->id;?>]">
-                                <option value=""><?php echo lang('choose_option');?></option>
-
-                            <?php foreach ($option->values as $values):
-                                $selected   = '';
-                                if($value == $values->id)
-                                {
-                                    $selected   = ' selected="selected"';
-                                }?>
-
-                                <option<?php echo $selected;?> value="<?php echo $values->id;?>">
-                                    <?php if($product->is_giftcard):?>
-                                        <?php echo($values->price != 0)?' (+'.format_currency($values->price).') ':''; echo lang($values->name);?>
-                                    <?php else:?>
-                                        <?php echo($values->price != 0)?' (+'.format_currency($values->price).') ':''; echo $values->name;?>
-                                    <?php endif;?>
-                                    
-                                </option>
-
-                            <?php endforeach;?>
-                            </select>
-                        <?php elseif($option->type == 'radiolist'):?>
-                            <label class="radiolist">
-                            <?php foreach ($option->values as $values):
-
-                                $checked = '';
-                                if($value == $values->id)
-                                {
-                                    $checked = ' checked="checked"';
-                                }?>
-                                <div>
-                                    <input<?php echo $checked;?> type="radio" name="option[<?php echo $option->id;?>]" value="<?php echo $values->id;?>"/>
-                                    <?php echo($values->price != 0)?'(+'.format_currency($values->price).') ':''; echo $values->name;?>
-                                </div>
-                            <?php endforeach;?>
-                            </label>
-                        <?php elseif($option->type == 'checklist'):?>
-                            <label class="checklist"<?php echo $required;?>>
-                            <?php foreach ($option->values as $values):
-
-                                $checked = '';
-                                if(in_array($values->id, $value))
-                                {
-                                    $checked = ' checked="checked"';
-                                }?>
-                                <div><input<?php echo $checked;?> type="checkbox" name="option[<?php echo $option->id;?>][]" value="<?php echo $values->id;?>"/>
-                                <?php echo($values->price != 0 && $option->name != 'Buy a Sample')?'('.format_currency($values->price).') ':''; echo $values->name;?></div>
-                            <?php endforeach; ?>
-                            </label>
-                        <?php endif;?>
-                        </div>
-                    </div>
-                <?php endforeach;?>
-            <?php endif;?>
-
-            <div class="text-right">
-            <?php if(!config_item('inventory_enabled') || config_item('allow_os_purchase') || !(bool)$product->track_stock || $product->quantity > 0) : ?>
-
-                <?php if(!$product->fixed_quantity) : ?>
-
-                        <strong>Quantity&nbsp;</strong>
-                        <input type="text" name="quantity" value="1" style="width:50px; display:inline"/>&nbsp;
-                        <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> <?php echo lang('form_add_to_cart');?></button>
-                <?php else: ?>
-                        <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> <?php echo lang('form_add_to_cart');?></button>
-                <?php endif;?>
-
-            <?php endif;?>
-                </div>
-            </form>
-
             <div class="productDescription">
-                <?php echo (new content_filter($product->description))->display();?>
+                <div id="textos">
+                    <p><strong><span class="verde" style="text-transform: uppercase;"><?php echo $get_parameters_of_product['category']->name?></span></strong><br>
+                        Make: <strong><?php echo $get_parameters_of_product['manufacturer']->name?></strong><br>
+                        Model: <strong><?php echo $product->name?></strong>
+                    </p>
+                </div>
+
+                <?php if($product->primary_category == 1){ $category_parameters = $get_parameters_of_product['category_parameters'];?>
+                    <?php if($category_parameters->rpm !=''){?>
+                        <h3>RPM: <?php echo $category_parameters->rpm?></h3>
+                        <div class="potencia"><div class="potencia1"><strong>STAND-BY POWER:</strong><br>
+                                <span class="arial11normal">(LTP "Limited Time Power" norma ISO 8528-1)</span></div>
+                            <div class="potencia2"><?php echo $category_parameters->standby?> kWm</div>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div style="clear: both; height:5px;"></div>
+                        <div class="potencia">
+                            <div class="potencia1">
+                                <strong>PRIME POWER:</strong><br>
+                                <span class="arial11normal">(PRP "Prime Power" norma ISO 8528-1)</span>
+                            </div>
+                            <div class="potencia2"><?php echo $category_parameters->prime?> kWm</div>
+                        </div>
+                    <?php }?>
+
+                    <?php if($category_parameters->rpm_2 !=''){?>
+                        <h3>RPM: <?php echo $category_parameters->rpm_2?></h3>
+                        <div class="potencia"><div class="potencia1"><strong>STAND-BY POWER:</strong><br>
+                                <span class="arial11normal">(LTP "Limited Time Power" norma ISO 8528-1)</span></div>
+                            <div class="potencia2"><?php echo $category_parameters->standby_2?> kWm</div>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div style="clear: both; height:5px;"></div>
+                        <div class="potencia">
+                            <div class="potencia1">
+                                <strong>PRIME POWER:</strong><br>
+                                <span class="arial11normal">(PRP "Prime Power" norma ISO 8528-1)</span>
+                            </div>
+                            <div class="potencia2"><?php echo $category_parameters->prime_2?> kWm</div>
+                        </div>
+                    <?php }?>
+                <?php }?>
+
+                <?php if($product->primary_category == 2){ $category_parameters = $get_parameters_of_product['category_parameters'];?>
+
+                    <div class="potencia" style="height:30px">
+                        <div class="potencia1"><strong><?php echo $category_parameters->hz?> Hz, CONTINUOUS POWER:</strong></div>
+                        <div class="potencia2" style="padding-top: 3px;"><?php echo $category_parameters->power?> kAV</div>
+                    </div>
+                    <div style="clear: both; height:5px;"></div>
+
+                    <?php $category_parameters = $get_parameters_of_product['category_parameters_hz_60'];?>
+
+                    <div class="potencia" style="height:30px">
+                        <div class="potencia1"><strong><?php echo $category_parameters->hz?> Hz, CONTINUOUS POWER:</strong></div>
+                        <div class="potencia2" style="padding-top: 3px;"><?php echo $category_parameters->power?> kAV</div>
+                    </div>
+                    <div style="clear: both;"></div>
+                <?php }?>
+
             </div>
+
+            <div class="potencia4">
+
+                <div class="columnasfooter">
+                    <div class="columna-enviar-ficha">
+                        <input autocomplete="true" name="email_contact" type="text" class="formu-enviar-ficha" id="email_contact" value="" placeholder="E-mail or phone number">
+                        <input name="Enviar" type="submit" onclick="form_send_email(0)" class="boton-enviar-ficha" value="Contact me">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="potencia4" style="height:auto;margin-top:15px;">
+                <p class="arial14">
+                    Need more information?, <a class="verde more-information" href="javascript:void(0)" ><strong>CONTACT</strong></a>
+                </p>
+                <div class="content-information" style="display:none">
+                    <input autocomplete="true" name="name" type="text" class="formu-enviar-ficha" id="name" value="" placeholder="Company's name">
+                    <input autocomplete="true" name="email" type="text" class="formu-enviar-ficha" id="email" value="" placeholder="E-mail">
+                    <input autocomplete="true" name="mobile" type="text" class="formu-enviar-ficha" id="mobile" value="" placeholder="Phone number">
+                    <input autocomplete="true" name="address" type="text" class="formu-enviar-ficha" id="address" value="" placeholder="Your address">
+                    <input autocomplete="true" name="subject" type="text" class="formu-enviar-ficha" id="subject" value="" placeholder="Subject">
+                    <textarea rows="4" cols="50" name="content" class="" id="content" placeholder="Message"></textarea>
+                    <input name="Enviar" type="submit" onclick="form_send_email(1)" class="boton-enviar-ficha" value="Send">
+                    <br>
+                </div>
+
+            </div>
+
+            <!--
+            <div class="potencia4" style="height:40px;margin-top:15px;">
+                <p class="arial14">Compare &nbsp; <input type="checkbox" id="check_compare" value="1"></p>
+            </div>
+            -->
+
+            <!--
+            <form action="http://dev.gonline.com/cart/add-to-cart" id="add-to-cart" method="post" accept-charset="utf-8">
+            <input type="hidden" name="cartkey" value="" />
+            <input type="hidden" name="id" value="1"/>
+
+            <div class="text-left">
+                <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> Add to Cart</button>
+            </div>
+            </form>
+            -->
 
         </div>
 
@@ -209,6 +176,69 @@
 
 
 <script>
+    $( ".more-information" ).click(function() {
+        $( ".content-information" ).toggle(400);
+    });
+
+    function form_send_email(flag){
+        var type = 0;
+        if(flag==0){
+            var email = $("#email_contact").val();
+            if( (isValidEmailAddress(email) || $.isNumeric( email ) ) && email !=''){
+                if(isValidEmailAddress( email ))
+                    type = 1;
+                if($.isNumeric( email ))
+                    type = 2;
+
+                var url = '<?php echo uri_string();?>';
+                $.ajax({
+                    method: "POST",
+                    url: "<?php echo site_url('product/contact');?>/"+type,
+                    data: { email: email, url: url}
+                }).done(function( msg ) {
+                    if(msg)
+                        alert("Thank you for your contact");
+                    $("#email_contact").val('');
+                });
+
+            }else {
+                alert("Please enter your email or mobile");
+            }
+        }else{
+            var email 	= $("#email").val();
+            var mobile 	= $("#mobile").val();
+            var name 	= $("#name").val();
+            var address = $("#address").val();
+            var subject = $("#subject").val();
+            var content = $("#content").val();
+            var type = 0;
+            if( (isValidEmailAddress(email) || $.isNumeric( mobile ) ) && (email !='' || mobile !='' ) ){
+                var url = '<?php echo uri_string();?>';
+                $.ajax({
+                    method: "POST",
+                    url: "<?php echo site_url('product/contact');?>/"+type,
+                    data: { email: email, mobile: mobile, url: url, name: name, address: address, subject: subject, content: content}
+                }).done(function( msg ) {
+                    if(msg)
+                        alert("Thank you for your contact");
+                    $( ".content-information" ).toggle(400);
+                    $("#email").val('');$("#mobile").val('');
+                    $("#name").val('');$("#address").val('');
+                    $("#subject").val('');$("#content").val('');
+                });
+
+            }else {
+                alert("Please enter your email or mobile");
+            }
+        }
+        return;
+    }
+
+    function isValidEmailAddress(emailAddress) {
+        var pattern = new RegExp(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/);
+        return pattern.test(emailAddress);
+    };
+
 
     function addToCart(btn)
     {
@@ -249,10 +279,10 @@
 </script>
 
 <?php if(count($product->images) > 1):?>
-<script id="banners" type="text/template">
-    <div class="banners">
-        <?php
-        foreach($product->images as $image):?>
+    <script id="banners" type="text/template">
+        <div class="banners">
+            <?php
+            foreach($product->images as $image):?>
                 <div class="banner" style="text-align:center;">
                     <img src="<?php echo base_url('uploads/images/full/'.$image['filename']);?>" style="max-height:600px; margin:auto;"/>
                     <?php if(!empty($image['caption'])):?>
@@ -261,12 +291,12 @@
                         </div>
                     <?php endif; ?>
                 </div>
-        <?php endforeach;?>
-        <a class="controls" data-direction="back"><i class="icon-chevron-left"></i></a>
-        <a class="controls" data-direction="forward"><i class="icon-chevron-right"></i></a>
-        <div class="banner-timer"></div>
-    </div>
-</script>
+            <?php endforeach;?>
+            <a class="controls" data-direction="back"><i class="icon-chevron-left"></i></a>
+            <a class="controls" data-direction="forward"><i class="icon-chevron-right"></i></a>
+            <div class="banner-timer"></div>
+        </div>
+    </script>
 <?php endif;?>
 
 

@@ -272,4 +272,15 @@ Class Customers extends CI_Model
             CI::dbforge()->add_column('categories', $fields);
         }
     }
+	
+	public function get_contacts()
+    {
+        return CI::db()->order_by('id', 'DESC')->get('contact')->result();
+    }
+	
+	public function update_contact($status, $id)
+    {
+		$this->db->where('id', $id);
+		$this->db->update( 'contact',  array('check' => $status) ); 
+    }
 }

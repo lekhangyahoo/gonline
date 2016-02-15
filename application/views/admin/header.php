@@ -87,7 +87,14 @@ $(document).ready(function(){
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="<?php echo site_url('admin/categories');?>"><?php echo lang('common_categories'); ?></a></li>
                             <li><a href="<?php echo site_url('admin/products');?>"><?php echo lang('common_products'); ?></a></li>
-                            <li><a href="<?php echo site_url('admin/digital_products');?>"><?php echo lang('common_digital_products'); ?></a></li>
+                            <!--li><a href="<?php echo site_url('admin/digital_products');?>"><?php echo lang('common_digital_products'); ?></a></li-->
+                        </ul>
+                    </li>
+					
+					<li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Contact <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="<?php echo site_url('admin/customers/contact');?>">Customers</a></li>                            
                         </ul>
                     </li>
 

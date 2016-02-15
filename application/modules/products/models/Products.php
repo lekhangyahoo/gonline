@@ -553,4 +553,21 @@ Class Products extends CI_Model
 		return CI::db()->where('product_id', $product_id)->get('products_documents')->result();
 	}
 
+    public function get_parameters_of_product($product_id, $category_id, $manufacturer_id, $hz = 50){
+        $data 	= array();
+        $tmp 	= array(1=>'engines',2=>'alternators',3=>'controllers',4=>'canopys');
+
+        $data['manufacturer'] 	= CI::db()->where('id', $manufacturer_id)->get('manufacturers')->row();
+        $data['category'] 		= CI::db()->where('id', $category_id)->get('categories')->row();
+        if($category_id==2){
+            CI::db()->where('hz', $hz);
+            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+            CI::db()->where('hz', 60);
+            $data['category_parameters_hz_60'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+        }
+        else $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+
+        return $data;
+
+    }
 }

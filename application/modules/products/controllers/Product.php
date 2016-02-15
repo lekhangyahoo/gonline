@@ -38,6 +38,13 @@ class Product extends Front {
                 $product->images = [];
             }
 
+			// get documents
+			$data['documents'] = \CI::Products()->get_documents($product->id);
+			//echo \CI::db()->last_query(); print_r($data['documents']);exit;
+			// get parameter of product
+			$data['get_parameters_of_product'] = \CI::Products()->get_parameters_of_product($product->id, $product->primary_category, $product->manufacturers);
+			//echo '<pre>'; print_r($data['documents']);exit;
+
             //set product options
             $data['options'] = \CI::ProductOptions()->getProductOptions($product->id);
 
@@ -121,7 +128,7 @@ class Product extends Front {
 		$this->view('generator', $data);
 	}
 
-	function documents($eng,$alt, $hz = 50){
+	function documents($eng,$alt, $p1, $p2,$hz = 50){
 		if($eng=='' || $alt =='') redirect(site_url());
 		$cos_phi = 0.8;
 		
@@ -221,6 +228,31 @@ class Product extends Front {
         $generator = $this->generator($data['eng'], $data['alt']);
         return $generator;
     }
+	function contact($type = 1){
+		if($_POST['email'] == '') return false;
+		
+		if($type == 1){
+			$data = array('email' => $_POST['email'], 'url' => $_POST['url'], 'date' => time());			
+		}
+		if($type == 2){
+			$data = array('mobile' => $_POST['email'], 'url' => $_POST['url'], 'date' => time());			
+		}
+		
+		if($type == 0){
+			$data = array(
+				'email' 		=> $_POST['email'],
+				'url' 			=> $_POST['url'],
+				'mobile' 		=> $_POST['mobile'],
+				'company_name' 	=> $_POST['name'],
+				'address' 		=> $_POST['address'],
+				'subject' 		=> $_POST['subject'],
+				'content' 		=> $_POST['content'],
+				'date' 			=> time(),
+			);
+		}
+		\CI::db()->insert('contact', $data);
+        echo true;
+	}
 
 }
 

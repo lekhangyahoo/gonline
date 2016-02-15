@@ -14,4 +14,5 @@ $routes[] = ['GET|POST', '/product/generator/[:slug]', 'GoCart\Controller\Produc
 $routes[] = ['GET|POST', '/product/compare/[:slug]', 'GoCart\Controller\Product#compare'];
 $routes[] = ['GET|POST', '/product/add_compare/[:slug]', 'GoCart\Controller\Product#add_compare'];
 $routes[] = ['GET|POST', '/product/remove_compare/[:slug]', 'GoCart\Controller\Product#remove_compare'];
+$routes[] = ['GET|POST', '/product/contact/[:slug]', 'GoCart\Controller\Product#contact'];
 $routes[] = ['GET|POST', '/product/[:slug]', 'GoCart\Controller\Product#index'];

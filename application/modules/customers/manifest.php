@@ -12,6 +12,7 @@ $routes[] = ['GET|POST', '/admin/customers/delete_group/[i:id]?', 'GoCart\Contro
 $routes[] = ['GET|POST', '/admin/customers/address_list/[i:id]?', 'GoCart\Controller\AdminCustomers#addressList'];
 $routes[] = ['GET|POST', '/admin/customers/address_form/[i:customer_id]/[i:id]?', 'GoCart\Controller\AdminCustomers#addressForm'];
 $routes[] = ['GET|POST', '/admin/customers/delete_address/[i:customer_id]/[i:id]', 'GoCart\Controller\AdminCustomers#deleteAddress'];
+$routes[] = ['GET|POST', '/admin/customers/contact', 'GoCart\Controller\AdminCustomers#contact'];
 $routes[] = ['GET|POST', '/admin/customers/[:order_by]?/[:direction]?/[i:page]?', 'GoCart\Controller\AdminCustomers#index'];
 
 //manifest
