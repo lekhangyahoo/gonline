@@ -49,7 +49,7 @@
         <div class="col listing-item" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1" data-power="<?php echo round ($generator['generator_kVA']);?>" data-price="<?php echo format_currency($generator['price']);?>" data-day="<?php echo $generator['days'];?>">
             <?php
             $photo  = theme_img('no_picture.png');
-			$url = site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id.'/0/0/'.$hz);
+			$url = site_url('/product/generator/'.$generator['engine']->product_id.'/'.$generator['alternator']->product_id.'/0/0/'.$hz.'/'.$phase);
             ?>
 			
             <div class="categoryItem" >
