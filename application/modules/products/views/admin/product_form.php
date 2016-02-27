@@ -414,11 +414,17 @@
 								<?php echo form_input(['name'=>'efficiency_4', 'value'=>assign_value('efficiency_4', @$efficiency_4), 'class'=>'form-control efficiency']); ?>
 								
                             </div>						
-                        </div>						
+                        </div>
+                        <div style="padding-top:10px;">
+                            <div class="form-group">
+                                <label for="slug">Power of single phase</label>
+                                <?php echo form_input(['name'=>'power_single_phase', 'value'=>assign_value('power_single_phase', @$power_single_phase), 'class'=>'form-control']); ?>
+                            </div>
+                        </div>
                     </fieldset>
-					
+					<br/>
 					<fieldset>
-                        <legend><?php echo lang('parameter_alternators_hz');?> : 60</legend>
+                        <legend style="margin-bottom: 0"><?php echo lang('parameter_alternators_hz');?> : 60</legend>
                         <div style="padding-top:10px;">                            
                             <div class="form-group">
                                 <label for="slug"><?php echo lang('parameter_alternators_power_min');?> </label>
@@ -426,12 +432,18 @@
                             </div>					
                         </div>
 						<label stype="float:left" for="slug"><?php echo lang('parameter_efficiencies');?> 4/4, 3/4, 2/4, 1/4</label>				
-                            <div class="form-group">                                
-                                <?php echo form_input(['name'=>'efficiency_2_1', 'value'=>assign_value('efficiency_2_1', @$efficiency_2_1), 'class'=>'form-control efficiency']); ?>
-								<?php echo form_input(['name'=>'efficiency_2_2', 'value'=>assign_value('efficiency_2_2', @$efficiency_2_2), 'class'=>'form-control efficiency']); ?>
-								<?php echo form_input(['name'=>'efficiency_2_3', 'value'=>assign_value('efficiency_2_3', @$efficiency_2_3), 'class'=>'form-control efficiency']); ?>
-								<?php echo form_input(['name'=>'efficiency_2_4', 'value'=>assign_value('efficiency_2_4', @$efficiency_2_4), 'class'=>'form-control efficiency']); ?>
+                        <div class="form-group">
+                            <?php echo form_input(['name'=>'efficiency_2_1', 'value'=>assign_value('efficiency_2_1', @$efficiency_2_1), 'class'=>'form-control efficiency']); ?>
+                            <?php echo form_input(['name'=>'efficiency_2_2', 'value'=>assign_value('efficiency_2_2', @$efficiency_2_2), 'class'=>'form-control efficiency']); ?>
+							<?php echo form_input(['name'=>'efficiency_2_3', 'value'=>assign_value('efficiency_2_3', @$efficiency_2_3), 'class'=>'form-control efficiency']); ?>
+							<?php echo form_input(['name'=>'efficiency_2_4', 'value'=>assign_value('efficiency_2_4', @$efficiency_2_4), 'class'=>'form-control efficiency']); ?>
+                        </div>
+                        <div style="padding-top:10px;">
+                            <div class="form-group">
+                                <label for="slug">Power of single phase</label>
+                                <?php echo form_input(['name'=>'power_single_phase_2', 'value'=>assign_value('power_single_phase_2', @$power_single_phase_2), 'class'=>'form-control']); ?>
                             </div>
+                        </div>
                     </fieldset>
 					<?php }?>
 					

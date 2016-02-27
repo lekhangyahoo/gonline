@@ -64,19 +64,21 @@ class Product extends Front {
         }
     }
 	
-	public function generator ($eng, $alt){
+	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3){
 		if($eng=='' || $alt =='') redirect(site_url());
-		$cos_phi = 0.8;
+		$power_factor = 0.8;
 
-        $con = \CI::uri()->segment(5);
-        $can = \CI::uri()->segment(6);
-        $hz = \CI::uri()->segment(7);
-        $other = \CI::uri()->segment(8);
+        $con 	= \CI::uri()->segment(5);
+        $can 	= \CI::uri()->segment(6);
+        $hz 	= \CI::uri()->segment(7);
+		$phase 	= \CI::uri()->segment(8);
+        $other 	= \CI::uri()->segment(9);
 
         if(!empty($this->gen_compare)){
             $con    = $this->gen_compare['con'];
             $can    = $this->gen_compare['can'];
             $hz     = $this->gen_compare['hz'];
+			$phase  = $this->gen_compare['phase'];
             $other  = $this->gen_compare['other'];
         }
 
@@ -87,7 +89,7 @@ class Product extends Front {
 		$alternator->manufacturer 	= \CI::Products()->getManufacturers($alternator->manufacturers);
 
 		$engine_parameters 	= \CI::Products()->getParameters($engine->id,'engines');
-		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators');
+		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators', $hz);
 		//echo '<pre>';print_r($alternator);exit;
 
 		$data['page_title'] = $engine->name;
@@ -99,21 +101,21 @@ class Product extends Front {
 		$data['eng'] 				= $engine;
 		$data['engine_alternator'] 	= $engine_alternator;
         $data['hz']                 = $hz;
+		$data['phase']              = $phase;
 
-
-		$generators = array();
-		$generators['kVA'] = $generators['kVA_standby'] = ($engine_parameters->standby/$cos_phi) * ($engine_alternator->efficiency*0.01);
-		$generators['kVA_prime'] = ($engine_parameters->prime/$cos_phi) * ($engine_alternator->efficiency*0.01);
-		$generators['price'] = $engine->price_1 + $alternator->price_1;
+		$generators 				= array();
+		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$power_factor) * ($engine_alternator->efficiency*0.01);
+		$generators['kVA_prime'] 	= ($engine_parameters->prime/$power_factor) * ($engine_alternator->efficiency*0.01);
+		$generators['price'] 		= $engine->price_1 + $alternator->price_1;
 
 		if($engine_alternator->power < $generators['kVA'])
 			$generators['kVA'] = $engine_alternator->power;
 
 		if($engine->days > $alternator->days)
-			$generators['days'] = $engine->days;
-		else $generators['days'] = $alternator->days;
+			$generators['days'] 	= $engine->days;
+		else $generators['days'] 	= $alternator->days;
 
-		$generators['name'] = 'G'.$hz.'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
+		$generators['name'] = 'G'.(int)($hz/10).'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
 		//echo '<pre>';print_r($generators);exit;
 		$data['generators'] 	= $generators;
 
@@ -128,9 +130,9 @@ class Product extends Front {
 		$this->view('generator', $data);
 	}
 
-	function documents($eng,$alt, $p1, $p2,$hz = 50){
+	function documents($eng,$alt, $can, $con,$hz = 50, $phase = 3){
 		if($eng=='' || $alt =='') redirect(site_url());
-		$cos_phi = 0.8;
+		$power_factor = 0.8;
 		
 		$engine 	= \CI::Products()->getProduct($eng);
 		$alternator = \CI::Products()->getProduct($alt);
@@ -139,7 +141,7 @@ class Product extends Front {
 		$alternator->manufacturer 	= \CI::Products()->getManufacturers($alternator->manufacturers);
 		
 		$engine_parameters 	= \CI::Products()->getParameters($engine->id,'engines');
-		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators');
+		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators', $hz);
 		
 		$data['page_title'] = $engine->name;
         $data['meta'] 		= $engine->meta;
@@ -152,8 +154,8 @@ class Product extends Front {
 		
 		
 		$generators = array();
-		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$cos_phi) * ($engine_alternator->efficiency*0.01);
-		$generators['kVA_prime'] 	= ($engine_parameters->prime/$cos_phi) * ($engine_alternator->efficiency*0.01);
+		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$power_factor) * ($engine_alternator->efficiency*0.01);
+		$generators['kVA_prime'] 	= ($engine_parameters->prime/$power_factor) * ($engine_alternator->efficiency*0.01);
 		$generators['price'] 		= $engine->price_1 + $alternator->price_1;
 					
 		if($engine_alternator->power < $generators['kVA'])
@@ -171,7 +173,7 @@ class Product extends Front {
 		$data['alternator_manufacturer'] 	= $alternator->manufacturer->name;
 		\CI::load()->helper('calculator');
 		\CI::load()->helper('html_to_pdf');
-		$data['fuel'] 	= get_info_fuel_consumption($engine->id, $alternator->id, $hz);
+		$data['fuel'] 	= get_info_fuel_consumption($engine->id, $alternator->id, $hz, $phase);
         //echo '<pre>';print_r($data);exit;
 		$html 			= \CI::load()->view('documents', $data, true);
 		convert2pdf($html,$data['generators']['name'].'.pdf');
@@ -223,9 +225,10 @@ class Product extends Front {
         $data['con']    = @$uri_string[4];
         $data['can']    = @$uri_string[5];
         $data['hz']     = @$uri_string[6];
+		$data['phase']  = @$uri_string[7];
         $data['other']  = 'return';
         $this->gen_compare = $data;
-        $generator = $this->generator($data['eng'], $data['alt']);
+        $generator = $this->generator($data['eng'], $data['alt'],'', '', $data['hz'], $data['phase']);
         return $generator;
     }
 	function contact($type = 1){

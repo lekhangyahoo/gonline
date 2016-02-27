@@ -8,7 +8,7 @@
 </style>
 <div class="page-header">
     <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
-	<div><?php echo round($generators['kVA_standby']);?> kVA, <?php echo $engine_manufacturer?> Engine, <?php echo $hz;?> Hz - Three-phase - <?php echo $alternator_manufacturer?> Alternator </div>
+	<div><?php echo round($generators['kVA_standby']);?> kVA, <?php echo $engine_manufacturer?> Engine, <?php echo $hz;?> Hz - <?php if($phase==1) echo 'Single-phase';else echo 'Three-phase'?> - <?php echo $alternator_manufacturer?> Alternator </div>
 	
 </div>
 

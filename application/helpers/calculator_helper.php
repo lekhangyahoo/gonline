@@ -1,9 +1,9 @@
 <?php
-function get_info_fuel_consumption($engine_id, $alternator_id, $hz)
+function get_info_fuel_consumption($engine_id, $alternator_id, $hz, $phase = 3)
 {
     $CI = &get_instance();
     $CI->load->model('Products');
-	$cos_phi = 0.8;
+	$power_factor = 0.8;
 	$constant = 0.84; 	// lit/kg
 	$engine 			= $CI->Products->find_engine($engine_id);	
 	$alternator 		= $CI->Products->find_alternator($alternator_id, $hz);
@@ -17,8 +17,8 @@ function get_info_fuel_consumption($engine_id, $alternator_id, $hz)
 		$fuel_consumption->prime_fuel_con_2 = 0;
 		$fuel_consumption->prime_fuel_con_3 = 0;
 	}
-	$kVA_standby 	= ($engine->standby/$cos_phi) * ($alternator->efficiency*0.01);
-	$kVA_prime		= ($engine->prime/$cos_phi) * ($alternator->efficiency*0.01);
+	$kVA_standby 	= ($engine->standby/$power_factor) * ($alternator->efficiency*0.01);
+	$kVA_prime		= ($engine->prime/$power_factor) * ($alternator->efficiency*0.01);
 		
 	//echo $CI->db->last_query();print_r($fuel_consumption);exit;
 	$pf = $engine->power_factor;
@@ -38,12 +38,12 @@ function get_info_fuel_consumption($engine_id, $alternator_id, $hz)
 	$generators['prime']['kVA_2']   = ($kVA_prime/4)*3;	// 3/4
 	$generators['prime']['kVA_3']   = $kVA_prime/2;		// 2/4
 	
-	$generators['standby']['kWm_1'] = $generators['standby']['kVA_1'] * $cos_phi;	// load 110%
-	$generators['standby']['kWm_2'] = $generators['standby']['kVA_2'] * $cos_phi;
-	$generators['standby']['kWm_3'] = $generators['standby']['kVA_3'] * $cos_phi;
-	$generators['prime']['kWm_1']   = $generators['prime']['kVA_1'] * $cos_phi;		// 4/4
-	$generators['prime']['kWm_2']   = $generators['prime']['kVA_2'] * $cos_phi;		// 3/4
-	$generators['prime']['kWm_3']   = $generators['prime']['kVA_3'] * $cos_phi;		// 2/4
+	$generators['standby']['kWm_1'] = $generators['standby']['kVA_1'] * $power_factor;	// load 110%
+	$generators['standby']['kWm_2'] = $generators['standby']['kVA_2'] * $power_factor;
+	$generators['standby']['kWm_3'] = $generators['standby']['kVA_3'] * $power_factor;
+	$generators['prime']['kWm_1']   = $generators['prime']['kVA_1'] * $power_factor;		// 4/4
+	$generators['prime']['kWm_2']   = $generators['prime']['kVA_2'] * $power_factor;		// 3/4
+	$generators['prime']['kWm_3']   = $generators['prime']['kVA_3'] * $power_factor;		// 2/4
 	
 	// kW * g/kWh = g/h; (g/h) / 1000 = kg/h; (kg/h) / constant = l/h
 	$generators['fuel']['standby']['fuel_con_1'] = ($generators['standby']['kWm_1'] * $fuel_consumption->standby_fuel_con_1)/1000/$constant;

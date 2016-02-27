@@ -27,9 +27,11 @@ Class Products extends CI_Model
         return $product;
     }
 	
-	public function getParameters($id, $table = 'engines')
+	public function getParameters($id, $table = 'engines', $hz = 50)
     {
-        if($table=='alternators') CI::db()->where('hz', 50);
+        if($table=='alternators'){
+            CI::db()->where('hz', $hz);
+        }
         $engines = CI::db()->select('*')->where('product_id', $id)->get($table)->row();
         return $engines;
     }
@@ -161,22 +163,29 @@ Class Products extends CI_Model
 
         if($get_max){	// get max
             $sql = $sql.'engines.standby/engines.power_factor >= '.$power;
+            $sql = $sql.' ORDER BY `standby` ASC';
         }
         else {			// get min
             $sql = $sql.'engines.standby/engines.power_factor < '.$power;
+            $sql = $sql.' ORDER BY `standby` DESC';
         }
 
-        $sql = $sql.' ORDER BY `name` ASC limit 50';
+        //$sql = $sql.' ORDER BY `name` ASC limit 50';
 		return CI::db()->query($sql)->result();
         
     }
 	
-	public function getProductsAlternators($power = 0, $hz = 50, $limit = false, $offset = false, $by=false, $sort=false)
-    {        
-		CI::db()->select('products.*, manufacturers.code, alternators.product_id, alternators.hz, alternators.power, alternators.phase, alternators.efficiency, alternators.efficiency_2, alternators.efficiency_3, alternators.efficiency_4');
+	public function getProductsAlternators($power = 0, $hz = 50, $phase, $limit = false, $offset = false, $by=false, $sort=false)
+    {
+        $coefficient = 0.85;
+		CI::db()->select('products.*, manufacturers.code, alternators.product_id, alternators.hz, alternators.power, alternators.phase, alternators.efficiency, alternators.efficiency_2, alternators.efficiency_3, alternators.efficiency_4, power_single_phase');
 		CI::db()->where('alternators.hz', $hz);
 		CI::db()->where('alternators.efficiency > ', 0);
-		CI::db()->where('alternators.power > '.($power*0.85));
+        if($phase == 1){
+            CI::db()->where('alternators.power_single_phase > '.($power * $coefficient));
+        }else{
+            CI::db()->where('alternators.power > '.($power * $coefficient));
+        }
 		CI::db()->join('alternators', 'alternators.product_id=products.id');
 		CI::db()->join('manufacturers', 'manufacturers.id=products.manufacturers');
         return CI::db()->order_by('name', 'ASC')->get('products')->result();

@@ -26,33 +26,37 @@ class Page extends Front{
 		*/
         if(file_exists(FCPATH.'themes/'.config_item('theme').'/views/homepage.php'))
         {
-			$data['power']= @$_POST['power'];
-            $data['hz']= @$_POST['hz'];
-			$engines = array();
-			$alternators = array();
-			$generators = array();
-			$data['engines'] = $engines;
-			$data['alternators'] = $alternators;
+			$data['power']      = @$_POST['power'];
+            $data['hz']         = @$_POST['hz'];
+            $data['phase']      = @$_POST['phase'];
+			$engines            = array();
+			$alternators        = array();
+			$generators         = array();
+			$data['engines']    = $engines;
+			$data['alternators']= $alternators;
 			
 			if($data['power'] > 0){
-                $data['hz']= @$_POST['hz'];
+                $data['hz']         = @$_POST['hz'];
+                $data['phase']      = @$_POST['phase'];
 				$categories['sort'] = $data['sort'] = '';
-				$categories['dir'] 	= $data['dir'] = '';
+				$categories['dir'] 	= $data['dir']  = '';
 				$categories['slug'] = $data['slug'] = '';
 				$categories['page'] = $data['page'] = '';
-				$categories['$per_page'] = $data['per_page'] = '';
-				$categories = \CI::Categories()->get($data['slug'], $data['sort'], $data['dir'], $data['page'], $data['per_page']);
-				
-				
-				$engines = \CI::Products()->getProductsCondition($data['power'], $data['hz']);
+				$categories['per_page'] = $data['per_page'] = '';
+				$categories     = \CI::Categories()->get($data['slug'], $data['sort'], $data['dir'], $data['page'], $data['per_page']);
+
+				$engines        = \CI::Products()->getProductsCondition($data['power'], $data['hz']);
                 //echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
-				$alternators = \CI::Products()->getProductsAlternators($data['power'], $data['hz']);
+                $engines_min        = \CI::Products()->getProductsCondition($data['power'], $data['hz'], false);
+                $engines = array_merge($engines_min, $engines);
+                //echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
+				$alternators    = \CI::Products()->getProductsAlternators($data['power'], $data['hz'], $data['phase']);
+
+				//echo \CI::db()->last_query().'<pre>';print_r($alternators);exit;
 				
-				//echo \CI::db()->last_query().'<pre>';print_r($engines);exit;
-				
-				$data['engines'] = $engines;
-				$data['alternators'] = $alternators;				
-				$generators = $this->results($data['hz'], $data['engines'],$data['alternators'], $data['power']);
+				$data['engines']    = $engines;
+				$data['alternators']= $alternators;
+				$generators         = $this->results($data['hz'], $data['engines'],$data['alternators'], $data['power'], $data['phase']);
 			}
 			$generators = $this->array_orderby(@$generators, 'kVA', SORT_ASC, 'price', SORT_ASC);
 			
@@ -96,33 +100,55 @@ class Page extends Front{
 		return array_pop($args);
 	}
 	
-	public function results($hz, $engines, $alternators, $power){
+	public function results($hz, $engines, $alternators, $power, $phase = 3){
 		$generators = array();
 		$tmp = 0;
+        $coefficient_min = 1.0 * $power;
+        $coefficient_max = 1.3 * $power;
+        //echo '<pre>';print_r($engines);exit;
 		foreach($engines as $engine){
 			foreach($alternators as $alternator){
-				if($alternator->power >= $engine->p_kAV){
-					$generators[$tmp]['engine'] = $engine;
-					$generators[$tmp]['alternator'] = $alternator;
-					$generators[$tmp]['kVA'] = $engine->s_kAV * $alternator->efficiency*0.01;
-					$generators[$tmp]['price'] = $engine->price_1 + $alternator->price_1;
-					
-					if($alternator->power < $generators[$tmp]['kVA'])
-						$generators[$tmp]['generator_kVA'] = $alternator->power;
-					else $generators[$tmp]['generator_kVA'] = $generators[$tmp]['kVA'];
-					
-					if($engine->days > $alternator->days)
-						$generators[$tmp]['days'] = $engine->days;
-					else $generators[$tmp]['days'] = $alternator->days;
+                if($phase == 1){
+                    $alternator->power = $alternator->power_single_phase;
+                }
+                if($coefficient_min <= $engine->s_kAV && $coefficient_max >= $engine->s_kAV ) {
+                    if ($alternator->power >= $engine->p_kAV) {
+                        $generators[$tmp]['engine'] = $engine;
+                        $generators[$tmp]['alternator'] = $alternator;
+                        $generators[$tmp]['kVA'] = $engine->s_kAV * $alternator->efficiency * 0.01;
+                        $generators[$tmp]['price'] = $engine->price_1 + $alternator->price_1;
 
-                    $generators[$tmp]['name'] = 'G'.$hz.'-'.round ($generators[$tmp]['generator_kVA']).$generators[$tmp]['engine']->code.$generators[$tmp]['alternator']->code;
-				}
-				$tmp ++;
+                        if ($alternator->power < $generators[$tmp]['kVA'])
+                            $generators[$tmp]['generator_kVA'] = $alternator->power;
+                        else $generators[$tmp]['generator_kVA'] = $generators[$tmp]['kVA'];
+
+                        if ($engine->days > $alternator->days)
+                            $generators[$tmp]['days'] = $engine->days;
+                        else $generators[$tmp]['days'] = $alternator->days;
+
+                        $generators[$tmp]['name'] = 'G' . (int)$hz/10 . '-' . round($generators[$tmp]['generator_kVA']) . $generators[$tmp]['engine']->code . $generators[$tmp]['alternator']->code;
+                    }
+                    $tmp++;
+                }
 			}
 		}
-		
-		return $generators;	
+
+        $tmp = $this->filter($generators, $power);
+        return $this->filter($generators, $power);
+		//return $generators;
 	}
+    public function filter($generators, $power){
+
+        $min = $power * 0.9;
+        $max = $power * 1.2;
+        $tmp = array();
+        foreach($generators as $generator){
+            if( $min <= $generator['generator_kVA'] && $generator['generator_kVA'] <= $max){
+                $tmp[] = $generator;
+            }
+        }
+        return $tmp;
+    }
     public function show404()
     {
         $this->view('404');

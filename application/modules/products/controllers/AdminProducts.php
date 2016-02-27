@@ -295,7 +295,8 @@ class AdminProducts extends Admin {
 				$data['efficiency_2'] 	= isset($alternator->efficiency_2) ? $alternator->efficiency_2 : '';
 				$data['efficiency_3'] 	= isset($alternator->efficiency_3) ? $alternator->efficiency_3 : '';
 				$data['efficiency_4'] 	= isset($alternator->efficiency_4) ? $alternator->efficiency_4 : '';
-				
+                $data['power_single_phase'] = isset($alternator->power_single_phase) ? $alternator->power_single_phase : '';
+
 				$alternator_2 = \CI::Products()->find_alternator($id,60);
 				//print_r($alternator_2);exit;
 				$data['hz_2'] 		= isset($alternator_2->hz) ? $alternator_2->hz : 60;
@@ -305,7 +306,8 @@ class AdminProducts extends Admin {
 				$data['efficiency_2_3'] 	= isset($alternator_2->efficiency_3) ? $alternator_2->efficiency_3 : '';
 				$data['efficiency_2_4'] 	= isset($alternator_2->efficiency_4) ? $alternator_2->efficiency_4 : '';
 			
-				$data['phase'] 		= isset($alternator->phase) ? $alternator->phase : '';				
+				$data['phase'] 		= isset($alternator->phase) ? $alternator->phase : '';
+                $data['power_single_phase_2'] = isset($alternator->power_single_phase) ? $alternator->power_single_phase : '';
 			}
 			
 			
@@ -549,20 +551,23 @@ class AdminProducts extends Admin {
 				$save_alternator['hz'] 				= 50;
 				$save_alternator['phase'] 			= \CI::input()->post('phase');
 				$save_alternator['efficiency'] 		= \CI::input()->post('efficiency');
-				$save_alternator['efficiency_2'] 		= \CI::input()->post('efficiency_2');
-				$save_alternator['efficiency_3'] 		= \CI::input()->post('efficiency_3');
-				$save_alternator['efficiency_4'] 		= \CI::input()->post('efficiency_4');
-				$save_alternator['power'] 			= \CI::input()->post('power');	
+				$save_alternator['efficiency_2'] 	= \CI::input()->post('efficiency_2');
+				$save_alternator['efficiency_3'] 	= \CI::input()->post('efficiency_3');
+				$save_alternator['efficiency_4'] 	= \CI::input()->post('efficiency_4');
+				$save_alternator['power'] 			= \CI::input()->post('power');
+                $save_alternator['power_single_phase'] = \CI::input()->post('power_single_phase');
 				$alternator_id = \CI::Products()->save_alternator($id, $alternator->id, $save_alternator);
-				
+
 				$save_alternator['hz'] 				= 60;
 				$save_alternator['phase'] 			= \CI::input()->post('phase');
 				$save_alternator['efficiency'] 		= \CI::input()->post('efficiency_2_1');
-				$save_alternator['efficiency_2'] 		= \CI::input()->post('efficiency_2_2');
-				$save_alternator['efficiency_3'] 		= \CI::input()->post('efficiency_2_3');
-				$save_alternator['efficiency_4'] 		= \CI::input()->post('efficiency_2_4');
+				$save_alternator['efficiency_2'] 	= \CI::input()->post('efficiency_2_2');
+				$save_alternator['efficiency_3'] 	= \CI::input()->post('efficiency_2_3');
+				$save_alternator['efficiency_4'] 	= \CI::input()->post('efficiency_2_4');
 				$save_alternator['power'] 			= \CI::input()->post('power_2');
-				$alternator_id = \CI::Products()->save_alternator($id, $alternator_2->id, $save_alternator);			
+                $save_alternator['power_single_phase'] = \CI::input()->post('power_single_phase_2');
+				$alternator_id = \CI::Products()->save_alternator($id, $alternator_2->id, $save_alternator);
+
 				
 			}
 
