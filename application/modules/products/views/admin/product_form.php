@@ -383,7 +383,17 @@
 							</div>
                         
 						</div>
-                    </fieldset>					
+                    </fieldset>
+                    <fieldset>
+                        <legend>Orthers</legend>
+                        <div style="padding-top:10px;">
+                            <div class="form-group">
+                                <label for="seo_title">Funnel cos-phi</label>
+                                <?php echo form_input(['name'=>'funnel_phi', 'value'=>assign_value('funnel_phi', @$funnel_phi), 'class'=>'form-control']); ?>
+                            </div>
+                        </div>
+                    </fieldset>
+
 					<?php } ?>
 					
 					<?php if($primary_category == 2){ //alternator?>

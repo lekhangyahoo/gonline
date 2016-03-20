@@ -4,7 +4,7 @@ body {
 }
 
 a {
-  color: #134da5;
+  color: #BB0F1D;
 }
 a:focus,
 a:hover {
@@ -17,7 +17,7 @@ a:hover {
     font-size:1.3em;
     padding:0px;
     margin:15px 0px 1em 0px;
-	color:#090;
+	color:#BB0F1D;
 }
 
 .page-header h1, .page-header h2, .page-header h3, .page-header h4 {

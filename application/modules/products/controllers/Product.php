@@ -46,18 +46,18 @@ class Product extends Front {
 			//echo '<pre>'; print_r($data['documents']);exit;
 
             //set product options
-            $data['options'] = \CI::ProductOptions()->getProductOptions($product->id);
+            $data['options'] 		= \CI::ProductOptions()->getProductOptions($product->id);
 
             $data['posted_options'] = \CI::session()->flashdata('option_values');
 
             //get related items
-            $data['related'] = $product->related_products;
+            $data['related'] 		= $product->related_products;
 
             //create view variable
             $data['page_title'] = $product->name;
-            $data['meta'] = $product->meta;
-            $data['seo_title'] = (!empty($product->seo_title))?$product->seo_title:$product->name;
-            $data['product'] = $product;
+            $data['meta'] 		= $product->meta;
+            $data['seo_title'] 	= (!empty($product->seo_title))?$product->seo_title:$product->name;
+            $data['product'] 	= $product;
 
             //load the view
             $this->view('product', $data);
@@ -65,6 +65,11 @@ class Product extends Front {
     }
 	
 	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3){
+		/* \CI::load()->library('Setup');
+		\CI::Setup()->set(120);
+		echo (\CI::Setup()->bon_dung(5000, 2, 3));
+		exit;*/
+
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
 

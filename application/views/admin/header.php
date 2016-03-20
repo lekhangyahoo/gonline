@@ -99,6 +99,19 @@ $(document).ready(function(){
                     </li>
 
                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Materials <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="<?php echo site_url('admin/materials/constants');?>">Constants</a></li>
+                            <li><a href="<?php echo site_url('admin/materials/coefficients');?>">Coefficients</a></li>
+                            <li><a href="<?php echo site_url('admin/materials/basic');?>">Basic</a></li>
+							<li><a href="<?php echo site_url('admin/materials/febrifuge');?>">Febrifuge</a></li>
+                            <li><a href="<?php echo site_url('admin/materials/funnel');?>">Funnel</a></li>
+                            <li><a href="<?php echo site_url('admin/materials/cable');?>">Cable</a></li>
+                            <li><a href="<?php echo site_url('admin/materials/rockwool');?>">Rom rockwool</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo lang('common_content'); ?> <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="<?php echo site_url('admin/banners');?>"><?php echo lang('common_banners'); ?></a></li>

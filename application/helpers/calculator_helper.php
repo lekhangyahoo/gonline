@@ -61,6 +61,11 @@ function get_info_fuel_consumption($engine_id, $alternator_id, $hz, $phase = 3)
 	else $generators[$tmp]['generator_kVA'] = $generators[$tmp]['kVA'];*/
 }
 
+function lap_dat(){
+	\CI::load()->model(['Materials']);
+	$tmp 	= \CI::Materials()->getMaterials();
+	echo '<pre>';print_r($tmp);exit;
+}
 function get_exchangeRates(){
 	echo dirname(__FILE__);exit;
 	$xmlData = NULL;

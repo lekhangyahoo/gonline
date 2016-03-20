@@ -217,24 +217,24 @@ class AdminProducts extends Admin {
             $this->product_name = \CI::input()->post('slug', $product->slug);
 
             //set values to db values
-            $data['id'] = $id;
-            $data['sku'] = $product->sku;
+            $data['id']     = $id;
+            $data['sku']    = $product->sku;
             $data['primary_category'] = $product->primary_category;
-            $data['name'] = $product->name;
-            $data['seo_title'] = $product->seo_title;
-            $data['meta'] = $product->meta;
-            $data['slug'] = $product->slug;
-            $data['description'] = $product->description;
-            $data['excerpt'] = $product->excerpt;
+            $data['name']       = $product->name;
+            $data['seo_title']  = $product->seo_title;
+            $data['meta']       = $product->meta;
+            $data['slug']       = $product->slug;
+            $data['description']= $product->description;
+            $data['excerpt']    = $product->excerpt;
             
-            $data['weight'] = $product->weight;
+            $data['weight']     = $product->weight;
 			$data['dimensions'] = $product->dimensions;
-			$data['days'] = $product->days;
-			$data['ogirin'] = $product->ogirin;
-            $data['track_stock'] = $product->track_stock;
-            $data['shippable'] = $product->shippable;
-            $data['quantity'] = $product->quantity;
-            $data['taxable'] = $product->taxable;
+			$data['days']       = $product->days;
+			$data['ogirin']     = $product->ogirin;
+            $data['track_stock']= $product->track_stock;
+            $data['shippable']  = $product->shippable;
+            $data['quantity']   = $product->quantity;
+            $data['taxable']    = $product->taxable;
             $data['fixed_quantity'] = $product->fixed_quantity;
 			
 			$data['manufacturer'] = $product->manufacturers;
@@ -269,6 +269,7 @@ class AdminProducts extends Admin {
 				$data['standby'] 	= isset($engine->standby) ? $engine->standby : '';				
 				$data['prime_2'] 	= isset($engine->prime_2) ? $engine->prime_2 : '';
 				$data['standby_2'] 	= isset($engine->standby_2) ? $engine->standby_2 : '';
+                $data['funnel_phi'] = isset($engine->funnel_phi) ? $engine->funnel_phi : '';
 
 				$fuel_consumption = \CI::Products()->find_fuel_consumption($id,50);
 				$data['standby_fuel_con_1']	= isset($fuel_consumption->standby_fuel_con_1) ? $fuel_consumption->standby_fuel_con_1 : '';
@@ -417,9 +418,9 @@ class AdminProducts extends Admin {
 
             foreach($data['groups'] as $group)
             {
-                $save['enabled_'.$group->id] = \CI::input()->post('enabled_'.$group->id);
-                $save['price_'.$group->id] = \CI::input()->post('price_'.$group->id);
-                $save['saleprice_'.$group->id] = \CI::input()->post('saleprice_'.$group->id);
+                $save['enabled_'.$group->id]    = \CI::input()->post('enabled_'.$group->id);
+                $save['price_'.$group->id]      = \CI::input()->post('price_'.$group->id);
+                $save['saleprice_'.$group->id]  = \CI::input()->post('saleprice_'.$group->id);
             }
 
             $save['slug'] = $slug;
@@ -511,14 +512,15 @@ class AdminProducts extends Admin {
 			
 			// save engine
 			if($data['primary_category']==1){ // engine
-				$save_engine['product_id'] 			= $id;
+				$save_engine['product_id'] 		= $id;
 			
 				$save_engine['rpm'] 			= 1500;
 				$save_engine['prime'] 			= \CI::input()->post('prime');
 				$save_engine['standby'] 		= \CI::input()->post('standby');
 				$save_engine['rpm_2'] 			= 1800;
 				$save_engine['prime_2'] 		= \CI::input()->post('prime_2');
-				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');								
+				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');
+                $save_engine['funnel_phi']          = \CI::input()->post('funnel_phi');
 				$engine_id = \CI::Products()->save_engine($id, $engine->id, $save_engine);
 				
 				$save_fuel_consumption['standby_fuel_con_1']	= \CI::input()->post('standby_fuel_con_1');
@@ -546,7 +548,7 @@ class AdminProducts extends Admin {
 			
 			// save alternators
 			if($data['primary_category']==2){ // engine
-				$save_alternator['product_id'] 			= $id;
+				$save_alternator['product_id'] 		= $id;
 							
 				$save_alternator['hz'] 				= 50;
 				$save_alternator['phase'] 			= \CI::input()->post('phase');

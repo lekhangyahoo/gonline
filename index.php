@@ -290,3 +290,11 @@ switch (ENVIRONMENT)
  * And away we go...
  */
 require_once BASEPATH.'core/CodeIgniter.php';
+function pr($value,$exit=true){
+	echo '<pre>';print_r($value);echo '</pre>';
+	if($exit) exit;
+}
+function lqr($exit=true){
+	echo \CI::db()->last_query();
+	if($exit) exit;
+}
