@@ -135,7 +135,7 @@ class Product extends Front {
 		$this->view('generator', $data);
 	}
 
-	function documents($eng,$alt, $can, $con,$hz = 50, $phase = 3){
+	function documents($eng, $alt, $can, $con,$hz = 50, $phase = 3){
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
 		
@@ -260,6 +260,60 @@ class Product extends Front {
 		}
 		\CI::db()->insert('contact', $data);
         echo true;
+	}
+	
+	function calculate_setup($type = 1){
+		echo '<pre>';print_r($_POST);exit;
+		$kVA = $_POST['kVA'];
+		\CI::load()->library('Setup');
+		\CI::Setup()->set($kVA);
+		
+		\CI::Setup()->bon_dung($_POST['dung_tich_bon_dau'], $_POST['duong_kinh_bon_dau'], $_POST['do_day_bon_dau']);
+		
+		\CI::Setup()->ong_dan_dau('ODD21', 'VDD21', $_POST['do_dai_ong_dau'], 1);
+		
+		\CI::Setup()->tu_bom($_POST['so_luong_tu_bom']);
+		
+		//public function ong_khoi($phi, $length, $rockwool = true, $quantity_ong_nhung = 1){
+		if($_POST['rockwool'] == 1)	$rockwool = true;
+		else $rockwool = false;
+		if($kVA <= 15){
+			$phi = 49;
+			$funnel_quantity = 1;
+		}else{
+			if($kVA >= 750) \CI::db()->where('group', 2);
+			$query = \CI::db()->where('kVA <= ', $kVA)->order_by('kVA','DESC')->limit(1)->get(parameters_kva);
+			if ($query->num_rows() > 0){
+			   $get_phi = $query->row();
+			   if($_POST['do_dai_ong_khoi'] > 20){
+				   if($kVA >= 750) \CI::db()->where('group', 2);
+				   $query = \CI::db()->where('phi > ', $get_phi->phi)->order_by('phi','ASC')->limit(1)->get(parameters_kva);
+				   if ($query->num_rows() > 0){
+					   $get_phi = $query->row();
+					   $phi = $get_phi->phi;
+				   }else{
+					   if($kVA >= 750) \CI::db()->where('group', 2);
+					   $query = \CI::db()->order_by('phi','DESC')->limit(1)->get(parameters_kva);
+					   $get_phi = $query->row();
+					   $phi = $get_phi->phi;
+				   }
+			   }else{
+				   $phi = $get_phi->phi;
+			   }
+			}else{
+				if($kVA >= 750) \CI::db()->where('group', 2);
+				$query = \CI::db()->order_by('phi','DESC')->limit(1)->get(parameters_kva);
+				$get_phi = $query->row();
+				$phi = $get_phi->phi;
+			}
+			$funnel_quantity = $get_phi->funnel_quantity;
+		}
+		
+		\CI::Setup()->ong_khoi($phi, $_POST['do_dai_ong_khoi'], $rockwool, 1, $funnel_quantity);
+		
+		\CI::Setup()->vat_tu_phu(1);
+		
+		exit; 
 	}
 
 }

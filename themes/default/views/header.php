@@ -92,12 +92,15 @@ if(isset($additional_header_info))
                     </ul>
                 </nav>
 
+                <!--
                 <?php echo form_open('search', 'class="navbar-search pull-right"');?>
                     <div class="btn-group">
                         <div><input type="text" name="term" class="search-query" placeholder="<?php echo lang('search');?>"/></div>
                         <div><input type="submit" value="<?php echo lang('search');?>"/></div>
                     </div>
                 </form>
+                -->
+
             </div>
         </div>
 

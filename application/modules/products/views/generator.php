@@ -5,6 +5,10 @@
 	width: 75%;
 }
 .last{border:none}
+.clear-left{clear:left}
+.col-set-up-left{float:left; min-width:200px}
+.col-set-up-right{float:left;}
+.set-up-input{height: 25px;width: 120px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
 </style>
 <div class="page-header">
     <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
@@ -158,10 +162,7 @@
 			<div class="potencia4 compare"  style="height:40px;margin-top:15px;">
 				<p class="arial14">
                     Compare &nbsp; <input type="checkbox" id="check_compare" value="1">
-
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a id="show-compare" <?php if(!\CI::session()->userdata('compare')) echo 'style="display: none" ';?>class="boton-enviar-ficha" href="<?php echo site_url('product/compare/1'); ?>" target="_blank">Show compare</a>
+                    <a style="margin-left:40px" id="show-compare" <?php if(!\CI::session()->userdata('compare')) echo 'style="display: none" ';?>class="boton-enviar-ficha" href="<?php echo site_url('product/compare/1'); ?>" target="_blank">Show compare</a>
 
                 </p>
 			</div>
@@ -188,13 +189,193 @@
             </form>
 			-->
 
-        </div>		
+			<hr/>
+			
+			<form id="calculate_setup" >
+			<div>
+				<div class="page-header">
+					<p><b>DU TOAN CHI PHI LAP DAT VA VAN CHUYEN</b></p>
+				</div>
+				<div class="part-set-up bon-dau">
+					<div class="col-set-up-left"> <strong><span class="verde">BON DAU: </span></strong></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="bon-dau" data-theid="bon-dau" name="bon_dau"></div>
+					
+					<div class="bon-dau-content clear-left" style="display:none">
+						<div class="clear-left">
+							<div class="col-set-up-left">Dung tich binh</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="dung-tich-bon-dau" name="dung_tich_bon_dau" value="5000" > (l) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Duong kinh</div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="duong-kinh-bon-dau" name="duong_kinh_bon_dau" value="2" > (m) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Do day cua thep</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="do-day-bon-dau" name="do_day_bon_dau" value="3"> (mm)</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Ong dau (chieu di chieu ve)</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="do-dai-ong-dau" name="do_dai_ong_dau" value="50"> (m)</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Tu bom</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="so-luong-tu-bom" name="so_luong_tu_bom" value="1"> (cai)</div>
+						</div>
+					</div>
+					
+				</div>
+				
+				<div class="clear-left" style="border-top:1px solid #ccc; padding-top: 20px;">
+					<div class="col-set-up-left"> <strong><span class="verde">VAT TU: </span></strong></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="vat-tu" data-theid="vat-tu" name="vat_tu"></div>
+					
+					<div class="vat-tu-content clear-left" style="display:none">
+						<div class="clear-left">
+							<div class="col-set-up-left">So luong ong khoi</div>
+							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="so-luong-ong-khoi" name="so_luong_ong_khoi" value="1" ></div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Duong kinh ong khoi</div>
+							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="duong-kinh-ong-khoi" name="duong_kinh_ong_khoi" value="49 mm" ></div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Do dai ong khoi</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="do-dai-ong-khoi" name="do_dai_ong_khoi" value="15" > (m) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Chat lieu ong khoi</div>
+							<div class="col-set-up-right">
+								<div class="col-set-up-right">
+									<select class="set-up-input" name="chat_lieu_ong_khoi">
+										<option value="1"> Thep </option>
+										<option value="2"> Inox </option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Do day ong khoi</div>
+							<div class="col-set-up-right">
+								<select class="set-up-input" name="do_day_ong_khoi">
+									<option value="2"> 2 mm </option>
+									<option value="3"> 3 mm </option>
+								</select>
+							</div>
+						</div>
+						
+						<div class="clear-left">
+							<div class="col-set-up-left">Sua dung Rockwool</div>
+							<div class="col-set-up-right"><input type="checkbox" id="rockwool" data-theid="rockwool" value="1" name="rockwool" checked></div>
+						</div>
+						
+						<div class="clear-left">
+							<div class="col-set-up-left">Khoang cach tu may den nguon </div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="do-dai-day-cap" name="do_dai_day_cap"value="15" > (m) </div>
+						</div>
+						
+					</div>
+					
+				</div>
+				
+				<div class="clear-left" style="border-top:1px solid #ccc; padding-top: 20px;">
+					<div class="col-set-up-left"> <strong><span class="verde">VAN CHUYEN: </span></strong></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="van-chuyen" data-theid="van-chuyen" name="van_chuyen"></div>
+					
+					<div class="van-chuyen-content clear-left" style="display:none">
+						<div class="clear-left">
+							<div class="col-set-up-left">Dung tich binh</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Duong kinh</div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="2" > (m) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Do dau cua thep</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2"> (mm)</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
+					<div class="col-set-up-left"> <strong><span class="verde">NHAN CONG:</span></strong></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="nhan-cong" data-theid="nhan-cong"></div>
+					
+					<div class="nhan-cong-content clear-left" style="display:none">
+						<div class="clear-left">
+							<div class="col-set-up-left">Dung tich binh</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Duong kinh</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2" > (m) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Do dau cua thep</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2"> (mm)</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
+					<div class="col-set-up-left"> <strong><span class="verde">KIEM DINH: </span></strong></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="kiem-dinh" data-theid="kiem-dinh"></div>
+					
+					<div class="kiem-dinh-content clear-left" style="display:none">
+						<div class="clear-left">
+							<div class="col-set-up-left">KĐ CL Vinacontrol</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="1" > (SL máy) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">KĐ Công suất TT 3</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="1" > (SL giấy) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Thu tai gia</div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="1"> (SL máy)</div>
+						</div>
+					</div>
+				</div>
+								
+				<div  class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
+					<p> <strong><span class="verde">TONG GIA CHI PHI LAP DAT VAN CHUYEN (truoc thue): </span></strong> </p>
+				</div>
+			
+			
+			</div>
+			<input type="hidden" name="kVA" value="<?php echo round($generators['kVA_standby']);?>">
+			<input type="hidden" name="generator_number" value="1">
+			<input type="hidden" name="phase" value="<?php echo $phase;?>">
+			<input type="hidden" name="generator" value="<?php echo uri_string();?>">
+			
+			</form>			
 
-    </div>
+		</div>
+	
+	</div>
 </div>
 
-
 <script>
+	function calculate_setup(){
+		var form_data = $("#calculate_setup").serialize();
+		alert($("#calculate_setup").serialize());
+		$.ajax({
+			method: "POST",
+			url: "<?php echo site_url('product/calculate_setup/1');?>",
+			data: form_data
+		}).done(function( data ) {
+			if(data)
+				alert("Thank you for your contact");
+				//$("#email_contact").val('');
+		});
+	}
+	calculate_setup();
+	
+	$( ".set-up-check" ).click(function(){
+		//$( "."+$(this).data('theid')+"-content" ).toggle(400);
+		$( "."+$(this).data('theid')+"-content" ).animate({height: 'toggle'});
+	});
+	
 	$( ".more-information" ).click(function() {
 		$( ".content-information" ).toggle(400);
 	});

@@ -269,7 +269,10 @@ class AdminProducts extends Admin {
 				$data['standby'] 	= isset($engine->standby) ? $engine->standby : '';				
 				$data['prime_2'] 	= isset($engine->prime_2) ? $engine->prime_2 : '';
 				$data['standby_2'] 	= isset($engine->standby_2) ? $engine->standby_2 : '';
-                $data['funnel_phi'] = isset($engine->funnel_phi) ? $engine->funnel_phi : '';
+                //$data['funnel_phi'] = isset($engine->funnel_phi) ? $engine->funnel_phi : '';
+                $data['type_cooled']= isset($engine->type_cooled) ? $engine->type_cooled : '';
+                $data['type_fuel']  = isset($engine->type_fuel) ? $engine->type_fuel : '';
+                $data['dBA']        = isset($engine->dBA) ? $engine->dBA : '';
 
 				$fuel_consumption = \CI::Products()->find_fuel_consumption($id,50);
 				$data['standby_fuel_con_1']	= isset($fuel_consumption->standby_fuel_con_1) ? $fuel_consumption->standby_fuel_con_1 : '';
@@ -520,7 +523,10 @@ class AdminProducts extends Admin {
 				$save_engine['rpm_2'] 			= 1800;
 				$save_engine['prime_2'] 		= \CI::input()->post('prime_2');
 				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');
-                $save_engine['funnel_phi']          = \CI::input()->post('funnel_phi');
+                //$save_engine['funnel_phi']          = \CI::input()->post('funnel_phi');
+                $save_engine['type_cooled']     = \CI::input()->post('type_cooled');
+                $save_engine['type_fuel']       = \CI::input()->post('type_fuel');
+                $save_engine['dBA']             = \CI::input()->post('dBA');
 				$engine_id = \CI::Products()->save_engine($id, $engine->id, $save_engine);
 				
 				$save_fuel_consumption['standby_fuel_con_1']	= \CI::input()->post('standby_fuel_con_1');

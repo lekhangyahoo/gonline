@@ -112,15 +112,20 @@ class Page extends Front{
                     $alternator->power = $alternator->power_single_phase;
                 }
                 if($coefficient_min <= $engine->s_kAV && $coefficient_max >= $engine->s_kAV ) {
-                    if ($alternator->power >= $engine->p_kAV) {
+                    if ($alternator->power >= $engine->s_kAV * $alternator->efficiency * 0.01) {
                         $generators[$tmp]['engine'] = $engine;
                         $generators[$tmp]['alternator'] = $alternator;
                         $generators[$tmp]['kVA'] = $engine->s_kAV * $alternator->efficiency * 0.01;
+                        $generators[$tmp]['p_kVA'] = $engine->p_kAV * $alternator->efficiency * 0.01;
                         $generators[$tmp]['price'] = $engine->price_1 + $alternator->price_1;
 
-                        if ($alternator->power < $generators[$tmp]['kVA'])
+                        /*if ($alternator->power < $generators[$tmp]['kVA']) {
                             $generators[$tmp]['generator_kVA'] = $alternator->power;
-                        else $generators[$tmp]['generator_kVA'] = $generators[$tmp]['kVA'];
+                        }*/
+                        //else{
+                            $generators[$tmp]['generator_kVA'] = $generators[$tmp]['kVA'];
+                            $generators[$tmp]['generator_p_kVA'] = $generators[$tmp]['p_kVA'];
+                        //}
 
                         if ($engine->days > $alternator->days)
                             $generators[$tmp]['days'] = $engine->days;

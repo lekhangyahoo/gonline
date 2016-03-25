@@ -12,7 +12,7 @@ class Setup
     public $gia_dong_luc            = 0;    // bao gom cong lap
     public $gia_cap_te              = 0;    // = $gia_dong_luc * 2 / 3
     public $gia_cap_dieu_khien      = 0;    // cable table, ampe = 99999
-    public $gia_cap_bao_ve          = 0;
+    public $gia_bao_ve_cap          = 0;
     public $gia_nhien_lieu_chay_nt  = 0;
     public $gia_vat_tu_phu          = 0;    // gia vat tu phu cho lap dat
     public $gia_vc_duong_ngan       = 0;
@@ -71,7 +71,7 @@ class Setup
         $this->gia_tu_bom = $gia_tu_bom;
     }
 
-    public function ong_khoi($phi, $length, $rockwool = true, $quantity_ong_nhung = 1){
+    public function ong_khoi($phi, $length, $do_day_ong_khoi = 0.002,  $rockwool = true, $quantity_ong_nhung = 1, $quantity_funnel = 1){
         $PI = $this->data['constants']['PI']->value;
         // gia thep (d/m)
         // do day cua thep 2mm
@@ -79,7 +79,7 @@ class Setup
         if($this->data['funnel'][$phi]->group) {  // truong hop gia innox
             $don_gia_thep = $this->data['basic']['INOX_ONG_304']->value;
         }
-        $gia_thep = (  ( ($phi / 1000 * $PI) * 0.002 ) * 7856  ) * $don_gia_thep;
+        $gia_thep = (  ( ($phi / 1000 * $PI) * $do_day_ong_khoi ) * 7856  ) * $don_gia_thep;
 
         // gia son (d/m)
         $gia_son        = ($phi / 1000 * $PI) * $this->data['basic']['GIA_SON']->value;
@@ -97,7 +97,7 @@ class Setup
         $gia_do = ( ( ($phi + 100 ) / 1000) * 5.8 ) * $this->data['basic']['GIA_DO']->value + 12000;
 
         // gia nhan cong
-        $gia_nhan_cong = ( ($phi / 1000 * $PI * 0.002 * 2.5 * 7856 ) + ( ( (($phi + 100) / 1000) * $PI ) / 4 * 0.006 * 7856)) * 2000;
+        $gia_nhan_cong = ( ($phi / 1000 * $PI * $do_day_ong_khoi * 2.5 * 7856 ) + ( ( (($phi + 100) / 1000) * $PI ) / 4 * 0.006 * 7856)) * 2000;
 
         $tong_gia = $gia_thep * $length +
                     $this->data['funnel'][$phi]->value_mabi * 2 / 2.5 +
@@ -114,7 +114,7 @@ class Setup
 
         $gia_ong_khoi = $tong_gia / $this->data['constants']['PROFIT_20']->value;
 
-        $this->gia_ong_khoi = $gia_ong_khoi;
+        $this->gia_ong_khoi = $gia_ong_khoi * $quantity_funnel;
 
 
         /* tinh gia ong nhung non che */
@@ -140,9 +140,9 @@ class Setup
         $this->gia_cap_dieu_khien = $gia;
     }
 
-    public function cap_bao_ve($length = 1){
+    public function bao_ve_cap($length = 1){
         $gia = ($this->data['basic']['ONG_PVC']->value * 0.9) / 0.8 * $length;
-        $this->gia_cap_bao_ve = $gia;
+        $this->gia_bao_ve_cap = $gia;
     }
 
     public function nhien_lieu_chay_nt($lit = 1){

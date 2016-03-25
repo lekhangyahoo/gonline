@@ -388,8 +388,20 @@
                         <legend>Orthers</legend>
                         <div style="padding-top:10px;">
                             <div class="form-group">
-                                <label for="seo_title">Funnel cos-phi</label>
-                                <?php echo form_input(['name'=>'funnel_phi', 'value'=>assign_value('funnel_phi', @$funnel_phi), 'class'=>'form-control']); ?>
+                                <label for="type_fuel">Fuel Type</label>
+                                <?php echo form_input(['name'=>'type_fuel', 'value'=>assign_value('type_fuel', @$type_fuel), 'class'=>'form-control']); ?>
+                            </div>
+                        </div>
+                        <div style="padding-top:10px;">
+                            <div class="form-group">
+                                <label for="type_cooled">Engine Cooling</label>
+                                <?php echo form_input(['name'=>'type_cooled', 'value'=>assign_value('type_cooled', @$type_cooled), 'class'=>'form-control']); ?>
+                            </div>
+                        </div>
+                        <div style="padding-top:10px;">
+                            <div class="form-group">
+                                <label for="dBA">Noise Level</label>
+                                <?php echo form_input(['name'=>'dBA', 'value'=>assign_value('dBA', @$dBA), 'class'=>'form-control']); ?>
                             </div>
                         </div>
                     </fieldset>
@@ -568,12 +580,12 @@
 
             <div class="form-group">
                 <label for="weight"><?php echo lang('weight');?> </label>
-                <?php echo form_input(['name'=>'weight', 'value'=>assign_value('weight', $weight), 'class'=>'form-control']);?>
+                <?php echo form_input(['name'=>'weight', 'value'=>assign_value('weight', $weight), 'class'=>'form-control', 'placeholder'=>'kg']);?>
             </div>
 			
 			<div class="form-group">
                 <label for="weight"><?php echo lang('dimensions');?> </label>
-                <?php echo form_input(['name'=>'dimensions', 'value'=>assign_value('dimensions', @$dimensions), 'class'=>'form-control']);?>
+                <?php echo form_input(['name'=>'dimensions', 'value'=>assign_value('dimensions', @$dimensions), 'class'=>'form-control', 'placeholder'=>'L x W x H (mm)']);?>
             </div>
 			
 			<div class="form-group">
