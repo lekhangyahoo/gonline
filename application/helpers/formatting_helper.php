@@ -32,5 +32,8 @@ function format_address($fields)
 function format_currency($value, $symbol=true)
 {
     $fmt = numfmt_create( config_item('locale'), NumberFormatter::CURRENCY );
-    return numfmt_format_currency($fmt, round($value,2), config_item('currency_iso'));
+    if(config_item('locale')=='vi_VN'){
+        $precision = -3;
+    }else $precision = 2;
+    return numfmt_format_currency($fmt, round($value,$precision), config_item('currency_iso'));
 }

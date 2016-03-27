@@ -1,4 +1,4 @@
-<style>
+<style type="text/css">
 .download-document {
     padding: 10px 0;
     border-bottom: 1px solid #C5C5C5;
@@ -8,8 +8,20 @@
 .clear-left{clear:left}
 .col-set-up-left{float:left; min-width:200px}
 .col-set-up-right{float:left;}
-.set-up-input{height: 25px;width: 120px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
+.set-up-input{height: 30px;width: 120px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
+.about-help{cursor: pointer; border-bottom: 1px dotted #BB0F1D;text-decoration: none;}
+.about-help:hover{text-decoration: none !important;}
 </style>
+
+<script>
+	$(document).ready(function(){
+		$('[data-toggle="popover"]').popover({
+			html:true,
+			trigger: 'hover',
+			placement : 'top'
+		});
+	});
+</script>
 <div class="page-header">
     <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
 	<div><?php echo round($generators['kVA_standby']);?> kVA, <?php echo $engine_manufacturer?> Engine, <?php echo $hz;?> Hz - <?php if($phase==1) echo 'Single-phase';else echo 'Three-phase'?> - <?php echo $alternator_manufacturer?> Alternator </div>
@@ -19,7 +31,7 @@
 <div class="col-nest">
     <div class="col" data-cols="2/5" data-medium-cols="2/5">
         <div class="productImg"><?php
-        $photo = theme_img('pic_generator.png', lang('no_image_available'));
+        $photo = theme_img('pic_generator.png', 'image-generator');
 
         if(!empty($product->images[0]))
         {
@@ -86,12 +98,19 @@
 					  Make: <strong><?php echo $engine_manufacturer?></strong><br>
 					  Model: <strong><?php echo $eng->name;?></strong></p>
 					<p><strong><span class="verde">ALTERNATOR</span></strong><br>
-					  Model: <strong><?php echo $alternator_manufacturer?></strong>
+					  Make: <strong><?php echo $alternator_manufacturer?></strong>
 					  <br>
 					  Model: <strong><?php echo $alt->name;?></strong>
 					</p>
 					<p><strong><span class="verde">CONTROLLER</span></strong><br>
-					  Model: <strong>Decision - Maker</strong></p>					
+					  Model: <strong>Decision - Maker</strong></p>
+					<p><strong><span class="verde">CANOPY</span></strong> &nbsp;&nbsp;
+						<select class="set-up-input change-canopy" name="change-canopy">
+							<option value="1"> Standard </option>
+							<option value="2"> No canopy </option>
+						</select>
+					</p>
+
 				</div>				
 				
 				<div class="potencia"><div class="potencia1"><strong>STAND-BY POWER:</strong><br>
@@ -231,14 +250,6 @@
 					
 					<div class="vat-tu-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="col-set-up-left">So luong ong khoi</div>
-							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="so-luong-ong-khoi" name="so_luong_ong_khoi" value="1" ></div>
-						</div>
-						<div class="clear-left">
-							<div class="col-set-up-left">Duong kinh ong khoi</div>
-							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="duong-kinh-ong-khoi" name="duong_kinh_ong_khoi" value="49 mm" ></div>
-						</div>
-						<div class="clear-left">
 							<div class="col-set-up-left">Do dai ong khoi</div>
 							<div class="col-set-up-right"><input class="set-up-input" type="text" id="do-dai-ong-khoi" name="do_dai_ong_khoi" value="15" > (m) </div>
 						</div>
@@ -280,65 +291,108 @@
 				<div class="clear-left" style="border-top:1px solid #ccc; padding-top: 20px;">
 					<div class="col-set-up-left"> <strong><span class="verde">VAN CHUYEN: </span></strong></div>
 					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="van-chuyen" data-theid="van-chuyen" name="van_chuyen"></div>
-					
 					<div class="van-chuyen-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="col-set-up-left">Dung tich binh</div>
+							<div class="">Please enter address your company</div>
+						</div>
+
+						<div class="clear-left">
+							<div class="col-set-up-left">Tinh</div>
+							<div class="col-set-up-right">
+								<select class="set-up-input" name="province">
+									<option value="2"> HCM City </option>
+									<option value="3"> Ha Noi </option>
+								</select>
+							</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Huyen</div>
+							<div class="col-set-up-right">
+								<select class="set-up-input" name="district">
+									<option value="2"> Quan 1 </option>
+									<option value="3"> Quan 2 </option>
+								</select>
+							</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Dia chi nha</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="" style="border-radius: 5px; height: 30px;width: 100% !important"></div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Van chuyen lien tinh</div>
 							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Duong kinh</div>
-							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="2" > (m) </div>
+							<div class="col-set-up-left">Van chuyen tai cau</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Do dau cua thep</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2"> (mm)</div>
+							<div class="col-set-up-left">Van chuyen thu cong <a class="about-help" data-toggle="popover" title="About an chuyen thu cong" data-content="Len doi.<br> Xuong ruong."> (?) </a></div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="2" ></div>
 						</div>
+
 					</div>
 				</div>
 				
 				<div class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
 					<div class="col-set-up-left"> <strong><span class="verde">NHAN CONG:</span></strong></div>
-					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="nhan-cong" data-theid="nhan-cong"></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" name="nhan_cong" id="nhan-cong" data-theid="nhan-cong"></div>
 					
 					<div class="nhan-cong-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="col-set-up-left">Dung tich binh</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
+							<div class="col-set-up-left">Thao ra vo cach am</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_thao_ra_vo" value="0" > (lan) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Duong kinh</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2" > (m) </div>
+							<div class="col-set-up-left">Day vao vi tri don gian <a class="about-help" data-toggle="popover" title="About day vao vi tri don gian" data-content="Vi tri don gian."> (?) </a></div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_day_vao_vi_tri_dg" value="0" > (lan) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Do dau cua thep</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="2"> (mm)</div>
+							<div class="col-set-up-left">Day vao vi tri phuc tap <a class="about-help" data-toggle="popover" title="About day vao vi tri phuc tap" data-content="Len doi.<br> Xuong ruong."> (?) </a></div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_day_vao_vi_tri_pt" value="0" > (lan) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Lap dat may phat dien</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_lap_may" value="1" > (may) </div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Lap dat tu ats</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_lap_dat_ats" value="1"> (may)</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Lap tu hoa</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_lap_tu_hoa"value="1"> (may)</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">HD su dung va nghiem thu</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="nc_hd_sudung_nt" value="1"> (lan)</div>
 						</div>
 					</div>
 				</div>
 				
 				<div class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
 					<div class="col-set-up-left"> <strong><span class="verde">KIEM DINH: </span></strong></div>
-					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="kiem-dinh" data-theid="kiem-dinh"></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" name="kiem_dinh" id="kiem-dinh" data-theid="kiem-dinh"></div>
 					
 					<div class="kiem-dinh-content clear-left" style="display:none">
 						<div class="clear-left">
 							<div class="col-set-up-left">KĐ CL Vinacontrol</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="1" > (SL máy) </div>
+							<div class="col-set-up-right"><input class="set-up-input" name="kd_chat_luong" type="text" id="kd-chat-luong" value="1" > (SL máy) </div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">KĐ Công suất TT 3</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="1" > (SL giấy) </div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" name="kd_tt3" id="kd-tt3" value="1" > (SL giấy) </div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Thu tai gia</div>
-							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="1"> (SL máy)</div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" name="thu_tai_gia" id="thu-tai-gia" value="1"> (SL máy)</div>
 						</div>
 					</div>
 				</div>
 								
 				<div  class="clear-left" style="border-top:1px solid #ccc;padding-top: 20px;">
-					<p> <strong><span class="verde">TONG GIA CHI PHI LAP DAT VAN CHUYEN (truoc thue): </span></strong> </p>
+					<p> <strong><span class="verde">TONG GIA CHI PHI LAP DAT VAN CHUYEN (truoc thue): </span></strong> <b><span class="total-price"></span></b> </p>
+                    <p> <a style="display:none" class="btn show-price-detail" data-toggle="modal" data-target="#price-detail" >View price detail<a> </p>
 				</div>
 			
 			
@@ -354,28 +408,241 @@
 	
 	</div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="price-detail" role="dialog">
+    <div class="modal-dialog modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Price detail</h3>
+            </div>
+            <div class="modal-body arial13">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>VAT TU</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
 
+                    <tr>
+                        <td>
+                            Ống thoát khói va cong lắp
+                        </td>
+                        <td class="text-right price ong-thoat-khoi-cong-lap"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Ống nhún với đoạn ống đi xuyên tường và nón che mưa
+                        </td>
+                        <td class="text-right price ong-nhun-non-che"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Hộp thoát nhiệt, lam gió va cong lắp
+                        </td>
+                        <td class="text-right price hop-thoat-nhiet-lam-gio"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cáp động lực va cong lắp
+                        </td>
+                        <td class="text-right price cap-dong-luc-cong-lap"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cáp te
+                        </td>
+                        <td class="text-right price cap-te"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cáp điều khiển
+                        </td>
+                        <td class="text-right price cap-dieu-khien"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Bảo vệ cáp
+                        </td>
+                        <td class="text-right price cap-bao-ve"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nhiên liệu chạy nghiệm thu
+                        </td>
+                        <td class="text-right price nhien-lieu-nt"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Vật tư phụ
+                        </td>
+                        <td class="text-right price vat-tu-phu"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>NHAN CONG</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td>
+                            Tháo rã vỏ cách âm
+                        </td>
+                        <td class="text-right price thao-ra-vo"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Đẩy vào vị trí don gian
+                        </td>
+                        <td class="text-right price day-vao-vi-tri-dg"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Đẩy vào vị trí phuc tap
+                        </td>
+                        <td class="text-right price day-vao-vi-tri-pt"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nhan cong lap may phat dien
+                        </td>
+                        <td class="text-right price nc-lap-may"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nhan cong lap tu ATS
+                        </td>
+                        <td class="text-right price nc-lap-tu-ats"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nhan cong lap tu hoa
+                        </td>
+                        <td class="text-right price nc-lap-tu-hoa"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Hướng dẫn sử dụng và nghiệm thu
+                        </td>
+                        <td class="text-right price nc-hd-nt"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>KIEM DINH</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td>
+                            Giám định chất lượng, XX Vinacontrol
+                        </td>
+                        <td class="text-right price kd-cl"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Giám định công suất Trung Tâm 3
+                        </td>
+                        <td class="text-right price kd-tt3"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Thử tải giả
+                        </td>
+                        <td class="text-right price thu-tai-gia"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end modal -->
 <script>
 	function calculate_setup(){
 		var form_data = $("#calculate_setup").serialize();
-		alert($("#calculate_setup").serialize());
 		$.ajax({
 			method: "POST",
 			url: "<?php echo site_url('product/calculate_setup/1');?>",
 			data: form_data
 		}).done(function( data ) {
-			if(data)
-				alert("Thank you for your contact");
-				//$("#email_contact").val('');
+			if(data) {
+				var value = $.parseJSON(data);
+				$(".total-price").html(value.total_price);
+                if(value.total_money > 0){
+                    $(".show-price-detail").show();
+                    show_content_price_detail(value);
+                }else{
+                    $(".show-price-detail").hide();
+                }
+			}
 		});
 	}
-	calculate_setup();
-	
+
+    function show_content_price_detail(value){
+        $(".ong-thoat-khoi-cong-lap").html(value.gia_ong_khoi_price);
+        $(".ong-nhun-non-che").html(value.gia_ong_nhung_non_che_price);
+        $(".hop-thoat-nhiet-lam-gio").html(value.gia_ong_khoi_price);
+        $(".cap-dong-luc-cong-lap").html(value.gia_cap_dong_luc_price);
+        $(".cap-te").html(value.gia_cap_te_price);
+        $(".cap-dieu-khien").html(value.gia_cap_dieu_khien_price);
+        $(".cap-bao-ve").html(value.gia_bao_ve_cap_price);
+        $(".nhien-lieu-nt").html(value.gia_nhien_lieu_chay_nt_price);
+        $(".vat-tu-phu").html(value.gia_vat_tu_phu_price);
+
+        $(".thao-ra-vo").html(value.gia_thao_ra_vo_price);
+        $(".day-vao-vi-tri-dg").html(value.gia_day_vao_vi_tri_dg_price);
+        $(".day-vao-vi-tri-pt").html(value.gia_day_vao_vi_tri_pt_price);
+        $(".nc-lap-may").html(value.gia_lap_may_price);
+        $(".nc-lap-tu-ats").html(value.gia_lap_dat_ats_price);
+        $(".nc-lap-tu-hoa").html(value.gia_lap_tu_hoa_price);
+        $(".nc-hd-nt").html(value.gia_hd_sd_nt_price);
+
+        $(".kd-cl").html(value.gia_kd_cl_price);
+        $(".kd-tt3").html(value.gia_kd_tt3_price);
+        $(".thu-tai-gia").html(value.gia_thu_tai_gia_price);
+    }
+    $("#calculate_setup input, #calculate_setup select").change(function(){
+        calculate_setup();
+    });
+
+
+	$('.change-canopy').change(function() {
+		var url_img = "<?php echo site_url().'themes/default/assets/img/';?>";
+		if ($(this).val() == 1) {
+			url_img = url_img + 'pic_generator.png';
+		}
+		if ($(this).val() == 2) {
+			url_img = url_img + 'pic_generator_no_canopy.jpg';
+		}
+		url_img = '<img src="'+url_img+'" alt="image-generator">';
+		$(".productImg").html(url_img);
+		//alert($(this).val());
+	});
+
 	$( ".set-up-check" ).click(function(){
 		//$( "."+$(this).data('theid')+"-content" ).toggle(400);
 		$( "."+$(this).data('theid')+"-content" ).animate({height: 'toggle'});
+
 	});
-	
+
 	$( ".more-information" ).click(function() {
 		$( ".content-information" ).toggle(400);
 	});
@@ -389,7 +656,7 @@
 					type = 1;
 				if($.isNumeric( email ))
 					type = 2;
-				
+
 				var url = '<?php echo uri_string();?>';
 				$.ajax({
 					method: "POST",

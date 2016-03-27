@@ -453,7 +453,7 @@ class AdminCustomers extends Admin {
 		}else{
 			$data['contacts'] = \CI::Customers()->get_contacts();
 			$data['page_title'] = 'Contact';
-			//echo '<pre>'; print_r($data['contacts']);exit;   
+			//echo '<pre>'; print_r($data['contacts']);exit;
 			$this->view('contact', $data);
 		}
     }

@@ -15,6 +15,7 @@
 <?php endif;?>
 
 <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,300,400,700,600' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <?php
 $_css = new CSSCrunch();
 $_css->addFile('gumbo/normalize');
@@ -59,6 +60,7 @@ if(isset($additional_header_info))
     echo $additional_header_info;
 }
 ?>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <link href='<?php echo theme_css('gumboIcons.css');?>' rel='stylesheet' type='text/css'>
 <link href='<?php echo theme_css('gumbo/elem-grid.css');?>' rel='stylesheet' type='text/css'>
 </head>
