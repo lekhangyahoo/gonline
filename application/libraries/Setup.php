@@ -108,36 +108,49 @@ class Setup
         day = do day cua thep (mm)
     */
     public function bon_dung($dtb = 5000, $dk = 2, $day = 3){
-        $PI = $this->data['constants']['PI']->value;
-        $TT_THEP = $this->data['constants']['TT_THEP']->value;
-        $GIA_THEP = $this->data['basic']['GIA_THEP']->value;
-        // gia thep
-        $gia_thep = 2 * $PI * ($dtb / 1000 / $PI / $dk * 2 + $dk * $dk / 4) * $day / 1000 * $TT_THEP * 1.2 * $GIA_THEP;
-        // gia gia cong
-        $gia_gia_cong = $gia_thep / $this->data['basic']['GIA_THEP']->value * $this->data['basic']['GIA_GC']->value;
-        // vat tu khac
+        if($dtb > 0 && $dk > 0 && $day > 0) {
+            $PI = $this->data['constants']['PI']->value;
+            $TT_THEP = $this->data['constants']['TT_THEP']->value;
+            $GIA_THEP = $this->data['basic']['GIA_THEP']->value;
+            // gia thep
+            $gia_thep = 2 * $PI * ($dtb / 1000 / $PI / $dk * 2 + $dk * $dk / 4) * $day / 1000 * $TT_THEP * 1.2 * $GIA_THEP;
+            // gia gia cong
+            $gia_gia_cong = $gia_thep / $this->data['basic']['GIA_THEP']->value * $this->data['basic']['GIA_GC']->value;
+            // vat tu khac
 
-        $tong_gia = $gia_thep + $gia_gia_cong + $this->data['basic']['BON_DAU_THANG_VTK']->value;
-        $gia_bon_dung = $tong_gia / $this->data['constants']['PROFIT_40']->value;
-        $this->gia_bon_dung = $gia_bon_dung;
+            $tong_gia = $gia_thep + $gia_gia_cong + $this->data['basic']['BON_DAU_THANG_VTK']->value;
+            $gia_bon_dung = $tong_gia / $this->data['constants']['PROFIT_40']->value;
+            $this->gia_bon_dung = $gia_bon_dung;
+        }
+
     }
 
     /*
 
     */
     public function ong_dan_dau($loai_ong_dan_dau = 'ODD21', $loai_van_dau = 'VDD21', $length, $so_luong_van){
-        // gia ong
-        $gia_ong = $this->data['basic'][$loai_ong_dan_dau]->value * $length * 1.1;
-        // gia van
-        $gia_van = $this->data['basic'][$loai_van_dau]->value * $so_luong_van;
-        // gia nhan cong
-        if($length < $this->data['basic']['GIA_ONG_DAU']->condition)
-            $gia_nhan_cong  = $this->data['basic']['GIA_ONG_DAU']->value;
-        else $gia_nhan_cong = $this->data['basic']['GIA_ONG_DAU']->value + $length * $this->data['basic']['GIA_ONG_DAU']->condition_value;
+        if($length > 0) {
+            // gia ong
+            $gia_ong = $this->data['basic'][$loai_ong_dan_dau]->value * $length * 1.1;
 
-        $tong_gia        = $gia_ong + $gia_van + $gia_nhan_cong;
-        $gia_ong_dan_dau = $tong_gia / $this->data['constants']['PROFIT_40']->value;
-        $this->gia_ong_dan_dau = $gia_ong_dan_dau;
+            // gia van
+            $tinh_so_van = round($length/4, 0, PHP_ROUND_HALF_DOWN);
+            if($tinh_so_van == 0)
+                 $so_luong_van = 1;
+            else if($tinh_so_van > 3)
+                 $so_luong_van = 3;
+            else $so_luong_van = $tinh_so_van;
+            $gia_van = $this->data['basic'][$loai_van_dau]->value * $so_luong_van;
+
+            // gia nhan cong
+            if ($length < $this->data['basic']['GIA_ONG_DAU']->condition)
+                $gia_nhan_cong = $this->data['basic']['GIA_ONG_DAU']->value;
+            else $gia_nhan_cong = $this->data['basic']['GIA_ONG_DAU']->value + $length * $this->data['basic']['GIA_ONG_DAU']->condition_value;
+
+            $tong_gia = $gia_ong + $gia_van + $gia_nhan_cong;
+            $gia_ong_dan_dau = $tong_gia / $this->data['constants']['PROFIT_40']->value;
+            $this->gia_ong_dan_dau = $gia_ong_dan_dau;
+        }
     }
 
     public function tu_bom($quantity){
@@ -316,7 +329,7 @@ class Setup
 
     public function kiem_dinh($kd_chat_luong = 1, $kd_tt3 = 1, $thu_tai_gia = 1){
         if($kd_chat_luong > 0)
-            $gia_kd_chat_luong  = $kd_chat_luong * $this->data['basic']['KIEM_DINH_CL']->value + ($kd_chat_luong - 1) * $this->data['basic']['KIEM_DINH_CL']->condition_value;
+            $gia_kd_chat_luong  = /*$kd_chat_luong * */$this->data['basic']['KIEM_DINH_CL']->value + ($kd_chat_luong - 1) * $this->data['basic']['KIEM_DINH_CL']->condition_value;
         else $gia_kd_chat_luong = 0;
         $this->gia_kd_cl        = $gia_kd_chat_luong;
         $this->gia_kd_tt3       = $kd_tt3 * $this->data['basic']['KIEM_DINH_CS']->value;
