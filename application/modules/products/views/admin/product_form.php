@@ -298,7 +298,7 @@
 				<div class="tab-pane" id="documents">
 					<div class="form-group">
                         <label for="meta">Document List</label>
-                        <?php foreach($documents as $document){?>
+                        <?php foreach(@$documents as $document){?>
 						<div>
 							<a href="<?php echo base_url('uploads/documents/'.$document->file_name);?>" target="_blank"><?php if($document->display_name == '')echo $document->file_name;else echo $document->display_name;?></a>
 							<span class="remove-document" data-remove-document="<?php echo $document->id?>"> x </span>
@@ -513,45 +513,24 @@
 					<?php }?>
 					<?php if($primary_category == 4){ //canopy?>
 					<fieldset>
-                        <legend><?php echo lang('parameter_engine_rpm_1500');?></legend>
                         <div style="padding-top:10px;">
-                            
                             <div class="form-group">
-                                <label for="slug"><?php echo lang('parameter_engine_prime');?> </label>
-                                <?php echo form_input(['name'=>'prime', 'value'=>assign_value('prime', @$prime), 'class'=>'form-control']); ?>
+                                <label for="kVA_min">kVA min</label>
+                                <?php echo form_input(['name'=>'kVA_min', 'value'=>assign_value('kVA_min', @$canopy_kVA_min), 'class'=>'form-control']); ?>
                             </div>
 
                             <div class="form-group">
-                                <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
-                                <?php echo form_input(['name'=>'standby', 'value'=>assign_value('standby', @$standby), 'class'=>'form-control']); ?>
+                                <label for="kVA_max">kVA max</label>
+                                <?php echo form_input(['name'=>'kVA_max', 'value'=>assign_value('kVA_max', @$canopy_kVA_max), 'class'=>'form-control']); ?>
                             </div>
 
                             <div class="form-group">
-                                <label for="meta"><?php echo lang('parameter_engine_continuous');?></label>
-								<?php echo form_input(['name'=>'continuous', 'value'=>assign_value('continuous', @$continuous), 'class'=>'form-control']); ?>
+                                <label for="standard">Standard</label>
+                                <input type="checkbox" name="standard" value="1" <?php if($canopy_standard==1) echo 'checked="checked"'?>>
                             </div>
                         </div>
                     </fieldset>
-					<fieldset>
-                        <legend><?php echo lang('parameter_engine_rpm_1800');?></legend>
-                        <div style="padding-top:10px;">
-                            
-                            <div class="form-group">
-                                <label for="slug"><?php echo lang('parameter_engine_prime');?> </label>
-                                <?php echo form_input(['name'=>'prime_2', 'value'=>assign_value('prime_2', @$prime_2), 'class'=>'form-control']); ?>
-                            </div>
 
-                            <div class="form-group">
-                                <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
-                                <?php echo form_input(['name'=>'standby_2', 'value'=>assign_value('standby_2', @$standby_2), 'class'=>'form-control']); ?>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="meta"><?php echo lang('parameter_engine_continuous');?></label>
-								<?php echo form_input(['name'=>'continuous_2', 'value'=>assign_value('continuous_2', @$continuous_2), 'class'=>'form-control']); ?>
-                            </div>
-                        </div>
-                    </fieldset>
 					<?php }?>
                 </div>
 				
@@ -595,9 +574,15 @@
 			
 			<div class="form-group">
                 <label for="weight"><?php echo lang('ogirin');?> </label>
-                <?php echo form_dropdown('ogirin', [1 => 'USA', 0 => 'ASIAN'], assign_value('ogirin',@$ogirin), 'class="form-control"');?>
+                <?php $ogirin_list = array('0'=>'ASIAN', '1'=>'USA', '2'=>'Vietnamese', '3'=>'EU');?>
+                <?php echo form_dropdown('ogirin', $ogirin_list, assign_value('ogirin',@$ogirin), 'class="form-control"');?>
             </div>
-			
+
+            <div class="form-group">
+                <label for="weight">Protection Class</label>
+                <?php echo form_input(['name'=>'protection_class', 'value'=>assign_value('protection_class', @$protection_class), 'class'=>'form-control']);?>
+            </div>
+
             <?php foreach($groups as $group):?>
                 <fieldset>
 					

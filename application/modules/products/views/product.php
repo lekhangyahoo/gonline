@@ -1,6 +1,9 @@
 <div class="page-header">
     <h1><?php echo $product->name;?></h1>
-    <div><?php echo $get_parameters_of_product['manufacturer']->name?> <?php echo $get_parameters_of_product['category']->name?></div>
+    <div><?php if($product->primary_category==1 || $product->primary_category==2){?>
+        <?php echo @$get_parameters_of_product['manufacturer']->name?> <?php echo @$get_parameters_of_product['category']->name?>
+        <?php }?>
+    </div>
 </div>
 
 <div class="col-nest">
@@ -8,7 +11,7 @@
         <div class="productImg">
             <!--<img src="http://dev.gonline.com/themes/default/assets/img/pic_generator.png" alt="No Image Available">-->
             <?php
-            if($product->primary_category==1)
+            if($product->primary_category==1 || $product->primary_category==4)
                 $photo = theme_img('pic_generator.png', lang('no_image_available'));
             if($product->primary_category==2)
                 $photo = theme_img('pic_alternator.png', lang('no_image_available'));
@@ -64,7 +67,16 @@
             <div class="productDescription">
                 <div id="textos">
                     <p><strong><span class="verde" style="text-transform: uppercase;"><?php echo $get_parameters_of_product['category']->name?></span></strong><br>
-                        Make: <strong><?php echo $get_parameters_of_product['manufacturer']->name?></strong><br>
+                        Make: <strong>
+                            <?php
+                                if($product->primary_category==1 || $product->primary_category==2){
+                                    echo $get_parameters_of_product['manufacturer']->name;
+                                }
+                                if($product->primary_category==4){
+                                    echo 'Gonline';
+                                }
+                            ?>
+                            </strong><br>
                         Model: <strong><?php echo $product->name?></strong>
                     </p>
                 </div>

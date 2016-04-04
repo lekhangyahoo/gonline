@@ -211,7 +211,39 @@
 			
 
 			<hr/>
-			
+			<?php if(!empty($order)){
+                //echo '<pre>';print_r(json_decode($order->items[0]->install_info));exit;
+                $install_info = json_decode($order->items[0]->install_info);
+                $order_view = true;
+            }
+                $bon_dau            = isset($install_info->bon_dau)?$install_info->bon_dau:'';
+                $dung_tich_bon_dau  = isset($install_info->dung_tich_bon_dau)?$install_info->dung_tich_bon_dau:5000;
+                $duong_kinh_bon_dau = isset($install_info->duong_kinh_bon_dau)?$install_info->duong_kinh_bon_dau:2;
+                $do_day_bon_dau     = isset($install_info->duong_kinh_bon_dau)?$install_info->duong_kinh_bon_dau:3;
+                $do_dai_ong_dau     = isset($install_info->do_dai_ong_dau)?$install_info->do_dai_ong_dau:15;
+                $so_luong_tu_bom    = isset($install_info->so_luong_tu_bom)?$install_info->so_luong_tu_bom:1;
+
+                $vat_tu             = isset($install_info->vat_tu)?$install_info->vat_tu:'';
+                $do_dai_ong_khoi    = isset($install_info->do_dai_ong_khoi)?$install_info->do_dai_ong_khoi:15;
+                $chat_lieu_ong_khoi = isset($install_info->chat_lieu_ong_khoi)?$install_info->chat_lieu_ong_khoi:1;
+                $do_day_ong_khoi    = isset($install_info->do_day_ong_khoi)?$install_info->do_day_ong_khoi:2;
+                $rockwool           = isset($install_info->rockwool)?$install_info->rockwool:'';
+                $do_dai_day_cap     = isset($install_info->do_dai_day_cap)?$install_info->do_dai_day_cap:15;
+
+                $nhan_cong          = isset($install_info->nhan_cong)?$install_info->nhan_cong:'';
+                $nc_thao_ra_vo      = isset($install_info->nc_thao_ra_vo)?$install_info->nc_thao_ra_vo:0;
+                $nc_day_vao_vi_tri_dg = isset($install_info->nc_day_vao_vi_tri_dg)?$install_info->nc_day_vao_vi_tri_dg:0;
+                $nc_day_vao_vi_tri_pt = isset($install_info->nc_day_vao_vi_tri_pt)?$install_info->nc_day_vao_vi_tri_pt:0;
+                $nc_lap_may         = isset($install_info->nc_lap_may)?$install_info->nc_lap_may:1;
+                $nc_lap_dat_ats     = isset($install_info->nc_lap_dat_ats)?$install_info->nc_lap_dat_ats:1;
+                $nc_lap_tu_hoa      = isset($install_info->nc_lap_tu_hoa)?$install_info->nc_lap_tu_hoa:1;
+                $nc_hd_sudung_nt    = isset($install_info->nc_hd_sudung_nt)?$install_info->nc_hd_sudung_nt:1;
+
+                $kiem_dinh          = isset($install_info->kiem_dinh)?$install_info->kiem_dinh:'';
+                $kd_chat_luong      = isset($install_info->kd_chat_luong)?$install_info->kd_chat_luong:1;
+                $kd_tt3             = isset($install_info->kd_tt3)?$install_info->kd_tt3:1;
+                $thu_tai_gia        = isset($install_info->thu_tai_gia)?$install_info->thu_tai_gia:1;
+            ?>
 			<form id="calculate_setup" >
 			<div>
 				<div class="page-header">
@@ -224,7 +256,7 @@
 					<div class="bon-dau-content clear-left" style="display:none">
 						<div class="clear-left">
 							<div class="col-set-up-left">Dung tich binh</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="dung-tich-bon-dau" name="dung_tich_bon_dau" value="5000" > (l) </div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="dung-tich-bon-dau" name="dung_tich_bon_dau" value="<?php echo $dung_tich_bon_dau?>" > (l) </div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Duong kinh</div>
@@ -236,7 +268,7 @@
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Ong dau (chieu di chieu ve)</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-dau" name="do_dai_ong_dau" value="50"> (m)</div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-dau" name="do_dai_ong_dau" value="15"> (m)</div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Tu bom</div>
@@ -296,41 +328,47 @@
 					<div class="van-chuyen-content clear-left" style="display:none">
 						<div class="clear-left">
 							<div class="">Please enter address your company</div>
+							<div class="col-set-up-left">Khoang cach uoc luong: </div>
+							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="distance" name="distance" value=""></div>
 						</div>
 
 						<div class="clear-left">
 							<div class="col-set-up-left">Tinh</div>
 							<div class="col-set-up-right">
-								<select class="set-up-input" name="province">
-									<option value="2"> HCM City </option>
-									<option value="3"> Ha Noi </option>
-								</select>
+								<?php echo form_dropdown('province', $provinces,3780, 'class="set-up-input"')?>
 							</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Huyen</div>
+							<div class="col-set-up-left">Huyen/Quan</div>
 							<div class="col-set-up-right">
-								<select class="set-up-input" name="district">
+								<div class="col-set-up-right"><input class="set-up-input" type="text" id="district" name="district" value=""></div>
+								<!--<select class="set-up-input" name="district">
 									<option value="2"> Quan 1 </option>
 									<option value="3"> Quan 2 </option>
-								</select>
+								</select>-->
 							</div>
+						</div>
+						<div class="clear-left">
+							<div class="col-set-up-left">Xa/Phuong</div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="ward" name="ward" value=""></div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Dia chi nha</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="" style="border-radius: 5px; height: 30px;width: 100% !important"></div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="address" name="address" value="" style="border-radius: 5px; height: 30px;width: 100% !important"></div>
 						</div>
+                        <!--
 						<div class="clear-left">
 							<div class="col-set-up-left">Van chuyen lien tinh</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="" value="5000" > (l) </div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Van chuyen tai cau</div>
-							<div class="col-set-up-right"><input class="set-up-input" type="text" id="bon_dau" value="5000" > (l) </div>
+							<div class="col-set-up-right"><input class="set-up-input" type="text" id="" value="5000" > (l) </div>
 						</div>
+						-->
 						<div class="clear-left">
 							<div class="col-set-up-left">Van chuyen thu cong <a class="about-help" data-toggle="popover" title="About an chuyen thu cong" data-content="Len doi.<br> Xuong ruong."> (?) </a></div>
-							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="bon_dau" value="2" ></div>
+							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="transport_hands" name="transport_hands" value="0" ></div>
 						</div>
 
 					</div>
@@ -410,8 +448,19 @@
 			<?php echo form_open('cart/add-to-cart', 'id="add-to-cart"');?>
             <input type="hidden" name="cartkey" value="<?php echo CI::session()->flashdata('cartkey');?>" />
             <input type="hidden" name="id" value="<?php echo $product->id?>"/>
+			<input type="hidden" name="product_link" value="<?php echo uri_string();?>"/>
+			<input type="hidden" name="product_price" value="<?php echo $generators['price'];?>"/>
+            <input type="hidden" name="product_name" value="<?php echo $generators['name'];?>"/>
+            <input type="hidden" name="install_price" value="0" class="install-price"/>
+            <input type="hidden" name="install_price_details" value="0" class="install-price-details"/>
+            <input type="hidden" name="install_info" value="" class="install-info"/>
 
             <div class="text-left">
+
+                <?php if(empty($order)){?>
+                    <button class="blue" type="button" value="submit" onclick="addToCart($(this));"><i class="icon-cart"></i> <?php echo lang('form_add_to_cart');?></button>
+                <?php }?>
+				<!--
             <?php if(!config_item('inventory_enabled') || config_item('allow_os_purchase') || !(bool)$product->track_stock || $product->quantity > 0) : ?>
 
                 <?php if(!$product->fixed_quantity) : ?>
@@ -424,6 +473,7 @@
                 <?php endif;?>
 
             <?php endif;?>
+            -->
                 </div>
             </form>
 			
@@ -600,6 +650,16 @@
 </div>
 <!-- end modal -->
 <script>
+    function change_to_jon() {
+        var serialized = $("#calculate_setup").serializeArray();
+        var s = '';
+        var data = {};
+        for (s in serialized) {
+            data[serialized[s]['name']] = serialized[s]['value']
+        }
+        return JSON.stringify(data);
+    }
+
 	function calculate_setup(){
 		var form_data = $("#calculate_setup").serialize();
 		$.ajax({
@@ -610,12 +670,21 @@
 			if(data) {
 				var value = $.parseJSON(data);
 				$(".total-price").html(value.total_price);
+                if(value.error_distance == true) {
+                    $("#distance").val('Error distance');
+                }
+                else{
+                    $("#distance").val(value.distance);
+                }
                 if(value.total_money > 0){
                     $(".show-price-detail").show();
                     show_content_price_detail(value);
                 }else{
                     $(".show-price-detail").hide();
                 }
+                $(".install-price").val(value.total_money);
+                $(".install-price-details").val(data);
+                $(".install-info").val(change_to_jon());
 			}
 		});
 	}
@@ -643,6 +712,7 @@
         $(".kd-tt3").html(value.gia_kd_tt3_price);
         $(".thu-tai-gia").html(value.gia_thu_tai_gia_price);
     }
+
     $("#calculate_setup input, #calculate_setup select").change(function(){
         calculate_setup();
     });
@@ -785,6 +855,12 @@
     var banners = false;
     $(document).ready(function(){
         banners = $('#banners').html();
+        <?php if(!empty($order)){?>
+            <?php if($bon_dau) {?>$( "#bon-dau" ).trigger( "click" );<?php }?>
+            <?php if($vat_tu) {?>$( "#vat-tu" ).trigger( "click" );<?php }?>
+            <?php if($nhan_cong) {?>$( "#nhan-cong" ).trigger( "click" );<?php }?>
+            <?php if($kiem_dinh) {?>$( "#kiem-dinh" ).trigger( "click" );<?php }?>
+        <?php }?>
     })
 
     $('.productImages img').click(function(){

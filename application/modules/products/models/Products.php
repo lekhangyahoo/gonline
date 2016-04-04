@@ -280,7 +280,17 @@ Class Products extends CI_Model
         }
         return $result;
     }
-	
+
+    public function find_canopy($product_id)
+    {
+        $result = CI::db()->get_where('canopies', array('product_id'=>$product_id))->row();
+        if(!$result)
+        {
+            return false;
+        }
+        return $result;
+    }
+
 	public function find_fuel_consumption($product_id, $hz)
     {
         $result = CI::db()->get_where('fuel_consumptions', array('product_id'=>$product_id, 'hz'=>$hz))->row();
@@ -429,6 +439,23 @@ Class Products extends CI_Model
         //return the engine id
         return true;
     }
+
+    public function save_canopy($canopy_id ='', $canopy = array())
+    {
+        if ($canopy_id > 0)
+        {
+            CI::db()->where('id', $canopy_id);
+            CI::db()->update('canopies', $canopy);
+        }
+        else
+        {
+            CI::db()->insert('canopies', $canopy);
+            $id = CI::db()->insert_id();
+        }
+
+        //return the engine id
+        return true;
+    }
 	
 	public function fuel_consumption($product_id ='', $fuel_consumption_id ='', $fuel_consumption = array() )
     {
@@ -564,7 +591,7 @@ Class Products extends CI_Model
 
     public function get_parameters_of_product($product_id, $category_id, $manufacturer_id, $hz = 50){
         $data 	= array();
-        $tmp 	= array(1=>'engines',2=>'alternators',3=>'controllers',4=>'canopys');
+        $tmp 	= array(1=>'engines',2=>'alternators',3=>'controllers',4=>'canopies');
 
         $data['manufacturer'] 	= CI::db()->where('id', $manufacturer_id)->get('manufacturers')->row();
         $data['category'] 		= CI::db()->where('id', $category_id)->get('categories')->row();
@@ -574,8 +601,13 @@ Class Products extends CI_Model
             CI::db()->where('hz', 60);
             $data['category_parameters_hz_60'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
         }
-        else $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+        if($category_id==1){
+            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+        }
 
+        /*if($category_id==4){
+            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+        }*/
         return $data;
 
     }

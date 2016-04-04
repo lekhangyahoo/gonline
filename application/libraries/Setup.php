@@ -17,7 +17,6 @@ class Setup
     public $gia_bao_ve_cap          = 0;
     public $gia_nhien_lieu_chay_nt  = 0;
     public $gia_vat_tu_phu          = 0;    // gia vat tu phu cho lap dat
-    public $gia_vc_duong_ngan       = 0;
 
     public $gia_kd_cl               = 0;
     public $gia_kd_tt3              = 0;
@@ -33,6 +32,12 @@ class Setup
     public $gia_day_vao_vi_tri_pt   = 0;
     public $gia_nhan_cong           = 0;
 
+    public $distance                = 0;
+    public $error_distance          = 0;
+    public $gia_vc_duong_ngan       = 0;
+    public $gia_vc_duong_dai        = 0;
+    public $gia_vc_thu_cong         = 0;
+
     public function get_all_value(){
         $value = array(
             'gia_bon_dung'          => $this->gia_bon_dung,
@@ -46,9 +51,11 @@ class Setup
             'gia_bao_ve_cap'        => $this->gia_bao_ve_cap,
             'gia_nhien_lieu_chay_nt'=> $this->gia_nhien_lieu_chay_nt,
             'gia_vat_tu_phu'        => $this->gia_vat_tu_phu,
-            'gia_vc_duong_ngan'     => $this->gia_vc_duong_ngan,
             'gia_kiem_dinh'         => $this->gia_kiem_dinh,
             'gia_nhan_cong'         => $this->gia_nhan_cong,
+            'gia_vc_duong_ngan'     => $this->gia_vc_duong_ngan,
+            'gia_vc_duong_dai'      => $this->gia_vc_duong_dai,
+            'gia_vc_thu_cong'       => $this->gia_vc_thu_cong,
         );
 
         $total_price = 0;
@@ -73,7 +80,6 @@ class Setup
             'gia_bao_ve_cap_price'        => format_currency($this->gia_bao_ve_cap),
             'gia_nhien_lieu_chay_nt_price'=> format_currency($this->gia_nhien_lieu_chay_nt),
             'gia_vat_tu_phu_price'        => format_currency($this->gia_vat_tu_phu),
-            'gia_vc_duong_ngan_price'     => format_currency($this->gia_vc_duong_ngan),
             'gia_kd_cl_price'             => format_currency($this->gia_kd_cl),
             'gia_kd_tt3_price'            => format_currency($this->gia_kd_tt3),
             'gia_thu_tai_gia_price'       => format_currency($this->gia_thu_tai_gia),
@@ -86,6 +92,12 @@ class Setup
             'gia_hd_sd_nt_price'          => format_currency($this->gia_hd_sd_nt),
             'gia_day_vao_vi_tri_dg_price' => format_currency($this->gia_day_vao_vi_tri_dg),
             'gia_day_vao_vi_tri_pt_price' => format_currency($this->gia_day_vao_vi_tri_pt),
+
+            'distance'                    => $this->distance,
+            'error_distance'              => $this->error_distance,
+            'gia_vc_duong_ngan_price'     => format_currency($this->gia_vc_duong_ngan),
+            'gia_vc_duong_dai_price'      => format_currency($this->gia_vc_duong_dai),
+            'gia_vc_thu_cong_price'       => format_currency($this->gia_vc_thu_cong),
         );
         //pr(array_merge($parameters, $value));exit;
         return json_encode(array_merge($parameters, $value));
@@ -324,7 +336,7 @@ class Setup
     }
 
     public function vc_duong_dai($km){
-        $this->gia_vc_duong_dai = $km * $this->data['basic']['VC_DUONG_DAI']->value;
+        $this->gia_vc_duong_dai = $km * $this->data['basic']['GIA_VC_DUONG_DAI']->value;
     }
 
     public function kiem_dinh($kd_chat_luong = 1, $kd_tt3 = 1, $thu_tai_gia = 1){
@@ -377,5 +389,37 @@ class Setup
         $gia_lap_tu_hoa     = $this->gia_lap_tu_hoa     = $lap_tu_hoa * $this->data['basic']['NC_LD_TU_HOA']->value;
         $gia_hd_sd_nt       = $this->gia_hd_sd_nt       = $gia_hd_sd_nt * $this->data['basic']['NC_HD_NT']->value;
         $this->gia_nhan_cong = $gia_thao_ra_vo + $gia_day_vao_vi_tri_dg + $gia_day_vao_vi_tri_pt + $gia_lap_may + $gia_lap_dat_ats + $gia_lap_tu_hoa + $gia_hd_sd_nt;
+    }
+
+    public function khoang_cach($province, $district, $ward, $address){
+        $get_province = \CI::Locations()->get_zone($province);
+        $province = $get_province->name;
+        $address_tmp_1 = trim(str_replace(" ","+",$address."+".$ward."+".$district."+".$province),"+");
+        //echo $address_tmp_1;exit;
+        //$address_tmp_2 = trim(str_replace(" ","+",$ward."+".$district."+".$province),"+");
+        //$address_tmp_3 = trim(str_replace(" ","+",$district."+".$province),"+");
+        //$address_tmp_4 = trim(str_replace(" ","+",$province),"+");
+        //$details = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=10.880659,106.750029&destinations=234+le+van+luong+nha+be+ho+chi+minh+vietnam&key=AIzaSyDIafD0HzwUeKBRqqufYxe080MCJniWERs';
+        $details = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='.str_replace(' ', '', $this->data['basic']['LAT_LON_GOOGLE_MAP']->unit).'&destinations='.$address_tmp_1.'+vietnam&key=AIzaSyDIafD0HzwUeKBRqqufYxe080MCJniWERs';
+        $json = file_get_contents($details);
+        $details = json_decode($json, TRUE);
+        if($details['rows'][0]['elements'][0]['status']=='OK') {
+            $km = $details['rows'][0]['elements'][0]['distance']['text'];
+            $km = str_replace(',', '', $km);
+            $this->distance = ceil($km);
+            if ($this->distance < 50) {
+                $this->vc_duong_ngan($this->distance);
+            } else {
+                $this->vc_duong_dai($this->distance);
+            }
+        }else{
+            $this->error_distance = true;
+        }
+        //echo $this->distance;echo "<pre>"; print_r($details); echo "</pre>";
+        //echo $this->distance.':';echo $this->gia_vc_duong_dai;exit;
+    }
+
+    public  function vc_thu_cong($times = 1){
+        $this->gia_vc_thu_cong = $times * $this->data['basic']['GIA_VC_THU_CONG']->value;
     }
 }

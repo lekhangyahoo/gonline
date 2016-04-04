@@ -165,9 +165,9 @@
 			
 		  </tr>
 		  <tr style="border: solid 1px #999;">
-			<td class="header-td" style="width:15%;">400/230</td>
-			<td class="header-td" style="width:10%;">50</td>		
-			<td class="header-td" style="width:15%;">3</td>
+			<td class="header-td" style="width:15%;">220/380V</td>
+			<td class="header-td" style="width:10%;"><?php echo $hz;?></td>
+			<td class="header-td" style="width:15%;"><?php echo $phase;?></td>
 			<td class="header-td" style="width:15%;">0.8</td>
 			<td class="header-td" style="width:25%;"><?php echo round($generators['kVA_standby']);?> / <?php echo $engine_parameters->standby;?></td>
 			<td class="header-td" style="width:20%;"><?php echo round($generators['kVA_prime']);?> / <?php echo $engine_parameters->prime;?></td>

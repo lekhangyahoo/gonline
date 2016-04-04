@@ -41,6 +41,7 @@ class Product extends Front {
 			// get documents
 			$data['documents'] = \CI::Products()->get_documents($product->id);
 			//echo \CI::db()->last_query(); print_r($data['documents']);exit;
+			//echo $product->manufacturers;exit;
 			// get parameter of product
 			$data['get_parameters_of_product'] = \CI::Products()->get_parameters_of_product($product->id, $product->primary_category, $product->manufacturers);
 			//echo '<pre>'; print_r($data['documents']);exit;
@@ -64,12 +65,16 @@ class Product extends Front {
         }
     }
 	
-	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3){
+	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3, $order_id = null){
 		/* \CI::load()->library('Setup');
 		\CI::Setup()->set(120);
 		echo (\CI::Setup()->bon_dung(5000, 2, 3));
 		exit;*/
 
+		if($order_id > 0){
+			$data['order'] = \CI::Orders()->getOrder($order_id, true);
+		}
+		//echo \CI::db()->last_query();exit;
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
 
@@ -96,6 +101,12 @@ class Product extends Front {
 		$engine_parameters 	= \CI::Products()->getParameters($engine->id,'engines');
 		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators', $hz);
 		//echo '<pre>';print_r($alternator);exit;
+
+		$get_provinces = \CI::Locations()->get_zones(230);
+		foreach($get_provinces as $value){
+			$provinces[$value->id] = $value->name;
+		}
+		$data['provinces'] = $provinces;
 
 		$data['page_title'] = $engine->name;
         $data['meta'] 		= $engine->meta;
@@ -156,7 +167,9 @@ class Product extends Front {
 		$data['alt'] 				= $alternator;
 		$data['eng'] 				= $engine;
 		$data['engine_alternator'] 	= $engine_alternator;
-		
+
+        $data['hz']     = $hz;
+        $data['phase']  = $phase;
 		
 		$generators = array();
 		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$power_factor) * ($engine_alternator->efficiency*0.01);
@@ -328,6 +341,12 @@ class Product extends Front {
 		if( isset($_POST['nhan_cong']) ) {
 			\CI::Setup()->nhan_cong($_POST['nc_thao_ra_vo'], $_POST['nc_day_vao_vi_tri_dg'], $_POST['nc_day_vao_vi_tri_pt'], $_POST['nc_lap_may'], $_POST['nc_lap_dat_ats'], $_POST['nc_lap_tu_hoa'], $_POST['nc_hd_sudung_nt']);
 		}
+
+		if( isset($_POST['van_chuyen']) ) {
+			\CI::Setup()->khoang_cach($_POST['province'], $_POST['district'], $_POST['ward'], $_POST['address']);
+			\CI::Setup()->vc_thu_cong($_POST['transport_hands']);
+		}
+
 		echo \CI::Setup()->get_all_value();
 		exit; 
 	}

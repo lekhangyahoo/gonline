@@ -1129,7 +1129,7 @@ small.sale{
 .table thead{color:#fff; background-color:#666}
 .table thead tr th {border-bottom:none;}
 .image-gen{padding: 0 !important; background-color:#fff; min-width:180px; max-width:250px}
-.image-gen img{padding-right:15px}
+.image-gen img{margin-right:7px}
 .border-right{border-right-width: 1px; border-right-style: dotted;border-right-color: #FFF;}
 
 @media screen and (min-width: 1192px) {
@@ -1148,4 +1148,14 @@ small.sale{
     .cojefichas {
         display:none;
     }
+}
+
+@media screen and (max-width: 400px) {
+    .potencia {
+		width: 328px;
+	}
+	
+	.potencia4 {
+		width: 328px;
+	}
 }

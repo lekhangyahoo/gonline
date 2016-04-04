@@ -238,6 +238,7 @@ class AdminProducts extends Admin {
             $data['fixed_quantity'] = $product->fixed_quantity;
 			
 			$data['manufacturer'] = $product->manufacturers;
+            $data['protection_class'] = $product->protection_class;
 
             foreach($data['groups'] as $group)
             {
@@ -290,30 +291,37 @@ class AdminProducts extends Admin {
 				$data['prime_fuel_con_2_2']	= isset($fuel_consumption->prime_fuel_con_2_2) ? $fuel_consumption->prime_fuel_con_2_2 : '';
 				$data['prime_fuel_con_2_3']	= isset($fuel_consumption->prime_fuel_con_2_3) ? $fuel_consumption->prime_fuel_con_2_3 : '';
 			}
-			
-			if($data['primary_category'] == 2){ // alternators
-				$alternator = \CI::Products()->find_alternator($id,50);
-				$data['hz'] 			= isset($alternator->hz) ? $alternator->hz : 50;
-				$data['power'] 			= isset($alternator->power) ? $alternator->power : '';
-				$data['efficiency'] 	= isset($alternator->efficiency) ? $alternator->efficiency : '';
-				$data['efficiency_2'] 	= isset($alternator->efficiency_2) ? $alternator->efficiency_2 : '';
-				$data['efficiency_3'] 	= isset($alternator->efficiency_3) ? $alternator->efficiency_3 : '';
-				$data['efficiency_4'] 	= isset($alternator->efficiency_4) ? $alternator->efficiency_4 : '';
+
+            if($data['primary_category'] == 2){ // canopy
+                $alternator = \CI::Products()->find_alternator($id,50);
+                $data['hz'] 			= isset($alternator->hz) ? $alternator->hz : 50;
+                $data['power'] 			= isset($alternator->power) ? $alternator->power : '';
+                $data['efficiency'] 	= isset($alternator->efficiency) ? $alternator->efficiency : '';
+                $data['efficiency_2'] 	= isset($alternator->efficiency_2) ? $alternator->efficiency_2 : '';
+                $data['efficiency_3'] 	= isset($alternator->efficiency_3) ? $alternator->efficiency_3 : '';
+                $data['efficiency_4'] 	= isset($alternator->efficiency_4) ? $alternator->efficiency_4 : '';
                 $data['power_single_phase'] = isset($alternator->power_single_phase) ? $alternator->power_single_phase : '';
 
-				$alternator_2 = \CI::Products()->find_alternator($id,60);
-				//print_r($alternator_2);exit;
-				$data['hz_2'] 		= isset($alternator_2->hz) ? $alternator_2->hz : 60;
-				$data['power_2'] = isset($alternator_2->power) ? $alternator_2->power : '';
-				$data['efficiency_2_1'] 	= isset($alternator_2->efficiency) ? $alternator_2->efficiency : '';
-				$data['efficiency_2_2'] 	= isset($alternator_2->efficiency_2) ? $alternator_2->efficiency_2 : '';
-				$data['efficiency_2_3'] 	= isset($alternator_2->efficiency_3) ? $alternator_2->efficiency_3 : '';
-				$data['efficiency_2_4'] 	= isset($alternator_2->efficiency_4) ? $alternator_2->efficiency_4 : '';
-			
-				$data['phase'] 		= isset($alternator->phase) ? $alternator->phase : '';
+                $alternator_2 = \CI::Products()->find_alternator($id,60);
+                //print_r($alternator_2);exit;
+                $data['hz_2'] 		= isset($alternator_2->hz) ? $alternator_2->hz : 60;
+                $data['power_2'] = isset($alternator_2->power) ? $alternator_2->power : '';
+                $data['efficiency_2_1'] 	= isset($alternator_2->efficiency) ? $alternator_2->efficiency : '';
+                $data['efficiency_2_2'] 	= isset($alternator_2->efficiency_2) ? $alternator_2->efficiency_2 : '';
+                $data['efficiency_2_3'] 	= isset($alternator_2->efficiency_3) ? $alternator_2->efficiency_3 : '';
+                $data['efficiency_2_4'] 	= isset($alternator_2->efficiency_4) ? $alternator_2->efficiency_4 : '';
+
+                $data['phase'] 		= isset($alternator->phase) ? $alternator->phase : '';
                 $data['power_single_phase_2'] = isset($alternator->power_single_phase) ? $alternator->power_single_phase : '';
-			}
+            }
 			
+			if($data['primary_category'] == 4){ // alternators
+				$canopy = \CI::Products()->find_canopy($id);
+                //print_r($canopy);exit;
+				$data['canopy_kVA_min'] 	= isset($canopy->kVA_min) ? $canopy->kVA_min : '';
+				$data['canopy_kVA_max'] 	= isset($canopy->kVA_max) ? $canopy->kVA_max : '';
+				$data['canopy_standard'] 	= isset($canopy->standard) ? $canopy->standard : 0;
+			}
 			
         }
 
@@ -416,7 +424,7 @@ class AdminProducts extends Admin {
 			$save['dimensions'] 	= \CI::input()->post('dimensions');
 			$save['ogirin'] 		= \CI::input()->post('ogirin');
             $save['manufacturers'] 	= \CI::input()->post('manufacturers');
-			
+            $save['protection_class'] 	= \CI::input()->post('protection_class');
             $post_images = \CI::input()->post('images');
 
             foreach($data['groups'] as $group)
@@ -578,6 +586,13 @@ class AdminProducts extends Admin {
 
 				
 			}
+            if($data['primary_category']==4){ // engine
+                $save_canopy['product_id']  = $id;
+                $save_canopy['kVA_min']     = \CI::input()->post('kVA_min');
+                $save_canopy['kVA_max']     = \CI::input()->post('kVA_max');
+                $save_canopy['standard']    = \CI::input()->post('standard');
+                $canopy_id = \CI::Products()->save_canopy($canopy->id, $save_canopy);
+            }
 
             // add file associations
             // clear existsing

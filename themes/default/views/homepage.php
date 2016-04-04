@@ -2,8 +2,8 @@
 	<form method="post" accept-charset="utf-8">
 	<div class="col-nest">
 		<div class="col" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
-		Stand By &nbsp; <input type="radio" name="stand_by" checked value="1"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Prime &nbsp; <input type="radio" name="stand_by" />
-			<input name="power" value="<?php echo $power?>" placeholder="Please enter kVA"> </input>
+		Stand By &nbsp; <input type="radio" name="stand_by" checked value="1"/> <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Prime &nbsp; <input type="radio" name="stand_by" />-->
+			<input type="number" name="power" value="<?php echo $power?>" placeholder="Please enter kVA"> </input>
 		</div>
 		<div class="col" data-cols="1/8" data-medium-cols="1/2" data-small-cols="1">
 		Hz
@@ -19,11 +19,13 @@
 				<option value="1" <?php if(@$phase == 1) echo 'selected'?>> Single </option>
 			</select>
 		</div>
+		<!--
 		<div class="col pull-right" style="margin-top:22px" data-cols="1/4" data-medium-cols="1/2" data-small-cols="1">
 			<button type="button" class="btn">More Option</button>
 		</div>
+		-->
 	</div>
-	<div><button type="submit" class="btn">Submit</button></div>
+	<div style="margin-top:10px	"><button type="submit" class="btn">Submit</button></div>
 	</form>
 </div>
 
@@ -35,11 +37,11 @@
 	  <table class="table" style="font-size:12px">
 		<thead>
 		  <tr>
-			<th style="min-width:130px" class="border-right">MODEL</th>
-			<th class="border-right">R.P.M</th>
+			<th style="max-width:145px" class="border-right">MODEL</th>
 			<th class="border-right">CONTIN. PRP</th>
 			<th class="border-right">STAND-BY LTP</th>
-			<th class="border-right">PRICE</th>
+			<th class="border-right" style="min-width:80px">PRICE</th>			
+			<th class="border-right">R.P.M</th>
 			<th>DELIVERY</th>
 		  </tr>
 		</thead>
@@ -51,15 +53,12 @@
 			<?php foreach($generators as $key=>$gen){ $index_ima = $key%2;//$index_ima = rand(0, 3);?>
 			<?php $url = site_url('/product/generator/'.$gen['engine']->product_id.'/'.$gen['alternator']->product_id.'/0/0/'.$hz.'/'.$phase);?>
 			<tr class="compare_<?php echo $key;?> <?php if($key % 2 == 1) echo 'line2';else echo 'line1'?>">
-				<td class="image-gen border-right">
+				<td class="image-gen border-right" style="max-width:145px">
 					<a href="<?php echo $url;?>" target="_blank">
-						<img src="<?php echo base_url('themes/default/assets/img/'.$image_compare[$index_ima])?>" width="81" height="59" border="0" align="left">
+						<img src="<?php echo base_url('themes/default/assets/img/'.$image_compare[$index_ima])?>" width="70" border="0" align="left">
 						<br>
 						<?php echo $gen['name'];?>
 					</a>
-				</td>
-				<td align="center" class="border-right">
-					<?php if($phase == 1 )echo $gen['engine']->rpm; else echo $gen['engine']->rpm_2;?>
 				</td>
 				<td class="border-right">
 					<?php echo round($gen['generator_kVA']);?>
@@ -69,6 +68,9 @@
 				</td>
 				<td class="border-right">
 					<?php echo format_currency($gen['price']);?>
+				</td>
+				<td align="center" class="border-right">
+					<?php if($hz == 50 )echo $gen['engine']->rpm; else echo $gen['engine']->rpm_2;?>
 				</td>
 				<td>
 					<?php echo $gen['days'];?> days
@@ -129,7 +131,7 @@
 				</div>
 				<div class="resultado2 <?php echo $line2?>">
 					<p class="marginTop20">
-						<?php if($phase == 1 )echo $gen['engine']->rpm; else echo $gen['engine']->rpm_2;?>
+						<?php if($hz == 50)echo $gen['engine']->rpm; else echo $gen['engine']->rpm_2;?>
 					</p>
 				</div>
 				<div class="resultado3 <?php echo $line2?>">
