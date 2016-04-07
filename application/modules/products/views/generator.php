@@ -8,7 +8,7 @@
 .clear-left{clear:left}
 .col-set-up-left{float:left; min-width:200px}
 .col-set-up-right{float:left;}
-.set-up-input{height: 30px;width: 120px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
+.set-up-input{height: 30px;width: 150px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
 .about-help{cursor: pointer; border-bottom: 1px dotted #BB0F1D;text-decoration: none;}
 .about-help:hover{text-decoration: none !important;}
 .uppercase{text-transform: uppercase;}
@@ -22,6 +22,8 @@
 			placement : 'top'
 		});
 	});
+	var uri_string  = '<?php echo uri_string();?>';
+	var site_url 	= '<?php echo site_url();?>';
 </script>
 <div class="page-header">
     <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
@@ -76,7 +78,7 @@
 			<div class="download-document last">
 				<img src="<?php echo base_url('assets/img')?>/label-pdf.gif" width="20" height="9" alt="PDF" border="0">
 				<?php $url_document = str_replace('/generator/','/documents/',uri_string())?>
-				<a target="_blank" href="<?php echo base_url($url_document)?>">Spec. Sheet - <?php echo $generators['name'];?>.pdf</a>
+				<a id="link-url" target="_blank" href="<?php echo base_url($url_document)?>">Spec. Sheet - <?php echo $generators['name'];?>.pdf</a>
 			</div>
 		</div>
 		
@@ -103,12 +105,15 @@
 					  <br>
 					  Model: <strong><?php echo $alt->name;?></strong>
 					</p>
-					<p><strong><span class="verde">CONTROLLER</span></strong><br>
-					  Model: <strong>Decision - Maker</strong></p>
-					<p><strong><span class="verde">CANOPY</span></strong> &nbsp;&nbsp;
-						<select class="set-up-input change-canopy" name="change-canopy">
+					<p style="margin-bottom: 0px"><strong><span class="verde">CONTROLLER</span></strong> &nbsp;&nbsp;
+						<select class="set-up-input change-controller" name="change-controller" onchange="change_link_url(this, 1);" style="width: 120px">
+							<option value="0"> Without ATS Panel </option>
+							<option value="1"> ATS Panel </option>
+						</select>
+					<p><strong><span class="verde">CANOPY</span></strong> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+						<select class="set-up-input change-canopy" name="change-canopy" onchange="change_link_url(this, 0);">
 							<option value="1"> Standard </option>
-							<option value="2"> No canopy </option>
+							<option value="0"> No canopy </option>
 						</select>
 					</p>
 
@@ -440,7 +445,7 @@
 			<input type="hidden" name="kVA" value="<?php echo round($generators['kVA_standby']);?>">
 			<input type="hidden" name="generator_number" value="1">
 			<input type="hidden" name="phase" value="<?php echo $phase;?>">
-			<input type="hidden" name="generator" value="<?php echo uri_string();?>">
+			<input type="hidden" name="generator" value="<?php echo uri_string();?>" class="link-url">
 			
 			</form>	
 
@@ -448,7 +453,7 @@
 			<?php echo form_open('cart/add-to-cart', 'id="add-to-cart"');?>
             <input type="hidden" name="cartkey" value="<?php echo CI::session()->flashdata('cartkey');?>" />
             <input type="hidden" name="id" value="<?php echo $product->id?>"/>
-			<input type="hidden" name="product_link" value="<?php echo uri_string();?>"/>
+			<input type="hidden" name="product_link" value="<?php echo uri_string();?>" class="link-url"/>
 			<input type="hidden" name="product_price" value="<?php echo $generators['price'];?>"/>
             <input type="hidden" name="product_name" value="<?php echo $generators['name'];?>"/>
             <input type="hidden" name="install_price" value="0" class="install-price"/>
@@ -650,7 +655,43 @@
 </div>
 <!-- end modal -->
 <script>
-    function change_to_jon() {
+	/* 0: canopy */
+	function change_link_url(sel, type){
+		var value = sel.value;
+		var tmp = uri_string.split("/");
+		var new_link = '';
+		for(i = 0; i < tmp.length; i++){
+			if(i==0)
+				new_link = tmp[i];
+			else {
+				if(type == 0 && i == 4){
+					new_link = new_link + '/' + value;
+				}else if(type == 1 && i == 5){
+					new_link = new_link + '/' + value;
+				}else {
+					new_link = new_link + '/' + tmp[i];
+				}
+			}
+		}
+		uri_string = new_link;
+		$(".link-url").val(uri_string);
+		var link_general_document = uri_string.replace("generator", "documents");
+		$("#link-url").attr('href', site_url + link_general_document);
+		alert(uri_string);
+		$.ajax({
+			method: "POST",
+			url: site_url + uri_string,
+			data: form_data
+		}).done(function( data ) {
+			if(data) {
+
+			}
+		});
+	}
+
+	//change_link_url(0,10);
+
+	function change_to_jon() {
         var serialized = $("#calculate_setup").serializeArray();
         var s = '';
         var data = {};
@@ -723,7 +764,7 @@
 		if ($(this).val() == 1) {
 			url_img = url_img + 'pic_generator.png';
 		}
-		if ($(this).val() == 2) {
+		if ($(this).val() == 0) {
 			url_img = url_img + 'pic_generator_no_canopy.jpg';
 		}
 		url_img = '<img src="'+url_img+'" alt="image-generator">';
@@ -751,7 +792,7 @@
 				if($.isNumeric( email ))
 					type = 2;
 
-				var url = '<?php echo uri_string();?>';
+				var url = uri_string;
 				$.ajax({
 					method: "POST",
 					url: "<?php echo site_url('product/contact');?>/"+type,
@@ -774,7 +815,7 @@
 			var content = $("#content").val();
 			var type = 0;
 			if( (isValidEmailAddress(email) || $.isNumeric( mobile ) ) && (email !='' || mobile !='' ) ){
-				var url = '<?php echo uri_string();?>';
+				var url = uri_string;
 				$.ajax({
 					method: "POST",
 					url: "<?php echo site_url('product/contact');?>/"+type,
@@ -801,7 +842,7 @@
     };
 	
 	$('#check_compare').click(function() {
-        var url = '<?php echo uri_string();?>';
+        var url = uri_string;
         if ($(this).is(':checked')) {
             $.ajax({
                 method: "POST",

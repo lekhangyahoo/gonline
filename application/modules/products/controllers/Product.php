@@ -146,6 +146,15 @@ class Product extends Front {
 		$this->view('generator', $data);
 	}
 
+	function calculator_price_again($eng, $alt, $can, $con, $hz = 50, $phase = 3){
+		$engine 	= \CI::Products()->getProduct($eng);
+		$alternator = \CI::Products()->getProduct($alt);
+		$canopy		= \CI::Products()->getProduct($can);
+		$controller = \CI::Products()->getProduct($con);
+		$generators['price'] = $engine->price_1 + $alternator->price_1 + $canopy->price_1 + $controller->price_1;
+
+	}
+
 	function documents($eng, $alt, $can, $con,$hz = 50, $phase = 3){
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
