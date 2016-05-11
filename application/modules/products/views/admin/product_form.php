@@ -308,16 +308,25 @@
 					
                     <label for="file"><?php echo lang('file_label');?> </label>
                     <?php echo form_upload(['name'=>'userfile', 'class'=>'form-control document']);?>
-					<?php echo form_input(['name'=>'display_name', 'value'=>assign_value('display_name', @$display_name), 'class'=>'form-control document display-name', 'placeholder'=>'Display name']); ?>					
+					<?php echo form_input(['name'=>'display_name', 'value'=>assign_value('display_name', @$display_name), 'class'=>'form-control document display-name', 'placeholder'=>'Display name']); ?>
+                    <br />
+                    <label for="file">Or document link</label> <?php if($document_link !=''){?>
+                        <a href="<?php echo $document_link?>" target="_blank"> (View) </a>
+                    <?php }?>
+                    <?php echo form_input(['name'=>'document_link', 'value'=>assign_value('document_link', @$document_link), 'class'=>'form-control document display-name']); ?>
                 </div>
 				
 				<?php if($id > 0){?>
 				<div class="tab-pane" id="product_parameters">
 					<?php if($primary_category == 1){ //engine?>
                     <fieldset>
-                        <legend><?php echo lang('parameter_engine_rpm_1500');?></legend>
+                        <legend>Hz: 50</legend>
                         <div style="padding-top:10px;">
-						
+
+                            <div class="form-group">
+                                <label for="seo_title">Speed rpm</label>
+                                <?php echo form_input(['name'=>'rpm', 'value'=>assign_value('rpm', @$rpm), 'class'=>'form-control']); ?>
+                            </div>
 							<div class="form-group">
                                 <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
                                 <?php echo form_input(['name'=>'standby', 'value'=>assign_value('standby', @$standby), 'class'=>'form-control']); ?>
@@ -350,8 +359,13 @@
                         </div>
                     </fieldset>
 					<fieldset>
-                        <legend><?php echo lang('parameter_engine_rpm_1800');?></legend>
+                        <legend>Hz: 60</legend>
                         <div style="padding-top:10px;">
+
+                            <div class="form-group">
+                                <label for="seo_title">Speed rpm</label>
+                                <?php echo form_input(['name'=>'rpm_2', 'value'=>assign_value('rpm_2', @$rpm_2), 'class'=>'form-control']); ?>
+                            </div>
 						
                             <div class="form-group">
                                 <label for="seo_title"><?php echo lang('parameter_engine_standby');?> </label>
@@ -389,12 +403,14 @@
                         <div style="padding-top:10px;">
                             <div class="form-group">
                                 <label for="type_fuel">Fuel Type</label>
+                                <?php if($type_fuel==''){$type_fuel = 'Diesel';}?>
                                 <?php echo form_input(['name'=>'type_fuel', 'value'=>assign_value('type_fuel', @$type_fuel), 'class'=>'form-control']); ?>
                             </div>
                         </div>
                         <div style="padding-top:10px;">
                             <div class="form-group">
                                 <label for="type_cooled">Engine Cooling</label>
+                                <?php if($type_cooled==''){$type_cooled = 'Liquid';}?>
                                 <?php echo form_input(['name'=>'type_cooled', 'value'=>assign_value('type_cooled', @$type_cooled), 'class'=>'form-control']); ?>
                             </div>
                         </div>

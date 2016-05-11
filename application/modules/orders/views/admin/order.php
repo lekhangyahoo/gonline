@@ -4,6 +4,10 @@
 <div class="row">
     <div class="col-md-6">
         <a class="btn btn-primary" href="<?php echo site_url('admin/orders/packing_slip/'.$order->order_number);?>" target="_blank"><i class="icon-file"></i> <?php echo lang('packing_slip');?></a>
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-primary" href="<?php echo site_url('product/print_order/'.$order->order_number.'/0');?>" target="_blank"><i class="icon-file"></i> Print order </a>
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-primary" href="#" target="_blank"><i class="icon-file"></i> Invoice </a>
     </div>
     <div class="col-md-6 text-right">
         <a class="btn btn-danger" onclick="if(!confirm('<?php echo lang('confirm_delete_order');?>')) { return false; }" href="<?php echo site_url('admin/orders/delete/'.$order->id);?>" target="_blank"><i class="icon-cancel"></i> <?php echo lang('delete');?></a>
@@ -126,8 +130,17 @@ foreach ($order->items as $item)
         <?php foreach($charges['products'] as $product):?>
             <tr>
                 <td>
-                    <strong><?php echo $product->name; ?></strong> <br>
-                    <?php echo (!empty($product->sku))?'<small>'.lang('sku').': '.$product->sku.'</small>':''?>
+                    <?php if($product->product_price > 0){?>
+                    <a href="<?php echo site_url($product->product_link.'/'.$order->order_number);?>" target="_blank">
+                        <strong><?php echo $product->product_name;?></strong> <br>
+                        <?php echo (!empty($product->sku))?'<small>'.lang('sku').': '.$product->sku.'</small>':''?>
+                    </a>
+                    <?php }else{?>
+                        <a href="<?php echo site_url('product/'.$product->slug);?>" target="_blank">
+                            <strong><?php echo $product->name;?></strong> <br>
+                            <?php echo (!empty($product->sku))?'<small>'.lang('sku').': '.$product->sku.'</small>':''?>
+                        </a>
+                    <?php }?>
                 </td>
                 <td>
                     <?php if(isset($order->options[$product->id])):
@@ -137,9 +150,23 @@ foreach ($order->items as $item)
                     endif;?>
                 </td>
                 <td>
-                    <div style="font-size:11px; color:#bbb;">(<?php echo $product->quantity.'  &times; '.format_currency($product->total_price);?>)</div>
+                    <div style="font-size:11px; color:#bbb;">(
+                        <?php
+                        if($product->product_price > 0) {
+                            echo $product->quantity.'  &times; '.format_currency($product->product_price + $product->install_price);
+                        }else{
+                            echo $product->quantity.'  &times; '.format_currency($product->total_price);
+                        }
+                        ?>
+                        )</div>
                     <?php if(!empty($product->coupon_code)):?><div style="color:#990000; font-size:11px;"><?php echo lang('coupon');?>: <?php echo '-'.format_currency(($product->coupon_discount * $product->coupon_discount_quantity));?></div><?php endif;?>
-                    <?php echo format_currency( ($product->total_price * $product->quantity) - ($product->coupon_discount * $product->coupon_discount_quantity) ); ?>
+                    <?php
+                    if($product->product_price > 0) {
+                        echo format_currency( ($product->product_price + $product->install_price) - ($product->coupon_discount * $product->coupon_discount_quantity) );
+                    }else{
+                        echo format_currency( ($product->total_price * $product->quantity) - ($product->coupon_discount * $product->coupon_discount_quantity) );
+                    }
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -290,7 +290,7 @@
     $('.tabs').gumboTabs();
 </script>
 
-<?php if(count($product->images) > 1):?>
+<?php if(count($product->images) > 0):?>
     <script id="banners" type="text/template">
         <div class="banners">
             <?php

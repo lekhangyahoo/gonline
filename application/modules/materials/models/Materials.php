@@ -16,7 +16,7 @@ Class Materials extends CI_Model
 
     }
 
-    public function getMaterials()
+    public function getMaterials($kVA, $gen_number)
     {
         $basic = $this->db->get('materials_price')->result();
         foreach($basic as $item){
@@ -40,7 +40,10 @@ Class Materials extends CI_Model
                 $data['funnel'][$item->group][$item->phi.'_'.$item->group] = $item;
         }
 
-        $data['febrifuge']  = $this->db->get('materials_price_febrifuge')->result();
+        $data['febrifuge']  = $this->db->where('kVA >=', $kVA * $gen_number)->limit(1)->order_by('kVA', 'ASC')->get('materials_price_febrifuge')->row();
+        if(empty($data['febrifuge'])){
+            $data['febrifuge']  = $this->db->limit(1)->order_by('kVA', 'DESC')->get('materials_price_febrifuge')->row();
+        }
 
         $cable              = $this->db->get('materials_price_elactric_cable')->result();
         foreach($cable as $item){

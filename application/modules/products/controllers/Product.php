@@ -65,42 +65,64 @@ class Product extends Front {
         }
     }
 	
-	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3, $order_id = null){
+	public function generator ($eng, $alt, $can, $con, $hz = 50, $phase = 3,$gen_number = 1, $order_id = null){
 		/* \CI::load()->library('Setup');
 		\CI::Setup()->set(120);
 		echo (\CI::Setup()->bon_dung(5000, 2, 3));
 		exit;*/
-
+		\CI::lang()->load('products');
 		if($order_id > 0){
 			$data['order'] = \CI::Orders()->getOrder($order_id, true);
 		}
 		//echo \CI::db()->last_query();exit;
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
-
-        $con 	= \CI::uri()->segment(5);
-        $can 	= \CI::uri()->segment(6);
+        $can 	= \CI::uri()->segment(5); // only test on demo, we will get option for canopy
+        $con 	= \CI::uri()->segment(6);
         $hz 	= \CI::uri()->segment(7);
 		$phase 	= \CI::uri()->segment(8);
-        $other 	= \CI::uri()->segment(9);
-
+		$gen_number 	= \CI::uri()->segment(9);
+		$order_id 	= \CI::uri()->segment(10);
         if(!empty($this->gen_compare)){
-            $con    = $this->gen_compare['con'];
-            $can    = $this->gen_compare['can'];
-            $hz     = $this->gen_compare['hz'];
-			$phase  = $this->gen_compare['phase'];
-            $other  = $this->gen_compare['other'];
+            $con    	= $this->gen_compare['con'];
+            $can    	= $this->gen_compare['can'];
+            $hz     	= $this->gen_compare['hz'];
+			$phase  	= $this->gen_compare['phase'];
+			$gen_number = $this->gen_compare['gen_number'];
+            $other  	= $this->gen_compare['other'];
         }
+
+		if(!isset($gen_number) or $gen_number == 0) $gen_number = 1;
 
 		$engine 	= \CI::Products()->getProduct($eng);
 		$alternator = \CI::Products()->getProduct($alt);
-		if(empty($engine) || empty($alternator)) redirect(site_url());
+        $canopy 	= \CI::Products()->getProduct($can);
+        $controller = \CI::Products()->getProduct($con);
+        if(empty($engine) || empty($alternator)) redirect(site_url());
 		$engine->manufacturer 		= \CI::Products()->getManufacturers($engine->manufacturers);
 		$alternator->manufacturer 	= \CI::Products()->getManufacturers($alternator->manufacturers);
+        if(isset($canopy->manufacturers)) {
+            $canopy->manufacturer 	    = \CI::Products()->getManufacturers($canopy->manufacturers);
+            $canopy_manufacturer_code = $canopy->manufacturer->code;
+            $price_can = $canopy->price_1;
+        }else{
+            $canopy_manufacturer_code = 'N';
+            $price_can = 0;
+        }
+
+        if(isset($controller->manufacturers)) {
+            $controller->manufacturer = \CI::Products()->getManufacturers($controller->manufacturers);
+            $controller_manufacturer_code = $controller->manufacturer->code;
+            $price_con = $controller->price_1;
+        }else{
+            $controller_manufacturer_code = 'N';
+            $price_con = 0;
+        }
 
 		$engine_parameters 	= \CI::Products()->getParameters($engine->id,'engines');
 		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators', $hz);
-		//echo '<pre>';print_r($alternator);exit;
+		$parameter_con	 	= \CI::Products()->getParameters($controller->id,'controllers');
+        //echo '<pre>';print_r($alternator);exit;
 
 		$get_provinces = \CI::Locations()->get_zones(230);
 		foreach($get_provinces as $value){
@@ -118,20 +140,34 @@ class Product extends Front {
 		$data['engine_alternator'] 	= $engine_alternator;
         $data['hz']                 = $hz;
 		$data['phase']              = $phase;
+		$data['gen_number']         = $gen_number;
+        $data['can']                = $can;
+        $data['con']                = $con;
+		$data['parameter_con']      = $parameter_con;
 
 		$generators 				= array();
-		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$power_factor) * ($engine_alternator->efficiency*0.01);
-		$generators['kVA_prime'] 	= ($engine_parameters->prime/$power_factor) * ($engine_alternator->efficiency*0.01);
-		$generators['price'] 		= $engine->price_1 + $alternator->price_1;
+
+		if($engine_alternator->efficiency_standby < $engine_alternator->efficiency)
+			$engine_alternator->efficiency_standby = $engine_alternator->efficiency;
+
+		if($hz == 50){
+			$generators['kVA'] = $generators['kVA_standby'] = ($engine_parameters->standby / $power_factor) * ($engine_alternator->efficiency * 0.01);
+			$generators['kVA_prime'] = ($engine_parameters->prime / $power_factor) * ($engine_alternator->efficiency * 0.01);
+		}else {
+			$generators['kVA'] = $generators['kVA_standby'] = ($engine_parameters->standby_2 / $power_factor) * ($engine_alternator->efficiency * 0.01);
+			$generators['kVA_prime'] = ($engine_parameters->prime_2 / $power_factor) * ($engine_alternator->efficiency * 0.01);
+		}
+
+        $generators['price']    = $engine->price_1 + $alternator->price_1 + $price_can + $price_con;
 
 		if($engine_alternator->power < $generators['kVA'])
 			$generators['kVA'] = $engine_alternator->power;
 
 		if($engine->days > $alternator->days)
-			$generators['days'] 	= $engine->days;
-		else $generators['days'] 	= $alternator->days;
+			$generators['days'] = $engine->days;
+		else $generators['days']= $alternator->days;
 
-		$generators['name'] = 'G'.(int)($hz/10).'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
+		$generators['name'] = 'G'.(int)($hz/10).'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.$canopy_manufacturer_code.$controller_manufacturer_code;
 		//echo '<pre>';print_r($generators);exit;
 		$data['generators'] 	= $generators;
 
@@ -143,30 +179,82 @@ class Product extends Front {
         if(!empty($this->gen_compare)){
             return $data;
         }
-		$this->view('generator', $data);
+        $canopies 	= \CI::Products()->getCanopy();
+        $canopy_option[0] = 'No canopy';
+        foreach($canopies as $item){
+            $canopy_option[$item->product_id] = $item->name;
+        }
+        //print_r($canopies);exit;
+        $data['canopy_option'] 	= $canopy_option;
+
+        $controllers 	= \CI::Products()->getController();
+        foreach($controllers as $item){
+            $controller_option[$item->product_id] = $item->name;
+        }
+        //print_r($controller_option);exit;
+        $data['controller_option'] 	= $controller_option;
+
+        $this->view('generator', $data);
 	}
 
-	function calculator_price_again($eng, $alt, $can, $con, $hz = 50, $phase = 3){
-		$engine 	= \CI::Products()->getProduct($eng);
-		$alternator = \CI::Products()->getProduct($alt);
-		$canopy		= \CI::Products()->getProduct($can);
-		$controller = \CI::Products()->getProduct($con);
-		$generators['price'] = $engine->price_1 + $alternator->price_1 + $canopy->price_1 + $controller->price_1;
+	function calculator_price_again($eng, $alt, $can, $con, $hz = 50, $phase = 3, $gen_number = 1){
+		\CI::lang()->load('products');
+		$hz 	= $_POST['hz'];
+		$kVA 	= $_POST['kVA'];
+		$engine 		= \CI::Products()->getProduct($eng);
+		$alternator 	= \CI::Products()->getProduct($alt);
+		$canopy			= \CI::Products()->getProduct($can);
+		$controller 	= \CI::Products()->getProduct($con);
+		$parameter_con 	= \CI::Products()->getParameters($con,'controllers');
+		//echo $con ;print_r($controller);exit;
 
+		$engine->manufacturer 		= \CI::Products()->getManufacturers($engine->manufacturers);
+		$alternator->manufacturer 	= \CI::Products()->getManufacturers($alternator->manufacturers);
+		if(isset($canopy->manufacturers)) {
+			$canopy->manufacturer 	    = \CI::Products()->getManufacturers($canopy->manufacturers);
+			$canopy_manufacturer_code = $canopy->manufacturer->code;
+			$price_can = $canopy->price_1;
+		}else{
+			$canopy_manufacturer_code = 'N';
+			$price_can = 0;
+		}
+
+		if(isset($controller->manufacturers)) {
+			$controller->manufacturer = \CI::Products()->getManufacturers($controller->manufacturers);
+			$controller_manufacturer_code = $controller->manufacturer->code;
+			$price_con = $controller->price_1;
+		}else{
+			$controller_manufacturer_code = 'N';
+			$price_con = 0;
+		}
+
+		$generators['price']= $engine->price_1 + $alternator->price_1 + $price_can + $price_con;
+		$data['currency'] 	= format_currency($generators['price']);
+		$data['price'] 		= $generators['price'];
+		$data['ats']		= $parameter_con->ats;
+		//if($parameter_con->ats == 1)
+		if(isset($_POST['ats']))
+				$data['gen_control_panel'] = lang('gen_with_ats_control');
+		else 	$data['gen_control_panel'] = lang('gen_with_manual_control');
+		$data['name'] = 'G'.(int)($hz/10).'-'.$kVA.$engine->manufacturer->code.$alternator->manufacturer->code.$canopy_manufacturer_code.$controller_manufacturer_code;
+		echo json_encode($data);
 	}
 
-	function documents($eng, $alt, $can, $con,$hz = 50, $phase = 3){
+	function documents($eng, $alt, $can, $con,$hz = 50, $phase = 3, $gen_number = 1){
 		if($eng=='' || $alt =='') redirect(site_url());
 		$power_factor = 0.8;
 		
 		$engine 	= \CI::Products()->getProduct($eng);
 		$alternator = \CI::Products()->getProduct($alt);
+		$controller = \CI::Products()->getProduct($con);
+
 		if(empty($engine) || empty($alternator)) redirect(site_url());
 		$engine->manufacturer 		= \CI::Products()->getManufacturers($engine->manufacturers);
 		$alternator->manufacturer 	= \CI::Products()->getManufacturers($alternator->manufacturers);
 		
 		$engine_parameters 	= \CI::Products()->getParameters($engine->id,'engines');
 		$engine_alternator 	= \CI::Products()->getParameters($alternator->id,'alternators', $hz);
+		$parameter_con	 	= \CI::Products()->getParameters($controller->id,'controllers');
 		
 		$data['page_title'] = $engine->name;
         $data['meta'] 		= $engine->meta;
@@ -177,8 +265,9 @@ class Product extends Front {
 		$data['eng'] 				= $engine;
 		$data['engine_alternator'] 	= $engine_alternator;
 
-        $data['hz']     = $hz;
-        $data['phase']  = $phase;
+        $data['hz']     		= $hz;
+        $data['phase']  		= $phase;
+		$data['gen_number']  	= $gen_number;
 		
 		$generators = array();
 		$generators['kVA'] 			= $generators['kVA_standby'] = ($engine_parameters->standby/$power_factor) * ($engine_alternator->efficiency*0.01);
@@ -192,7 +281,9 @@ class Product extends Front {
 			$generators['days'] 	= $engine->days;
 		else $generators['days'] 	= $alternator->days;	
 		
-		$generators['name'] 		= 'G50-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
+		$generators['name'] 		= 'G'.($hz/10).'-'.round($generators['kVA']).$engine->manufacturer->code.$alternator->manufacturer->code.'BA';
+		if($gen_number == 3)
+			$generators['name']		= $gen_number.'x'.$generators['name'];
 		//echo '<pre>';print_r($generators);exit;
 		$data['generators'] 		= $generators;
 		
@@ -286,10 +377,11 @@ class Product extends Front {
 	
 	function calculate_setup($type = 1){
 		//echo '<pre>';print_r($_POST);exit;
-		$kVA 	= $_POST['kVA'];
-		$phase 	= $_POST['phase'];
+		$kVA 		= $_POST['kVA'];
+		$phase 		= $_POST['phase'];
+		$gen_number = $_POST['gen_number'];
 		\CI::load()->library('Setup');
-		\CI::Setup()->set($kVA, $phase);
+		\CI::Setup()->set($kVA, $phase, $gen_number);
 
 		if( isset($_POST['bon_dau']) ) {
 			\CI::Setup()->bon_dung($_POST['dung_tich_bon_dau'], $_POST['duong_kinh_bon_dau'], $_POST['do_day_bon_dau']);
@@ -355,10 +447,34 @@ class Product extends Front {
 			\CI::Setup()->khoang_cach($_POST['province'], $_POST['district'], $_POST['ward'], $_POST['address']);
 			\CI::Setup()->vc_thu_cong($_POST['transport_hands']);
 		}
+		if( isset($_POST['ats']) ) {
+			\CI::Setup()->tu_ats();
+		}
+
+		if( isset($_POST['thoat_nhiet']) ) {
+			\CI::Setup()->thoat_nhiet();
+		}
+
 
 		echo \CI::Setup()->get_all_value();
 		exit; 
 	}
 
+	function print_order(){
+		$order_id 	= \CI::uri()->segment(3);
+		$action 	= \CI::uri()->segment(4);
+		$data['order'] = \CI::Orders()->getOrder($order_id);
+		//echo '<pre>';print_r($data);exit;
+		if(empty($action)){
+			$html 			= \CI::load()->view('print_order_details', $data, true);
+			\CI::load()->helper('html_to_pdf');
+			convert2pdf($html,$order_id.'.pdf');
+			exit;
+			echo 'aaa';exit;
+		}else{
+
+		}
+
+	}
 }
 

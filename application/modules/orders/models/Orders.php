@@ -217,7 +217,7 @@ Class Orders extends CI_Model
         return CI::db()->count_all_results('orders');
     }
 
-    public function getOrder($orderNumber)
+    public function getOrder($orderNumber, $view = false)
     {
         $fields = \CI::db()->list_fields('customers_address_bank');
         $select = 'orders.*, customers.*, orders.id as id ';
@@ -235,7 +235,7 @@ Class Orders extends CI_Model
         {
             return false;
         }
-        $order->items = $this->getItems($order->id);
+        $order->items = $this->getItems($order->id, $view);
         $order->options = $this->getItemOptions($order->id);
         $order->files = $this->getItemFiles($order->id);
         $order->payments = $this->getPaymentInfo($order->id);
@@ -243,8 +243,12 @@ Class Orders extends CI_Model
         return $order;
     }
 
-    public function getItems($id)
+    public function getItems($id, $view = false)
     {
+        if($view){
+            CI::db()->where('product_link !=', '');
+            CI::db()->limit(1);
+        }
         CI::db()->where('order_id', $id)->order_by('type', 'ASC')->order_by('id', 'ASC');
         $items = CI::db()->get('order_items')->result();
 

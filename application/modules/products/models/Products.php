@@ -147,12 +147,46 @@ Class Products extends CI_Model
             return CI::db()->order_by('name', 'ASC')->get('products')->result();
         }
     }
-	
-	public function getProductsCondition($power = 0, $hz = 50, $get_max = true, $limit = false, $offset = false, $by=false, $sort=false)
+
+    function getCanopy($kVA = 0){
+        CI::db()->select('category_products.*, products.*, saleprice_'.$this->customer->group_id.' as saleprice, price_'.$this->customer->group_id.' as price, LEAST(IFNULL(NULLIF(saleprice_'.$this->customer->group_id.', 0), price_'.$this->customer->group_id.'), price_'.$this->customer->group_id.') as sort_price', false)->from('category_products')->join('products', 'category_products.product_id=products.id')->where(array('category_id'=>4, 'enabled_'.$this->customer->group_id=>1));
+        $result = CI::db()->get()->result();
+        $products = [];
+        foreach($result as $product)
+        {
+            $products[] = $this->processImageDecoding($product);
+        }
+
+        if($kVA >0){
+
+        }else{
+
+        }
+        return $products;
+    }
+
+    function getController($kVA = 0){
+        CI::db()->select('category_products.*, products.*, saleprice_'.$this->customer->group_id.' as saleprice, price_'.$this->customer->group_id.' as price, LEAST(IFNULL(NULLIF(saleprice_'.$this->customer->group_id.', 0), price_'.$this->customer->group_id.'), price_'.$this->customer->group_id.') as sort_price', false)->from('category_products')->join('products', 'category_products.product_id=products.id')->where(array('category_id'=>3, 'enabled_'.$this->customer->group_id=>1));
+        $result = CI::db()->get()->result();
+        $products = [];
+        foreach($result as $product)
+        {
+            $products[] = $this->processImageDecoding($product);
+        }
+
+        if($kVA >0){
+
+        }else{
+
+        }
+        return $products;
+    }
+
+	public function getProductsCondition($power = 0, $hz = 50, $get_max = true, $stand_by = true, $limit = false, $offset = false, $by=false, $sort=false)
     {
 		// prime, standby is kWm , => kVA = kWm/cos
 
-        $sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV '
+        $sql = 'SELECT products.*, manufacturers.code, `engines`.*, (engines.prime/engines.power_factor) AS p_kAV, (engines.standby/engines.power_factor) AS s_kAV , (engines.prime_2/engines.power_factor) AS p_kAV_2, (engines.standby_2/engines.power_factor) AS s_kAV_2 '
             .'FROM products JOIN `engines` ON engines.product_id=products.id '
             .'JOIN `manufacturers` ON manufacturers.id=products.manufacturers ';
         if($hz == 50){
@@ -161,16 +195,54 @@ Class Products extends CI_Model
             $sql = $sql.'WHERE (rpm_2 = 1800 or rpm_2 = 3600) and ';
 		}
 
-        if($get_max){	// get max
-            $sql = $sql.'engines.standby/engines.power_factor >= '.$power;
-            $sql = $sql.' ORDER BY `standby` ASC';
-        }
-        else {			// get min
-            $sql = $sql.'engines.standby/engines.power_factor < '.$power;
-            $sql = $sql.' ORDER BY `standby` DESC';
+        if($stand_by == true) {
+            if($hz == 50) {
+                if ($get_max) {    // get max
+                    $sql = $sql . 'engines.standby/engines.power_factor >= ' . $power;
+                    $sql = $sql . ' and engines.standby/engines.power_factor <= ' . ($power*2);
+                    $sql = $sql . ' ORDER BY `standby` ASC';
+                } else {            // get min
+                    $sql = $sql . 'engines.standby/engines.power_factor < ' . $power;
+                    $sql = $sql . ' and engines.standby/engines.power_factor >= ' . ($power/2);
+                    $sql = $sql . ' ORDER BY `standby` DESC';
+                }
+            }else{
+                if ($get_max) {    // get max
+                    $sql = $sql . 'engines.standby_2/engines.power_factor >= ' . $power;
+                    $sql = $sql . ' and engines.standby_2/engines.power_factor <= ' . ($power*2);
+                    $sql = $sql . ' ORDER BY `standby_2` ASC';
+                } else {            // get min
+                    $sql = $sql . 'engines.standby_2/engines.power_factor < ' . $power;
+                    $sql = $sql . ' and engines.standby_2/engines.power_factor >= ' . ($power/2);
+                    $sql = $sql . ' ORDER BY `standby_2` DESC';
+                }
+            }
+        }else{
+            if($hz == 50) {
+                if ($get_max) {    // get max
+                    $sql = $sql . 'engines.prime/engines.power_factor >= ' . $power;
+                    $sql = $sql . ' and engines.prime/engines.power_factor <= ' . ($power*2);
+                    $sql = $sql . ' ORDER BY `prime` ASC';
+                } else {            // get min
+                    $sql = $sql . 'engines.prime/engines.power_factor < ' . $power;
+                    $sql = $sql . ' and engines.prime/engines.power_factor >= ' . ($power/2);
+                    $sql = $sql . ' ORDER BY `prime` DESC';
+                }
+            }else{
+                if ($get_max) {    // get max
+                    $sql = $sql . 'engines.prime_2/engines.power_factor >= ' . $power;
+                    $sql = $sql . ' and engines.prime_2/engines.power_factor <= ' . ($power*2);
+                    $sql = $sql . ' ORDER BY `prime_2` ASC';
+                } else {            // get min
+                    $sql = $sql . 'engines.prime_2/engines.power_factor < ' . $power;
+                    $sql = $sql . ' and engines.prime_2/engines.power_factor >= ' . ($power/2);
+                    $sql = $sql . ' ORDER BY `prime_2` DESC';
+                }
+            }
         }
 
-        //$sql = $sql.' ORDER BY `name` ASC limit 50';
+        //$sql = $sql.' ORDER BY `name` ASC limit 20';
+        $sql = $sql.' limit 20';
 		return CI::db()->query($sql)->result();
         
     }
@@ -178,16 +250,34 @@ Class Products extends CI_Model
 	public function getProductsAlternators($power = 0, $hz = 50, $phase, $limit = false, $offset = false, $by=false, $sort=false)
     {
         $coefficient = 0.85;
-		CI::db()->select('products.*, manufacturers.code, alternators.product_id, alternators.hz, alternators.power, alternators.phase, alternators.efficiency, alternators.efficiency_2, alternators.efficiency_3, alternators.efficiency_4, power_single_phase');
+		CI::db()->select('products.*, manufacturers.code, alternators.product_id, alternators.hz, alternators.power, alternators.phase, alternators.efficiency, alternators.efficiency_2, alternators.efficiency_3, alternators.efficiency_4, power_single_phase, efficiency_single, efficiency_single_standby, efficiency_standby');
 		CI::db()->where('alternators.hz', $hz);
 		CI::db()->where('alternators.efficiency > ', 0);
         if($phase == 1){
-            CI::db()->where('alternators.power_single_phase > '.($power * $coefficient));
+            CI::db()->where('alternators.power_single_phase <= '.($power * $coefficient) * 2.0);
+            CI::db()->where('alternators.power_single_phase >= '.($power * $coefficient * 0.9));
         }else{
-            CI::db()->where('alternators.power > '.($power * $coefficient));
+            CI::db()->where('alternators.power >= '.($power * $coefficient));
+            CI::db()->where('alternators.power <= '.($power * $coefficient *3));
         }
 		CI::db()->join('alternators', 'alternators.product_id=products.id');
 		CI::db()->join('manufacturers', 'manufacturers.id=products.manufacturers');
+        return CI::db()->order_by('name', 'ASC')->get('products')->result();
+    }
+
+    public function getProductsCanopies()
+    {
+        CI::db()->select('products.*, manufacturers.code, canopies.kVA_min, canopies.kVA_max, canopies.standard, canopies.product_id');
+        CI::db()->join('canopies', 'canopies.product_id=products.id');
+        CI::db()->join('manufacturers', 'manufacturers.id=products.manufacturers');
+        return CI::db()->order_by('name', 'ASC')->get('products')->result();
+    }
+
+    public function getProductsControllers()
+    {
+        CI::db()->select('products.*, manufacturers.code, controllers.product_id');
+        CI::db()->join('controllers', 'controllers.product_id=products.id');
+        CI::db()->join('manufacturers', 'manufacturers.id=products.manufacturers');
         return CI::db()->order_by('name', 'ASC')->get('products')->result();
     }
 
@@ -597,12 +687,14 @@ Class Products extends CI_Model
         $data['category'] 		= CI::db()->where('id', $category_id)->get('categories')->row();
         if($category_id==2){
             CI::db()->where('hz', $hz);
-            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$category_id])->row();
             CI::db()->where('hz', 60);
-            $data['category_parameters_hz_60'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+            $data['category_parameters_hz_60'] = CI::db()->where('product_id', $product_id)->get($tmp[$category_id])->row();
         }
         if($category_id==1){
-            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$manufacturer_id])->row();
+            //echo $manufacturer_id;exit;echo $tmp[$manufacturer_id];exit;
+            $data['category_parameters'] = CI::db()->where('product_id', $product_id)->get($tmp[$category_id])->row();
+
         }
 
         /*if($category_id==4){
@@ -610,5 +702,17 @@ Class Products extends CI_Model
         }*/
         return $data;
 
+    }
+
+    public function getAts($amps)
+    {
+        CI::db()->select('*, saleprice_'.$this->customer->group_id.' as saleprice, price_'.$this->customer->group_id.' as price')->where('products.group', 'ats')->where('enabled_'.$this->customer->group_id, '1');
+        CI::db()->join('accessrory_ats','accessrory_ats.product_id=products.id');
+        CI::db()->where('amps >=', $amps);
+        CI::db()->limit(1);
+        CI::db()->order_by('amps','ASC');
+        $product = CI::db()->get('products')->row();
+        $product = $this->processImageDecoding($product);
+        return $product;
     }
 }

@@ -156,7 +156,6 @@ class AdminOrders extends Admin {
 
             \CI::Orders()->saveOrder($save);
         }
-
         $this->view('order', $data);
     }
 

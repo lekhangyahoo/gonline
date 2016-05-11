@@ -38,24 +38,32 @@ class Setup
     public $gia_vc_duong_dai        = 0;
     public $gia_vc_thu_cong         = 0;
 
+    public $gia_ats                 = 0;
+
+    public $gia_thoat_nhiet         = 0;
+    public $gia_lam_gio             = 0;
+
     public function get_all_value(){
         $value = array(
             'gia_bon_dung'          => $this->gia_bon_dung,
             'gia_ong_dan_dau'       => $this->gia_ong_dan_dau,
             'gia_tu_bom'            => $this->gia_tu_bom,
-            'gia_ong_khoi'          => $this->gia_ong_khoi,
-            'gia_ong_nhung_non_che' => $this->gia_ong_nhung_non_che,
-            'gia_cap_dong_luc'      => $this->gia_cap_dong_luc,
-            'gia_cap_te'            => $this->gia_cap_te,
-            'gia_cap_dieu_khien'    => $this->gia_cap_dieu_khien,
+            'gia_ong_khoi'          => $this->gia_ong_khoi * $this->gen_number,
+            'gia_ong_nhung_non_che' => $this->gia_ong_nhung_non_che * $this->gen_number,
+            'gia_cap_dong_luc'      => $this->gia_cap_dong_luc * $this->gen_number,
+            'gia_cap_te'            => $this->gia_cap_te * $this->gen_number,
+            'gia_cap_dieu_khien'    => $this->gia_cap_dieu_khien * $this->gen_number,
             'gia_bao_ve_cap'        => $this->gia_bao_ve_cap,
-            'gia_nhien_lieu_chay_nt'=> $this->gia_nhien_lieu_chay_nt,
-            'gia_vat_tu_phu'        => $this->gia_vat_tu_phu,
+            'gia_nhien_lieu_chay_nt'=> $this->gia_nhien_lieu_chay_nt * $this->gen_number,
+            'gia_vat_tu_phu'        => $this->gia_vat_tu_phu * $this->gen_number,
             'gia_kiem_dinh'         => $this->gia_kiem_dinh,
-            'gia_nhan_cong'         => $this->gia_nhan_cong,
+            'gia_nhan_cong'         => $this->gia_nhan_cong * $this->gen_number,
             'gia_vc_duong_ngan'     => $this->gia_vc_duong_ngan,
             'gia_vc_duong_dai'      => $this->gia_vc_duong_dai,
             'gia_vc_thu_cong'       => $this->gia_vc_thu_cong,
+            'gia_ats'               => $this->gia_ats,
+            'gia_thoat_nhiet'       => $this->gia_thoat_nhiet,
+            'gia_lam_gio'           => $this->gia_lam_gio
         );
 
         $total_price = 0;
@@ -98,18 +106,22 @@ class Setup
             'gia_vc_duong_ngan_price'     => format_currency($this->gia_vc_duong_ngan),
             'gia_vc_duong_dai_price'      => format_currency($this->gia_vc_duong_dai),
             'gia_vc_thu_cong_price'       => format_currency($this->gia_vc_thu_cong),
+            'gia_ats'                     => format_currency($this->gia_ats),
+            'gia_thoat_nhiet'             => format_currency($this->gia_thoat_nhiet),
+            'gia_lam_gio'                 => format_currency($this->gia_lam_gio)
         );
         //pr(array_merge($parameters, $value));exit;
         return json_encode(array_merge($parameters, $value));
     }
 
-    public function set($kVA, $phase)
+    public function set($kVA, $phase, $gen_number)
     {
         \CI::load()->model(['Materials']);
-        $this->kVA      = $kVA;
-        $this->phase    = $phase;
+        $this->kVA          = $kVA;
+        $this->phase        = $phase;
+        $this->gen_number   = $gen_number;
 
-        $this->data     = \CI::Materials()->getMaterials();
+        $this->data         = \CI::Materials()->getMaterials($kVA, $gen_number);
 
         //echo '<pre>';print_r($this->data);exit;
     }
@@ -335,7 +347,7 @@ class Setup
 
     }
 
-    public function vc_duong_dai($km){
+    public function vc_duong_dai($km, $weight){
         $this->gia_vc_duong_dai = $km * $this->data['basic']['GIA_VC_DUONG_DAI']->value;
     }
 
@@ -421,5 +433,36 @@ class Setup
 
     public  function vc_thu_cong($times = 1){
         $this->gia_vc_thu_cong = $times * $this->data['basic']['GIA_VC_THU_CONG']->value;
+    }
+
+    public function thoat_nhiet(){
+        $width          = $this->data['febrifuge']->width;
+        $height         = $this->data['febrifuge']->height;
+        $value_vtp      = $this->data['febrifuge']->value_vtp;
+        $gia_thep       = ((((($width+$height)*2+100))*1100)/1000000)*0.0008*7856*$this->data['basic']['THEP_MA_KEM']->value*1.1;
+        $nep            = ((0.08*1.1*0.002*7856)*4*$this->data['basic']['NEP_RANG_CUA']->value)+10000;
+        $gia_do_hop     = ((($width+100)/1000)*2)*2.1*$this->data['basic']['GIA_DO']->value;
+        $ty_ren         = ($height+400)/1000*$this->data['basic']['TY_REN_10']->value/1.5;
+        $ke_goc         = $this->data['basic']['KE_GOC']->value*4/1.5;
+        $gioang_cao_su  = (($width+$height)*2)/1000*79000/5;
+        $cong_san_xuat  = ((((($width+$height)*2+100))*1100)/1000000)*0.0008*7856*3000+150000;
+
+        $gia_thoat_nhiet= $gia_thep + $nep + $gia_do_hop + $ty_ren + $ke_goc + $gioang_cao_su + $cong_san_xuat + $value_vtp;
+
+        $kl_khung       = (((($width+$height)*1.2)*2*200)/1000000)*0.002*7856;
+        $kl_lam         = (((140*$height*1.2)/1000000)*0.0008*7856)*($width*1.2/100);
+        $tong_kl        = $kl_khung + $kl_lam;
+        $gia_thep       = $tong_kl*$this->data['basic']['THEP_MA_KEM']->value;
+        $gia_nhan_cong  = $tong_kl*$this->data['basic']['CONG_SX_LAM_GIO']->value+150000;
+        $gia_lam_gio    = $gia_thep + $gia_nhan_cong + $value_vtp;
+
+        $this->gia_thoat_nhiet  = $gia_thoat_nhiet= $gia_thoat_nhiet/0.8;
+        $this->gia_lam_gio      = $gia_lam_gio    = $gia_lam_gio/0.8;
+    }
+    public function tu_ats(){
+        $ats = \CI::Products()->getAts(($this->kVA/1.72)/0.83);
+        //echo lqr();pr($ats);exit;
+        $this->gia_ats = $ats->price_1;
+        //echo $this->gia_ats;exit;
     }
 }

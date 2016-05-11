@@ -26,6 +26,429 @@ class AdminProducts extends Admin {
 		//echo \CI::db()->last_query().'<pre>';print_r($alternator);exit;
     }
 
+    function input_data_from_link($type = 0, $active = false){
+        \CI::load()->helper('simple_html_dom');
+        set_time_limit(1800);
+
+        if($type == 0) {
+            $csv_data = array_map('str_getcsv', file($_SERVER['DOCUMENT_ROOT'] . '/perkins-data.csv'));
+            $product_list = array();
+            foreach ($csv_data as $key => $product) {
+                if ($key == 0 || $key == 1 || $product[0] == '' || $product[2] == '') continue;
+                $index = $key - 2;
+                $product_list[$index]['active'] = $product[1];
+                $product_list[$index]['product']['name'] = $product[2];
+                $product_list[$index]['product']['slug'] = strtolower(str_replace(' ', '-', $product[2]));
+                $product_list[$index]['product']['note'] = $product[18];
+                $product_list[$index]['product']['ref_link'] = $product[19];
+                $product_list[$index]['product']['document_link'] = $product[20];
+                $product_list[$index]['product']['document_link_2'] = $product[21];
+                $product_list[$index]['product']['price_1'] = $product[22];
+
+                $product_list[$index]['engine']['standby'] = $product[3];
+                $product_list[$index]['engine']['prime'] = $product[4];
+                $product_list[$index]['engine']['rpm'] = ($product[9] > 0) ? $product[9] : 1500;
+                $product_list[$index]['engine']['standby_2'] = $product[10];
+                $product_list[$index]['engine']['prime_2'] = $product[11];
+                $product_list[$index]['engine']['rpm_2'] = ($product[16] > 0) ? $product[16] : 1800;
+
+                $product_list[$index]['fuel'][50]['hz'] = 50;
+                $product_list[$index]['fuel'][50]['standby_fuel_con_1'] = $product[5];
+                $product_list[$index]['fuel'][50]['prime_fuel_con_1'] = $product[6];
+                $product_list[$index]['fuel'][50]['prime_fuel_con_2'] = $product[7];
+                $product_list[$index]['fuel'][50]['prime_fuel_con_3'] = $product[8];
+                $product_list[$index]['fuel'][50]['unit'] = ($product[17] != '') ? 1 : 0;
+
+                $product_list[$index]['fuel'][60]['hz'] = 60;
+                $product_list[$index]['fuel'][60]['standby_fuel_con_1'] = $product[12];
+                $product_list[$index]['fuel'][60]['prime_fuel_con_1'] = $product[13];
+                $product_list[$index]['fuel'][60]['prime_fuel_con_2'] = $product[14];
+                $product_list[$index]['fuel'][60]['prime_fuel_con_3'] = $product[15];
+                $product_list[$index]['fuel'][60]['unit'] = ($product[17] != '') ? 1 : 0;
+
+
+                //$ref_link = 0;
+                $ref_link = $product[19];
+                if (!isset($get_data[$ref_link])) {
+                //if ($ref_link > 0) {
+                    $data = array();
+                    // Create DOM from URL or file
+                    $html = file_get_html($ref_link);
+
+                    $modelTitle = $html->find('div.modelTitle');
+                    foreach ($modelTitle as $element) {
+                        $title = trim($element->plaintext);
+                        break;
+                    }
+
+                    $img = $html->find('ul#carousel-photos a img');
+                    foreach ($img as $element) {
+                        $link_img = $element->src;
+                        break;
+                    }
+                    //echo $title;continue;
+                    if($active == false)
+                        $images = $this->save_image($title, $link_img);
+
+                    foreach ($html->find('.specifications tbody tr') as $key2 => $element) {
+                        $tmp = $element->childNodes(1);
+                        $label = trim($element->childNodes(0)->plaintext);
+                        //echo $label.'<br/>';
+                        $value = trim($tmp->find('.unit-metric')[0]->plaintext);
+                        if ($label == 'Bore') {
+                            $tmp_data['bore'] = $value;
+                        }
+                        if ($label == 'Stroke') {
+                            $tmp_data['stroke'] = $value;
+                        }
+                        if ($label == 'Displacement') {
+                            $tmp_data['displacement'] = $value;
+                        }
+                        if ($label == 'Cycle') {
+                            $tmp_data['cylinders'] = $value;
+                        }
+                        if ($label == 'Compression ratio') {
+                            $tmp_data['compression_ratio'] = $value;
+                        }
+                        if ($label == 'Cooling system') {
+                            $tmp_data['cooling_system'] = $value;
+                        }
+                        if ($label == 'Emissions') {
+                            $tmp_data['emissions'] = $value;
+                        }
+                        if ($label == 'Length') {
+                            $tmp_data['length'] = $value;
+                        }
+                        if ($label == 'Width') {
+                            $tmp_data['width'] = $value;
+                        }
+                        if ($label == 'Height') {
+                            $tmp_data['height'] = $value;
+                        }
+                        if ($label == 'Dry weight') {
+                            $tmp_data['weight'] = $value;
+                        }
+
+                    }
+
+                    $tmp_data['dimensions'] = str_replace('.0 mm', '', $tmp_data['length']) . 'x' . str_replace('.0 mm', '', $tmp_data['width']) . 'x' . str_replace('.0 mm', '', $tmp_data['height']);
+                    $tmp_data['weight'] = str_replace(' kg', '', $tmp_data['weight']);
+
+                    if($active == false){
+                        $product_list[$index]['product']['images'] = $get_data[$ref_link]['images'] = $images ? $images : '';
+                    }
+                    $product_list[$index]['product']['dimensions'] = $get_data[$ref_link]['dimensions'] = $tmp_data['dimensions'] ? $tmp_data['dimensions'] : 0;
+                    $product_list[$index]['product']['weight'] = $get_data[$ref_link]['weight'] = $tmp_data['weight'] ? $tmp_data['weight'] : 0;
+
+                    $product_list[$index]['engine']['bore'] = $get_data[$ref_link]['bore'] = $tmp_data['bore'] ? $tmp_data['bore'] : 0;
+                    $product_list[$index]['engine']['stroke'] = $get_data[$ref_link]['stroke'] = $tmp_data['stroke'] ? $tmp_data['stroke'] : 0;
+                    $product_list[$index]['engine']['displacement'] = $get_data[$ref_link]['displacement'] = $tmp_data['displacement'] ? $tmp_data['displacement'] : 0;
+                    $product_list[$index]['engine']['cylinders_number'] = $get_data[$ref_link]['cylinders_number'] = $tmp_data['cylinders'] ? $tmp_data['cylinders'] : 0;
+                    $product_list[$index]['engine']['compression_ratio'] = $get_data[$ref_link]['compression_ratio'] = $tmp_data['compression_ratio'] ? $tmp_data['compression_ratio'] : 0;
+                    $product_list[$index]['engine']['type_cooled'] = $get_data[$ref_link]['type_cooled'] = $tmp_data['cooling_system'] ? $tmp_data['cooling_system'] : 0;
+                    $product_list[$index]['engine']['emissions'] = $get_data[$ref_link]['emissions'] = $tmp_data['emissions'] ? $tmp_data['emissions'] : 0;
+                } else {
+                    if($active == false){
+                        $product_list[$index]['product']['images'] = $get_data[$ref_link]['images'];
+                    }
+                    $product_list[$index]['product']['dimensions'] = $get_data[$ref_link]['dimensions'];
+                    $product_list[$index]['product']['weight'] = $get_data[$ref_link]['weight'];
+
+                    $product_list[$index]['engine']['bore'] = $get_data[$ref_link]['bore'];
+                    $product_list[$index]['engine']['stroke'] = $get_data[$ref_link]['stroke'];
+                    $product_list[$index]['engine']['displacement'] = $get_data[$ref_link]['displacement'];
+                    $product_list[$index]['engine']['cylinders_number'] = $get_data[$ref_link]['cylinders_number'];
+                    $product_list[$index]['engine']['compression_ratio'] = $get_data[$ref_link]['compression_ratio'];
+                    $product_list[$index]['engine']['type_cooled'] = $get_data[$ref_link]['type_cooled'];
+                    $product_list[$index]['engine']['emissions'] = $get_data[$ref_link]['emissions'];
+                }
+                //break;
+            }
+            //pr($product_list);exit;
+            foreach ($product_list as $product) {
+                $product['product']['primary_category'] = 1;
+                $product['product']['enabled_1'] = 1;
+                $product['product']['manufacturers'] = 3;
+                if($active == false) {
+                    \CI::db()->insert('products', $product['product']);
+                    $product_id = \CI::db()->insert_id();
+                    \CI::db()->insert('category_products', array('product_id' => $product_id, 'category_id' => 1));
+
+                    $product['engine']['product_id'] = $product_id;
+                    \CI::db()->insert('engines', $product['engine']);
+
+                    $product['fuel'][50]['product_id'] = $product_id;
+                    \CI::db()->insert('fuel_consumptions', $product['fuel'][50]);
+
+                    $product['fuel'][60]['product_id'] = $product_id;
+                    \CI::db()->insert('fuel_consumptions', $product['fuel'][60]);
+                }else{
+                    $query = \CI::db()->where('slug', $product['product']['slug'])->get('products');
+                    if($query->num_rows() > 0) {
+                        $result = $query->row_array();
+                        $product_id = $result['id'];
+
+                        \CI::db()->where('id', $product_id);
+                        \CI::db()->update('products', $product['product']);
+
+                        \CI::db()->where('product_id', $product_id);
+                        \CI::db()->update('engines', $product['engine']);
+
+                        \CI::db()->where('product_id', $product_id)->where('hz', 50);
+                        \CI::db()->insert('fuel_consumptions', $product['fuel'][50]);
+
+                        \CI::db()->where('product_id', $product_id)->where('hz', 60);
+                        \CI::db()->insert('fuel_consumptions', $product['fuel'][60]);
+
+                    }else{
+                        \CI::db()->insert('products', $product['product']);
+                        $product_id = \CI::db()->insert_id();
+                        \CI::db()->insert('category_products', array('product_id' => $product_id, 'category_id' => 1));
+
+                        $product['engine']['product_id'] = $product_id;
+                        \CI::db()->insert('engines', $product['engine']);
+
+                        $product['fuel'][50]['product_id'] = $product_id;
+                        \CI::db()->insert('fuel_consumptions', $product['fuel'][50]);
+
+                        $product['fuel'][60]['product_id'] = $product_id;
+                        \CI::db()->insert('fuel_consumptions', $product['fuel'][60]);
+                    }
+                }
+            }
+        }
+
+        // input database control
+        if($type==1){
+            $csv_data = array_map('str_getcsv', file($_SERVER['DOCUMENT_ROOT'] . '/leroy-somer-data.csv'));
+            $product_list = array();
+            foreach ($csv_data as $key => $product) {
+                if ($key == 0 || $key == 1 || $product[0] == '' || $product[2] == '') continue;
+                $index = $key - 2;
+
+                $product_list[$index]['active'] = $product[1];
+                $product_list[$index]['product']['name'] = $product[2];
+                $product_list[$index]['product']['slug'] = strtolower(str_replace(' ', '-', str_replace('.', '-', $product[2])));
+                $product_list[$index]['product']['group'] = $product[3];
+                $product_list[$index]['product']['note'] = $product[43];
+                $product_list[$index]['product']['ref_link'] = $product[44];
+                $product_list[$index]['product']['document_link'] = $product[45];
+                $product_list[$index]['product']['price_1'] = $product[47];
+                $product_list[$index]['product']['protection_class'] = $product[40];
+                $product_list[$index]['product']['weight'] = $product[42];
+
+                $product_list[$index]['alternator'][50]['hz'] = 50;
+                $product_list[$index]['alternator'][50]['power'] = $product[4];
+                $product_list[$index]['alternator'][50]['power_standby'] = $product[5];
+                $product_list[$index]['alternator'][50]['phase'] = 3;
+                $product_list[$index]['alternator'][50]['voltage'] = $product[33];
+                $product_list[$index]['alternator'][50]['pole'] = $product[34];
+                $product_list[$index]['alternator'][50]['speed'] = $product[35];
+                $product_list[$index]['alternator'][50]['shaft_height'] = $product[36];
+                $product_list[$index]['alternator'][50]['excitation'] = $product[38];
+                $product_list[$index]['alternator'][50]['max_efficiency'] = $product[37];
+                $product_list[$index]['alternator'][50]['regulation'] = $product[39];
+                $product_list[$index]['alternator'][50]['number_of_wires'] = $product[40];
+                $product_list[$index]['alternator'][50]['about_power'] = $product[32];
+
+                $product_list[$index]['alternator'][50]['efficiency_standby'] = $product[6];
+                $product_list[$index]['alternator'][50]['efficiency'] = $product[7];
+                $product_list[$index]['alternator'][50]['efficiency_2'] = $product[8];
+                $product_list[$index]['alternator'][50]['efficiency_3'] = $product[9];
+                //$product_list[$index]['alternator'][50]['efficiency_4'] = $product[8];
+
+                $product_list[$index]['alternator'][50]['power_single_phase'] = $product[11];
+                $product_list[$index]['alternator'][50]['power_single_phase_standby'] = $product[12];
+                $product_list[$index]['alternator'][50]['efficiency_single_standby'] = $product[13];
+                $product_list[$index]['alternator'][50]['efficiency_single'] = $product[14];
+                $product_list[$index]['alternator'][50]['efficiency_single_2'] = $product[15];
+                $product_list[$index]['alternator'][50]['efficiency_single_3'] = $product[16];
+                //$product_list[$index]['alternator'][50]['efficiency_single_4'] = $product[8];
+
+                //hz 60
+                $product_list[$index]['alternator'][60]['hz'] = 60;
+                $product_list[$index]['alternator'][60]['power'] = $product[18];
+                $product_list[$index]['alternator'][60]['power_standby'] = $product[19];
+                $product_list[$index]['alternator'][60]['phase'] = 3;
+                $product_list[$index]['alternator'][60]['voltage'] = $product[33];
+                $product_list[$index]['alternator'][60]['pole'] = $product[34];
+                $product_list[$index]['alternator'][60]['speed'] = $product[35];
+                $product_list[$index]['alternator'][60]['shaft_height'] = $product[36];
+                $product_list[$index]['alternator'][60]['excitation'] = $product[38];
+                $product_list[$index]['alternator'][60]['max_efficiency'] = $product[37];
+                $product_list[$index]['alternator'][60]['regulation'] = $product[39];
+                $product_list[$index]['alternator'][60]['number_of_wires'] = $product[40];
+                $product_list[$index]['alternator'][60]['about_power'] = $product[32];
+
+                $product_list[$index]['alternator'][60]['efficiency_standby'] = $product[20];
+                $product_list[$index]['alternator'][60]['efficiency'] = $product[21];
+                $product_list[$index]['alternator'][60]['efficiency_2'] = $product[22];
+                $product_list[$index]['alternator'][60]['efficiency_3'] = $product[23];
+                //$product_list[$index]['alternator'][60]['efficiency_4'] = $product[8];
+
+                $product_list[$index]['alternator'][60]['power_single_phase'] = $product[25];
+                $product_list[$index]['alternator'][60]['power_single_phase_standby'] = $product[26];
+                $product_list[$index]['alternator'][60]['efficiency_single_standby'] = $product[27];
+                $product_list[$index]['alternator'][60]['efficiency_single'] = $product[28];
+                $product_list[$index]['alternator'][60]['efficiency_single_2'] = $product[29];
+                $product_list[$index]['alternator'][60]['efficiency_single_3'] = $product[30];
+                //$product_list[$index]['alternator'][60]['efficiency_single_4'] = $product[8];
+            }
+
+            foreach ($product_list as $product) {
+                $product['product']['primary_category'] = 2;
+                $product['product']['enabled_1'] = 1;
+                $product['product']['manufacturers'] = 7;
+                if ($active == false) {
+                    \CI::db()->insert('products', $product['product']);
+                    $product_id = \CI::db()->insert_id();
+                    \CI::db()->insert('category_products', array('product_id' => $product_id, 'category_id' => 2));
+
+                    $product['alternator'][50]['product_id'] = $product_id;
+                    \CI::db()->insert('alternators', $product['alternator'][50]);
+                    $product['alternator'][60]['product_id'] = $product_id;
+                    \CI::db()->insert('alternators', $product['alternator'][60]);
+                }else{
+                    $query = \CI::db()->where('slug', $product['product']['slug'])->get('products');
+                    if($query->num_rows() > 0) {
+                        $result = $query->row_array();
+                        $product_id = $result['id'];
+
+                        \CI::db()->where('id', $product_id);
+                        \CI::db()->update('products', $product['product']);
+
+                        \CI::db()->where('product_id', $product_id)->where('hz', 50);
+                        \CI::db()->insert('alternators', $product['alternator'][50]);
+
+                        \CI::db()->where('product_id', $product_id)->where('hz', 60);
+                        \CI::db()->insert('alternators', $product['alternator'][60]);
+
+                    }else{
+                        \CI::db()->insert('products', $product['product']);
+                        $product_id = \CI::db()->insert_id();
+                        \CI::db()->insert('category_products', array('product_id' => $product_id, 'category_id' => 2));
+
+                        $product['alternators'][50]['product_id'] = $product_id;
+                        \CI::db()->insert('alternators', $product['alternator'][50]);
+
+                        $product['alternators'][60]['product_id'] = $product_id;
+                        \CI::db()->insert('alternators', $product['alternator'][60]);
+                    }
+                }
+            }
+        }
+        //pr($product_list);
+        exit;
+
+        \CI::db()->insert('engines', $parameters);
+        $product_id = \CI::db()->insert_id();
+
+
+        $data = array();
+        // Create DOM from URL or file
+        $html = file_get_html('https://www.perkins.com/en_GB/products/new/perkins/electric-power-generation/diesel-generators/1000002660.html');
+
+        $modelTitle = $html->find('div.modelTitle');
+        foreach($modelTitle as $element) {
+            $data['name'] = trim($element->plaintext);
+            break;
+        }
+        $data['slug'] = strtolower(str_replace(' ', '-', $data['name']));
+        $download = $html->find('div#toggle-product-downloads ul li a');
+        foreach($download as $element) {
+            $data['document_link'] = $element->href;
+            break;
+        }
+        $img = $html->find('ul#carousel-photos a img');
+        foreach($img as $element) {
+            $link_img = $element->src;
+            break;
+        }
+
+        $tmp_name = '404D-22G';
+        $images = $this->save_image($tmp_name, $link_img);
+
+        echo $images; exit;
+        // Find all images
+        $tmp_array = array('bore','stroke','displacement','aspiration','rotation ','cylinders','cycle','compression_ratio',
+            'combustion_system','cooling_system','total_coolant_capacity','total_lubricating_capacity','length','width','height','weight','disclaimer1','disclaimer2','emissions');
+        $tmp_data = array();
+        foreach($html->find('.unit-metric') as $key=>$element) {
+            $tmp_data[$tmp_array[$key]] = trim($element->plaintext);
+            if(count($tmp_array) == ($key + 1)) break;
+        }
+
+        $data['dimensions'] = str_replace('.0 mm','',$tmp_data['length']).'x'.str_replace('.0 mm','',$tmp_data['width']).'x'.str_replace('.0 mm','',$tmp_data['height']);
+        $data['weight'] = str_replace(' kg', '', $tmp_data['weight']);
+        //\CI::db()->insert('products', $data);
+        //$product_id = \CI::db()->insert_id();
+
+        $parameters = array();
+        //$parameters['product_id']   = $product_id;
+        $parameters['bore']         = $tmp_data['bore'];
+        $parameters['stroke']       = $tmp_data['stroke'];
+        $parameters['displacement'] = $tmp_data['displacement'];
+        $parameters['cylinders_number']     = $tmp_data['cylinders'];
+        $parameters['compression_ratio']    = $tmp_data['compression_ratio'];
+        $parameters['type_cooled']          = $tmp_data['cooling_system'];
+        $parameters['emissions']            = $tmp_data['emissions'];
+
+        //\CI::db()->insert('engines', $parameters);
+
+
+        echo '<pre>';print_r($data);pr($parameters);
+
+        // Find all links
+        //foreach($html->find('a') as $element)
+          //  echo $element->href . '<br>';
+
+        echo 'aaaa';exit;
+    }
+
+    public function save_image($tmp_name, $link_img){
+        \CI::load()->library('image_lib');
+        $image = file_get_contents($link_img);
+        $tmp_img = str_replace(' ','',trim(strtolower($tmp_name)));
+        $path_image = $_SERVER['DOCUMENT_ROOT'].'/uploads/images/full/'.$tmp_img.'.jpg';
+
+        file_put_contents($path_image, $image);
+        $name_image = $tmp_img.'.jpg';
+
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/images/full/'.$name_image;
+        $config['new_image'] = 'uploads/images/medium/'.$name_image;
+        $config['maintain_ratio'] = false;
+        $config['width'] = 664;
+        $config['height'] = 466;
+        \CI::image_lib()->initialize($config);
+        \CI::image_lib()->resize();
+        \CI::image_lib()->clear();
+
+        //small image
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/images/medium/'.$name_image;
+        $config['new_image'] = 'uploads/images/small/'.$name_image;
+        $config['maintain_ratio'] = TRUE;
+        $config['width'] = 235;
+        $config['height'] = 235;
+        \CI::image_lib()->initialize($config);
+        \CI::image_lib()->resize();
+        \CI::image_lib()->clear();
+
+        //cropped thumbnail
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = 'uploads/images/small/'.$name_image;
+        $config['new_image'] = 'uploads/images/thumbnails/'.$name_image;
+        $config['maintain_ratio'] = false;
+        $config['width'] = 144;
+        $config['height'] = 105;
+        \CI::image_lib()->initialize($config);
+        \CI::image_lib()->resize();
+        \CI::image_lib()->clear();
+
+        return '{"'.$tmp_img.'":{"filename":"'.$tmp_img.'.jpg","alt":"engine-'.$tmp_img.'","caption":"","primary":"TRUE"}}';
+
+    }
     public function index($rows=100, $order_by="name", $sort_order="ASC", $code=0, $page=0)
     {
         $data['groups'] = \CI::Customers()->get_groups();
@@ -235,10 +658,11 @@ class AdminProducts extends Admin {
             $data['shippable']  = $product->shippable;
             $data['quantity']   = $product->quantity;
             $data['taxable']    = $product->taxable;
-            $data['fixed_quantity'] = $product->fixed_quantity;
+            $data['fixed_quantity']     = $product->fixed_quantity;
 			
-			$data['manufacturer'] = $product->manufacturers;
-            $data['protection_class'] = $product->protection_class;
+			$data['manufacturer']       = $product->manufacturers;
+            $data['protection_class']   = $product->protection_class;
+            $data['document_link']      = $product->document_link;
 
             foreach($data['groups'] as $group)
             {
@@ -274,6 +698,8 @@ class AdminProducts extends Admin {
                 $data['type_cooled']= isset($engine->type_cooled) ? $engine->type_cooled : '';
                 $data['type_fuel']  = isset($engine->type_fuel) ? $engine->type_fuel : '';
                 $data['dBA']        = isset($engine->dBA) ? $engine->dBA : '';
+                $data['rpm']        = isset($engine->rpm) ? $engine->rpm : 1500;
+                $data['rpm_2']      = isset($engine->rpm_2) ? $engine->rpm_2 : 1800;
 
 				$fuel_consumption = \CI::Products()->find_fuel_consumption($id,50);
 				$data['standby_fuel_con_1']	= isset($fuel_consumption->standby_fuel_con_1) ? $fuel_consumption->standby_fuel_con_1 : '';
@@ -425,6 +851,7 @@ class AdminProducts extends Admin {
 			$save['ogirin'] 		= \CI::input()->post('ogirin');
             $save['manufacturers'] 	= \CI::input()->post('manufacturers');
             $save['protection_class'] 	= \CI::input()->post('protection_class');
+            $save['document_link'] 	    = \CI::input()->post('document_link');
             $post_images = \CI::input()->post('images');
 
             foreach($data['groups'] as $group)
@@ -525,10 +952,10 @@ class AdminProducts extends Admin {
 			if($data['primary_category']==1){ // engine
 				$save_engine['product_id'] 		= $id;
 			
-				$save_engine['rpm'] 			= 1500;
+				$save_engine['rpm'] 			= \CI::input()->post('rpm');
 				$save_engine['prime'] 			= \CI::input()->post('prime');
 				$save_engine['standby'] 		= \CI::input()->post('standby');
-				$save_engine['rpm_2'] 			= 1800;
+				$save_engine['rpm_2'] 			= \CI::input()->post('rpm_2');;
 				$save_engine['prime_2'] 		= \CI::input()->post('prime_2');
 				$save_engine['standby_2'] 		= \CI::input()->post('standby_2');
                 //$save_engine['funnel_phi']          = \CI::input()->post('funnel_phi');
@@ -546,8 +973,9 @@ class AdminProducts extends Admin {
 				$save_fuel_consumption['product_id'] 			= $id;
 				$save_fuel_consumption['rpm'] 					= 1500;
 				$save_fuel_consumption['hz'] 					= 50;
+
 				$engine_id = \CI::Products()->fuel_consumption($id, $fuel_consumption->id, $save_fuel_consumption);
-				
+				//  echo lqr();
 				$save_fuel_consumption_2['standby_fuel_con_1']	= \CI::input()->post('standby_fuel_con_2_1');
 				$save_fuel_consumption_2['standby_fuel_con_2']	= \CI::input()->post('standby_fuel_con_2_2');
 				$save_fuel_consumption_2['standby_fuel_con_3']	= \CI::input()->post('standby_fuel_con_2_3');				
@@ -939,7 +1367,7 @@ class AdminProducts extends Admin {
         $config['allowed_types'] = 'gif|jpg|png';
         //$config['max_size']   = config_item('size_limit');
         $config['upload_path'] = 'uploads/images/full';
-        $config['encrypt_name'] = true;
+        $config['encrypt_name'] = false;
         $config['remove_spaces'] = true;
 
         \CI::load()->library('upload', $config);

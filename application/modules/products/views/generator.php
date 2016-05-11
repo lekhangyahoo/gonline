@@ -1,17 +1,23 @@
 <style type="text/css">
-.download-document {
-    padding: 10px 0;
-    border-bottom: 1px solid #C5C5C5;
-	width: 75%;
-}
-.last{border:none}
-.clear-left{clear:left}
-.col-set-up-left{float:left; min-width:200px}
-.col-set-up-right{float:left;}
-.set-up-input{height: 30px;width: 150px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
-.about-help{cursor: pointer; border-bottom: 1px dotted #BB0F1D;text-decoration: none;}
-.about-help:hover{text-decoration: none !important;}
-.uppercase{text-transform: uppercase;}
+	.download-document {
+		padding: 10px 0;
+		border-bottom: 1px solid #C5C5C5;
+		width: 75%;
+	}
+	.last{border:none}
+	.clear-left{clear:left}
+	.col-set-up-left{float:left; min-width:200px}
+	.col-set-up-right{float:left;}
+	.set-up-input{height: 30px;width: 120px !important;border-radius: 5px !important;display: initial !important; padding: 0.25em 1em 0.25em !important;}
+	#textos .set-up-input{width: 160px !important;}
+	.about-help{cursor: pointer; border-bottom: 1px dotted #BB0F1D;text-decoration: none;}
+	.about-help:hover{text-decoration: none !important;}
+	.uppercase{text-transform: uppercase;}
+
+	#price-detail .table tbody tr td{
+		padding: 2px 15px;
+	}
+	.gen-with-control{font-weight: bold}
 </style>
 
 <script>
@@ -24,10 +30,12 @@
 	});
 	var uri_string  = '<?php echo uri_string();?>';
 	var site_url 	= '<?php echo site_url();?>';
+	var hz 			= '<?php echo $hz;?>';
+	var kVA 		= '<?php echo round($generators['kVA_standby']);?>';
 </script>
 <div class="page-header">
-    <h2>GENERATOR Model <?php echo $generators['name'];?></h2>
-	<div><?php echo round($generators['kVA_standby']);?> kVA, <?php echo $engine_manufacturer?> Engine, <?php echo $hz;?> Hz - <?php if($phase==1) echo 'Single-phase';else echo 'Three-phase'?> - <?php echo $alternator_manufacturer?> Alternator </div>
+    <h2>GENERATOR Model <span class="gen-name"><?php echo $generators['name'];?></span></h2>
+	<div><?php echo round($generators['kVA_standby']) * $gen_number;?> kVA, <?php echo $engine_manufacturer?> Engine, <?php echo $hz;?> Hz - <?php if($phase==1) echo 'Single-phase';else echo 'Three-phase'?> - <?php echo $alternator_manufacturer?> Alternator </div>
 	
 </div>
 
@@ -35,7 +43,7 @@
     <div class="col" data-cols="2/5" data-medium-cols="2/5">
         <div class="productImg"><?php
         $photo = theme_img('pic_generator.png', 'image-generator');
-
+		/*
         if(!empty($product->images[0]))
         {
             foreach($product->images as $photo)
@@ -53,8 +61,10 @@
 
             $photo = '<img src="'.base_url('uploads/images/full/'.$primary['filename']).'" alt="'.$product->seo_title.'" data-caption="'.htmlentities(nl2br($primary['caption'])).'"/>';
         }
-        echo $photo
-        ?></div>
+		*/
+        echo $photo;
+        ?>
+		</div>
         <?php if(!empty($primary['caption'])):?>
         <div class="productCaption">
             <?php echo $primary['caption'];?>
@@ -78,7 +88,7 @@
 			<div class="download-document last">
 				<img src="<?php echo base_url('assets/img')?>/label-pdf.gif" width="20" height="9" alt="PDF" border="0">
 				<?php $url_document = str_replace('/generator/','/documents/',uri_string())?>
-				<a id="link-url" target="_blank" href="<?php echo base_url($url_document)?>">Spec. Sheet - <?php echo $generators['name'];?>.pdf</a>
+				<a id="link-url" target="_blank" href="<?php echo base_url($url_document)?>">Spec. Sheet - <span class="gen-name"><?php if($gen_number == 1) echo $generators['name'];else echo $gen_number.'x'.$generators['name'];?></span>.pdf</a>
 			</div>
 		</div>
 		
@@ -86,17 +96,20 @@
 
 
     <div class="col pull-right" style="padding: 0px 25px;" data-cols="3/5" data-medium-cols="3/5">
-        <div id="productAlerts"></div>
-            <div class="productPrice">           
+        <div id="productAlerts">
+            <div class="productPrice product_price">
                 <?php echo format_currency($generators['price']);?>
             </div>
+		</div>
         <div class="productDetails"> 
 
             <div class="productDescription">
                 <?php echo (new content_filter($product->description))->display();?>
 				<div id="textos">
 					<p class="negro14">GENERAL FEATURES:</p>
-					<p class="arial13"><strong>Power Generator with manual control panel.</strong></p>
+					<p class="arial13 gen-with-control">
+						<?php if(@$parameter_ats->ats == true) echo lang('gen_with_ats_control');else echo lang('gen_with_manual_control');?>
+					</p>
 					<p><strong><span class="verde">ENGINE</span></strong><br>
 					  Make: <strong><?php echo $engine_manufacturer?></strong><br>
 					  Model: <strong><?php echo $eng->name;?></strong></p>
@@ -106,22 +119,16 @@
 					  Model: <strong><?php echo $alt->name;?></strong>
 					</p>
 					<p style="margin-bottom: 0px"><strong><span class="verde">CONTROLLER</span></strong> &nbsp;&nbsp;
-						<select class="set-up-input change-controller" name="change-controller" onchange="change_link_url(this, 1);" style="width: 120px">
-							<option value="0"> Without ATS Panel </option>
-							<option value="1"> ATS Panel </option>
-						</select>
+                        <?php echo form_dropdown('change_canopy', $controller_option, $con, 'class="set-up-input change-controller" onchange="change_link_url(this, 1);"');?>
 					<p><strong><span class="verde">CANOPY</span></strong> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
-						<select class="set-up-input change-canopy" name="change-canopy" onchange="change_link_url(this, 0);">
-							<option value="1"> Standard </option>
-							<option value="0"> No canopy </option>
-						</select>
+						<?php echo form_dropdown('change_canopy', $canopy_option, $can, 'class="set-up-input change-canopy" onchange="change_link_url(this, 0);"');?>
 					</p>
 
 				</div>				
 				
 				<div class="potencia"><div class="potencia1"><strong>STAND-BY POWER:</strong><br>
 					<span class="arial11normal">(LTP “Limited Time Power” norma ISO 8528-1)</span></div>
-					<div class="potencia2"><?php echo round($generators['kVA_standby']);?> kVA</div>
+					<div class="potencia2"><?php echo round($generators['kVA_standby']) * $gen_number;?> kVA</div>
 				</div>
 				<div style="clear: both;"></div>
 				<div style="clear: both; height:5px;"></div>
@@ -131,7 +138,7 @@
 						<strong>PRIME POWER:</strong><br>
 						<span class="arial11normal">(PRP “Prime Power” norma ISO 8528-1)</span>
 					</div>
-					<div class="potencia2"><?php echo round($generators['kVA_prime']);?> kVA</div>
+					<div class="potencia2"><?php echo round($generators['kVA_prime']) * $gen_number;?> kVA</div>
 				</div>
 				
 				<!--
@@ -222,18 +229,18 @@
                 $order_view = true;
             }
                 $bon_dau            = isset($install_info->bon_dau)?$install_info->bon_dau:'';
-                $dung_tich_bon_dau  = isset($install_info->dung_tich_bon_dau)?$install_info->dung_tich_bon_dau:5000;
+                $dung_tich_bon_dau  = isset($install_info->dung_tich_bon_dau)?$install_info->dung_tich_bon_dau:2000;
                 $duong_kinh_bon_dau = isset($install_info->duong_kinh_bon_dau)?$install_info->duong_kinh_bon_dau:2;
                 $do_day_bon_dau     = isset($install_info->duong_kinh_bon_dau)?$install_info->duong_kinh_bon_dau:3;
-                $do_dai_ong_dau     = isset($install_info->do_dai_ong_dau)?$install_info->do_dai_ong_dau:15;
+                $do_dai_ong_dau     = isset($install_info->do_dai_ong_dau)?$install_info->do_dai_ong_dau:1;
                 $so_luong_tu_bom    = isset($install_info->so_luong_tu_bom)?$install_info->so_luong_tu_bom:1;
 
                 $vat_tu             = isset($install_info->vat_tu)?$install_info->vat_tu:'';
-                $do_dai_ong_khoi    = isset($install_info->do_dai_ong_khoi)?$install_info->do_dai_ong_khoi:15;
+                $do_dai_ong_khoi    = isset($install_info->do_dai_ong_khoi)?$install_info->do_dai_ong_khoi:1;
                 $chat_lieu_ong_khoi = isset($install_info->chat_lieu_ong_khoi)?$install_info->chat_lieu_ong_khoi:1;
                 $do_day_ong_khoi    = isset($install_info->do_day_ong_khoi)?$install_info->do_day_ong_khoi:2;
                 $rockwool           = isset($install_info->rockwool)?$install_info->rockwool:'';
-                $do_dai_day_cap     = isset($install_info->do_dai_day_cap)?$install_info->do_dai_day_cap:15;
+                $do_dai_day_cap     = isset($install_info->do_dai_day_cap)?$install_info->do_dai_day_cap:5;
 
                 $nhan_cong          = isset($install_info->nhan_cong)?$install_info->nhan_cong:'';
                 $nc_thao_ra_vo      = isset($install_info->nc_thao_ra_vo)?$install_info->nc_thao_ra_vo:0;
@@ -250,33 +257,40 @@
                 $thu_tai_gia        = isset($install_info->thu_tai_gia)?$install_info->thu_tai_gia:1;
             ?>
 			<form id="calculate_setup" >
+			<input type="hidden" name="gen_number" value="<?php echo $gen_number;?>">
 			<div>
 				<div class="page-header">
 					<p class="uppercase"><b>estimate shipping costs and installation</b></p>
 				</div>
+
 				<div class="part-set-up bon-dau">
+					<div class="col-set-up-left"> <strong><span class="verde uppercase">ATS </span></strong><a class="about-help" data-toggle="popover" data-content="Automatic transfer switch."> (?) </a></div>
+					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="ats" data-theid="ats" name="ats" <?php if($parameter_con->ats == 1) echo 'checked';?>></div>
+				</div>
+
+				<div class="part-set-up bon-dau clear-left"  style="border-top:1px solid #ccc; padding-top: 20px;">
 					<div class="col-set-up-left"> <strong><span class="verde uppercase">Oil storage tanks: </span></strong></div>
 					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="bon-dau" data-theid="bon-dau" name="bon_dau"></div>
 					
 					<div class="bon-dau-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="col-set-up-left">Dung tich binh</div>
+							<div class="col-set-up-left"><?php echo lang('dung_tich_binh')?></div>
 							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="dung-tich-bon-dau" name="dung_tich_bon_dau" value="<?php echo $dung_tich_bon_dau?>" > (l) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Duong kinh</div>
-							<div class="col-set-up-right"> <input type="number" class="set-up-input" type="text" id="duong-kinh-bon-dau" name="duong_kinh_bon_dau" value="2" > (m) </div>
+							<div class="col-set-up-left"><?php echo lang('duong_kinh')?></div>
+							<div class="col-set-up-right"> <input type="number" class="set-up-input" type="text" id="duong-kinh-bon-dau" name="duong_kinh_bon_dau" value="<?php echo $duong_kinh_bon_dau?>" > (m) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Do day cua thep</div>
+							<div class="col-set-up-left"><?php echo lang('do_day_cua_thep')?></div>
 							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-day-bon-dau" name="do_day_bon_dau" value="3"> (mm)</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Ong dau (chieu di chieu ve)</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-dau" name="do_dai_ong_dau" value="15"> (m)</div>
+							<div class="col-set-up-left"><?php echo lang('do_dai_ong_dau').' '.lang('ong_dau_2_chieu')?></div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-dau" name="do_dai_ong_dau" value="5"> (m)</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Tu bom</div>
+							<div class="col-set-up-left"><?php echo lang('tu_bom')?></div>
 							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="so-luong-tu-bom" name="so_luong_tu_bom" value="1"> (cai)</div>
 						</div>
 					</div>
@@ -289,11 +303,11 @@
 					
 					<div class="vat-tu-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="col-set-up-left">Do dai ong khoi</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-khoi" name="do_dai_ong_khoi" value="15" > (m) </div>
+							<div class="col-set-up-left"><?php echo lang('do_dai_ong_khoi')?></div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-ong-khoi" name="do_dai_ong_khoi" value="5" > (m) </div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Chat lieu ong khoi</div>
+							<div class="col-set-up-left"><?php echo lang('chat_lieu_ong_khoi')?></div>
 							<div class="col-set-up-right">
 								<div class="col-set-up-right">
 									<select class="set-up-input" name="chat_lieu_ong_khoi">
@@ -304,7 +318,7 @@
 							</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Do day ong khoi</div>
+							<div class="col-set-up-left"><?php echo lang('do_day_ong_khoi')?></div>
 							<div class="col-set-up-right">
 								<select class="set-up-input" name="do_day_ong_khoi">
 									<option value="2"> 2 mm </option>
@@ -314,13 +328,13 @@
 						</div>
 						
 						<div class="clear-left">
-							<div class="col-set-up-left">Sua dung Rockwool</div>
+							<div class="col-set-up-left"><?php echo lang('sua_dung_rockwool')?></div>
 							<div class="col-set-up-right"><input type="checkbox" id="rockwool" data-theid="rockwool" value="1" name="rockwool" checked></div>
 						</div>
 						
 						<div class="clear-left">
-							<div class="col-set-up-left">Khoang cach tu may den nguon </div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-day-cap" name="do_dai_day_cap"value="15" > (m) </div>
+							<div class="col-set-up-left"><?php echo lang('kcach_tu_may_den_nguon')?></div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" id="do-dai-day-cap" name="do_dai_day_cap"value="5" > (m) </div>
 						</div>
 						
 					</div>
@@ -332,19 +346,20 @@
 					<div class="col-set-up-right"> <input class="set-up-check" type="checkbox" id="van-chuyen" data-theid="van-chuyen" name="van_chuyen"></div>
 					<div class="van-chuyen-content clear-left" style="display:none">
 						<div class="clear-left">
-							<div class="">Please enter address your company</div>
-							<div class="col-set-up-left">Khoang cach uoc luong: </div>
+							<div class="">The case for transport truck.</div>
+							<div class="">Please enter address your company.</div>
+							<div class="col-set-up-left">Estimate distance (km): </div>
 							<div class="col-set-up-right"><input readonly class="set-up-input" type="text" id="distance" name="distance" value=""></div>
 						</div>
 
 						<div class="clear-left">
-							<div class="col-set-up-left">Tinh</div>
+							<div class="col-set-up-left">Province</div>
 							<div class="col-set-up-right">
 								<?php echo form_dropdown('province', $provinces,3780, 'class="set-up-input"')?>
 							</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Huyen/Quan</div>
+							<div class="col-set-up-left">District</div>
 							<div class="col-set-up-right">
 								<div class="col-set-up-right"><input class="set-up-input" type="text" id="district" name="district" value=""></div>
 								<!--<select class="set-up-input" name="district">
@@ -354,11 +369,11 @@
 							</div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Xa/Phuong</div>
+							<div class="col-set-up-left">Ward</div>
 							<div class="col-set-up-right"><input class="set-up-input" type="text" id="ward" name="ward" value=""></div>
 						</div>
 						<div class="clear-left">
-							<div class="col-set-up-left">Dia chi nha</div>
+							<div class="col-set-up-left">Address</div>
 							<div class="col-set-up-right"><input class="set-up-input" type="text" id="address" name="address" value="" style="border-radius: 5px; height: 30px;width: 100% !important"></div>
 						</div>
                         <!--
@@ -372,7 +387,7 @@
 						</div>
 						-->
 						<div class="clear-left">
-							<div class="col-set-up-left">Van chuyen thu cong <a class="about-help" data-toggle="popover" title="About an chuyen thu cong" data-content="Len doi.<br> Xuong ruong."> (?) </a></div>
+							<div class="col-set-up-left">Transport by hands <a class="about-help" data-toggle="popover" title="About an chuyen thu cong" data-content="Len doi.<br> Xuong ruong."> (?) </a></div>
 							<div class="col-set-up-right"> <input class="set-up-input" type="text" id="transport_hands" name="transport_hands" value="0" ></div>
 						</div>
 
@@ -402,15 +417,15 @@
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Lap dat tu ats</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_lap_dat_ats" value="1"> (may)</div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_lap_dat_ats" value="0"> (may)</div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Lap tu hoa</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_lap_tu_hoa"value="1"> (may)</div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_lap_tu_hoa"value="0"> (may)</div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">HD su dung va nghiem thu</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_hd_sudung_nt" value="1"> (lan)</div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="nc_hd_sudung_nt" value="0"> (lan)</div>
 						</div>
 					</div>
 				</div>
@@ -426,11 +441,11 @@
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">KĐ Công suất TT 3</div>
-							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="kd_tt3" id="kd-tt3" value="1" > (SL giấy) </div>
+							<div class="col-set-up-right"><input type="number" class="set-up-input" type="text" name="kd_tt3" id="kd-tt3" value="0" > (SL giấy) </div>
 						</div>
 						<div class="clear-left">
 							<div class="col-set-up-left">Thu tai gia</div>
-							<div class="col-set-up-right"> <input type="number" class="set-up-input" type="text" name="thu_tai_gia" id="thu-tai-gia" value="1"> (SL máy)</div>
+							<div class="col-set-up-right"> <input type="number" class="set-up-input" type="text" name="thu_tai_gia" id="thu-tai-gia" value="0"> (SL máy)</div>
 						</div>
 					</div>
 				</div>
@@ -454,8 +469,8 @@
             <input type="hidden" name="cartkey" value="<?php echo CI::session()->flashdata('cartkey');?>" />
             <input type="hidden" name="id" value="<?php echo $product->id?>"/>
 			<input type="hidden" name="product_link" value="<?php echo uri_string();?>" class="link-url"/>
-			<input type="hidden" name="product_price" value="<?php echo $generators['price'];?>"/>
-            <input type="hidden" name="product_name" value="<?php echo $generators['name'];?>"/>
+			<input type="hidden" name="product_price" value="<?php echo $generators['price'];?>" class="product_price"/>
+            <input type="hidden" name="product_name" value="<?php echo $generators['name'];?>" class="product_name"/>
             <input type="hidden" name="install_price" value="0" class="install-price"/>
             <input type="hidden" name="install_price_details" value="0" class="install-price-details"/>
             <input type="hidden" name="install_info" value="" class="install-info"/>
@@ -655,6 +670,16 @@
 </div>
 <!-- end modal -->
 <script>
+	/* chang ats */
+	$('#ats').click(function() {
+		if ($(this).is(':checked')) {
+			$(".gen-with-control").html('Power Generator with ats control panel.');
+		}
+		else{
+			$(".gen-with-control").html('Power Generator with manual control panel.');
+		}
+
+	});
 	/* 0: canopy */
 	function change_link_url(sel, type){
 		var value = sel.value;
@@ -677,14 +702,20 @@
 		$(".link-url").val(uri_string);
 		var link_general_document = uri_string.replace("generator", "documents");
 		$("#link-url").attr('href', site_url + link_general_document);
-		alert(uri_string);
+
+		var link_calc_price = uri_string.replace("generator", "calculator_price_again");
 		$.ajax({
 			method: "POST",
-			url: site_url + uri_string,
-			data: form_data
+			url: site_url + link_calc_price,
+			data: {hz: hz, kVA: kVA}
 		}).done(function( data ) {
-			if(data) {
-
+			if(data) {//alert(uri_string);
+				var value = $.parseJSON(data);
+				$("#productAlerts .product_price").html(value.currency);
+				$(".product_price").val(value.price);
+				//$(".gen-with-control").html(value.gen_control_panel);
+				$(".gen-name").html(value.name);
+				$(".product_name").html(value.name);
 			}
 		});
 	}
@@ -761,12 +792,13 @@
 
 	$('.change-canopy').change(function() {
 		var url_img = "<?php echo site_url().'themes/default/assets/img/';?>";
-		if ($(this).val() == 1) {
-			url_img = url_img + 'pic_generator.png';
-		}
 		if ($(this).val() == 0) {
 			url_img = url_img + 'pic_generator_no_canopy.jpg';
 		}
+		else{
+			url_img = url_img + 'pic_generator.png';
+		}
+
 		url_img = '<img src="'+url_img+'" alt="image-generator">';
 		$(".productImg").html(url_img);
 		//alert($(this).val());
